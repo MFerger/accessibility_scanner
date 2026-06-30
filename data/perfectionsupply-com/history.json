@@ -1,13 +1,13 @@
 [
   {
     "date": "2026-06-30",
-    "errors": 128,
-    "warnings": 798,
+    "errors": 41,
+    "warnings": 432,
     "notices": 0,
-    "total": 926,
-    "scanErrors": 15,
+    "total": 473,
+    "scanErrors": 27,
     "pages": 43,
-    "new": 0,
-    "resolved": 0
+    "new": 121,
+    "resolved": 561
   }
 ]
