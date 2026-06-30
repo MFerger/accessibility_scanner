@@ -1,0 +1,58 @@
+name: Rebuild report
+
+# Regenerate the whole site from the scan data already committed in the repo
+# and redeploy to Pages — no re-scan. Use this to pick up report/display
+# changes (new explanations, layout, etc.) without waiting on a fresh scan.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      # Add a repo secret REPORT_PASSWORD to password-protect the report.
+      REPORT_PASSWORD: ${{ secrets.REPORT_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No npm install needed — build-report.js uses only Node built-ins.
+      - name: Build HTML reports
+        run: node scripts/build-report.js
+
+      - name: Assemble site
+        run: |
+          mkdir -p public
+          cp -r build/. public/
+          printf 'User-agent: *\nDisallow: /\n' > public/robots.txt
+
+      - name: Password-protect the report (optional)
+        if: env.REPORT_PASSWORD != ''
+        run: |
+          find public -name '*.html' -print0 | while IFS= read -r -d '' f; do
+            npx --yes staticrypt "$f" -p "$REPORT_PASSWORD" -d "$(dirname "$f")"
+          done
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

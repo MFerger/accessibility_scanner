@@ -25,6 +25,9 @@ const wcag = require('./lib/wcag');
 const RESULTS_FILE = process.env.RESULTS_FILE || 'results.json';
 const DATA_DIR = process.env.DATA_DIR || 'data';
 const INPUT = process.env.SCAN_URL || process.argv[2] || '';
+// Keep the element preview generous so full elements/selectors are usable;
+// only guard against pathological cases (e.g. an inline base64 data URI).
+const CONTEXT_MAX = Math.max(200, parseInt(process.env.CONTEXT_MAX || '2000', 10) || 2000);
 
 if (!INPUT) {
   console.error('No URL given. Set SCAN_URL or pass a URL argument.');
@@ -110,7 +113,7 @@ for (const url of pageUrls) {
       type,
       message,
       selector: i.selector || '',
-      context: truncate(normalizeContext(i.context), 200),
+      context: truncate(normalizeContext(i.context), CONTEXT_MAX),
       impact: (i.runnerExtras && i.runnerExtras.impact) || null,
       firstSeen: priorFirstSeen.get(fp) || RUN_DATE,
     };

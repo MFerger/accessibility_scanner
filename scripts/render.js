@@ -9,6 +9,8 @@
  *   site(site)      -> one interactive per-site report
  */
 
+const wcag = require('./lib/wcag');
+
 const esc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -18,6 +20,7 @@ const jsonScript = (obj) => JSON.stringify(obj)
   .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
 
 const fmtDate = (iso) => String(iso || '').slice(0, 10) || '—';
+const sevRank = (t) => (t === 'error' ? 0 : t === 'warning' ? 1 : 2);
 
 // ---------------------------------------------------------------------------
 // Shared chrome
@@ -38,16 +41,15 @@ const STYLES = `
   --line:#222831;--code:#0b0e13;--codefg:#e6e9ef;--accent:#6aa3ff;--chip:#1d2530;--shadow:none;
 }
 *{box-sizing:border-box}
-body{font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;max-width:960px;margin:0 auto;
+body{font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;max-width:980px;margin:0 auto;
   padding:24px 20px 64px;color:var(--fg);background:var(--bg);-webkit-text-size-adjust:100%}
 a{color:var(--accent)}
 h1{margin:0 0 4px;font-size:24px}
 .meta{color:var(--muted);margin:0 0 20px;font-size:13px;word-break:break-all}
-.muted{color:var(--muted)}
+.muted{color:var(--muted)} .ok{color:var(--ok);margin:0}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.spacer{flex:1 1 auto}
+.spacer,.ghspacer{flex:1 1 auto}
 
-/* summary numbers */
 .sum{display:flex;gap:22px;flex-wrap:wrap;margin:14px 0 6px}
 .sum .n{font-size:26px;font-weight:700;line-height:1}
 .sum .k{font-size:12px;color:var(--muted)}
@@ -58,62 +60,73 @@ h1{margin:0 0 4px;font-size:24px}
 .pill.resolved{background:rgba(42,122,58,.14);color:var(--ok)}
 .spark{color:var(--accent);vertical-align:middle}
 
-/* controls */
 .controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin:8px 0 14px;
   border-bottom:1px solid var(--border)}
 .controls button,.controls input,.controls label{font:inherit}
-.btn{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;
-  padding:5px 11px;cursor:pointer}
+.btn{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;padding:5px 11px;cursor:pointer}
 .btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .seg{display:inline-flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
 .seg .btn{border:0;border-radius:0}
-.chip{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;
-  padding:4px 11px;cursor:pointer}
+.chip{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;padding:4px 11px;cursor:pointer}
 .chip.on{color:var(--fg)}
 .chip.error.on{border-color:var(--err);color:var(--err)}
 .chip.warning.on{border-color:var(--warn);color:var(--warn)}
 .chip.notice.on{border-color:var(--notice);color:var(--notice)}
-#q{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;
-  padding:6px 10px;min-width:170px;flex:1 1 170px}
+#q{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;padding:6px 10px;min-width:170px;flex:1 1 170px}
 .ck{display:inline-flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer;font-size:13px}
 
 /* page sections */
-.pg{border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:0 0 12px;
-  background:var(--card);box-shadow:var(--shadow)}
+.pg{border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:0 0 12px;background:var(--card);box-shadow:var(--shadow)}
 .pg.clean{opacity:.7}
-.pg h2{font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  word-break:break-all;margin:0 0 6px;font-weight:600}
+.pg h2{font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all;margin:0 0 10px;font-weight:600}
+.pglink{color:var(--accent)} .pglink:hover{text-decoration:underline}
 .pg h2 .pgcount{color:var(--muted);font-weight:400;font-family:system-ui,sans-serif;font-size:12px}
-ul.issues{list-style:none;margin:0;padding:0}
-.issue{display:flex;gap:10px;border-top:1px solid var(--line);padding:11px 0}
-.issue:first-child{border-top:0}
-.issue .body{min-width:0;flex:1}
-.issue .head{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 3px}
+
+/* issue-type group */
+.groups{display:flex;flex-direction:column;gap:10px}
+.grp{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--bg)}
+.grp.empty{opacity:.55}
+.grp-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gtitle{font-size:14px}
+.cnt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .t{font-size:10.5px;text-transform:uppercase;font-weight:700;padding:1px 6px;border-radius:4px;color:#fff}
 .t.error{background:var(--err)} .t.warning{background:var(--warn)} .t.notice{background:var(--notice)}
-.imp{font-size:10.5px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);
-  border:1px solid var(--border);border-radius:4px;padding:0 5px}
 .sc{font-size:12px;white-space:nowrap}
-.msg{font-size:14px}
-.tip{font-size:12.5px;color:var(--muted);margin:3px 0 0}
-.sel{margin:5px 0 0;font-size:12.5px}
-.sel code,pre code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.issue pre{background:var(--code);color:var(--codefg);padding:8px 10px;border-radius:6px;
-  overflow:auto;font-size:12px;margin:6px 0 0}
+.why{font-size:13px;margin:6px 0 0} .why b,.tip b{font-weight:600}
+.grp .tip,.icard .tip{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.copy,.dismiss-group,.copy-sel{font-size:11.5px;border:1px solid var(--border);background:var(--card);
+  color:var(--muted);border-radius:6px;padding:2px 8px;cursor:pointer;white-space:nowrap}
+.copy:hover,.dismiss-group:hover,.copy-sel:hover{color:var(--fg);border-color:var(--accent)}
+
+.occ{margin:9px 0 0}
+.occ>summary{font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+.occ>summary:hover{color:var(--fg)}
+ul.issues{list-style:none;margin:9px 0 0;padding:0}
+.issue{display:flex;gap:10px;border-top:1px solid var(--line);padding:10px 0}
+.issue:first-child{border-top:0}
+.issue.is-dismissed{opacity:.5}
+.issue .body{min-width:0;flex:1}
+.imp{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);
+  border:1px solid var(--border);border-radius:4px;padding:0 5px;margin:0 0 4px}
+.sel{display:flex;gap:8px;align-items:flex-start}
+.sel code{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;word-break:break-all;
+  background:var(--chip);border-radius:5px;padding:4px 7px}
+.issue pre{flex:1;background:var(--code);color:var(--codefg);padding:8px 10px;border-radius:6px;
+  overflow:auto;font-size:12px;margin:6px 0 0;white-space:pre-wrap;word-break:break-word}
+.issue pre code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .dz{flex:0 0 auto;padding-top:2px}
 .dz input{width:16px;height:16px;cursor:pointer}
-.issue.is-dismissed .body{opacity:.5}
-.issue.is-dismissed .msg{text-decoration:line-through}
 
-/* by-issue table */
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
-thead th{border-top:0;font-size:12px;color:var(--muted);font-weight:600}
-td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-td.ic{width:14px;padding-right:0}
+/* by-issue cards */
+.icard{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--card)}
+.ic-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%}
 .dot.error{background:var(--err)} .dot.warning{background:var(--warn)} .dot.notice{background:var(--notice)}
-td.lbl .tip{margin-top:2px}
+.icard .pages{font-size:12.5px;margin:9px 0 0;line-height:1.9}
+.icard .pages .lbl{color:var(--muted);margin-right:4px}
+.icard .pages a{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+  background:var(--chip);border-radius:5px;padding:2px 7px;margin:0 4px 2px 0;display:inline-block;text-decoration:none}
+.icard .pages a:hover{text-decoration:underline}
 
 /* landing cards */
 .cards{display:grid;gap:12px}
@@ -126,10 +139,11 @@ td.lbl .tip{margin-top:2px}
 .card .stat b{font-size:20px} .card .stat span{font-size:12px;color:var(--muted);margin-left:4px}
 
 /* filter visibility (combined via body classes) */
-body.hide-error .issue.error,body.hide-warning .issue.warning,body.hide-notice .issue.notice{display:none}
-body.hide-error #byIssue tr.error,body.hide-warning #byIssue tr.warning,body.hide-notice #byIssue tr.notice{display:none}
+body.hide-error .grp.error,body.hide-warning .grp.warning,body.hide-notice .grp.notice{display:none}
+body.hide-error #byIssue .icard.error,body.hide-warning #byIssue .icard.warning,body.hide-notice #byIssue .icard.notice{display:none}
 body.hide-dismissed .issue.is-dismissed{display:none}
-.issue.q-hide{display:none}
+body.hide-dismissed .grp.empty{display:none}
+.grp.q-hide,.icard.q-hide{display:none}
 [hidden]{display:none !important}
 `;
 
@@ -212,48 +226,91 @@ try{localStorage.setItem('a11y-theme',n);}catch(e){}});
 // Per-site report
 // ---------------------------------------------------------------------------
 
-function issueLi(it, codes) {
-  const meta = codes[it.code] || {};
-  const ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+function occurrence(it) {
   return `<li class="issue ${esc(it.type)}" data-fp="${esc(it.fp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}">
-<label class="dz"><input type="checkbox" class="dismiss" aria-label="Dismiss this issue"></label>
+<label class="dz"><input type="checkbox" class="dismiss" aria-label="Dismiss this occurrence"></label>
 <div class="body">
-<div class="head"><span class="t ${esc(it.type)}">${esc(it.type)}</span>${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}${meta.url ? '<a class="sc" href="' + esc(meta.url) + '" target="_blank" rel="noopener">' + esc(ref) + '</a>' : ''}</div>
-<div class="msg">${esc(it.message)}</div>
-${meta.tip ? '<div class="tip">' + esc(meta.tip) + '</div>' : ''}
-${it.selector ? '<div class="sel"><code>' + esc(it.selector) + '</code></div>' : ''}
+${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
+<div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
 ${it.context ? '<pre><code>' + esc(it.context) + '</code></pre>' : ''}
 </div></li>`;
 }
 
+function group(g, codes) {
+  const meta = codes[g.code] || {};
+  const title = meta.label || g.code;
+  const ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+  const occ = g.items.map(occurrence).join('\n');
+  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}">
+<div class="grp-head">
+<span class="t ${esc(g.type)}">${esc(g.type)}</span>
+<strong class="gtitle">${esc(title)}</strong>
+<span class="cnt">${g.act}&times;</span>
+${meta.url ? '<a class="sc" href="' + esc(meta.url) + '" target="_blank" rel="noopener">' + esc(ref) + '</a>' : ''}
+<span class="ghspacer"></span>
+<button class="copy" type="button" title="Copy title + why for your report">copy</button>
+<button class="dismiss-group" type="button" title="Dismiss every occurrence of this issue on this page">dismiss all</button>
+</div>
+${meta.why ? '<div class="why"><b>Why it matters:</b> ' + esc(meta.why) + '</div>' : ''}
+${meta.tip ? '<div class="tip"><b>How to fix:</b> ' + esc(meta.tip) + '</div>' : ''}
+<details class="occ"><summary><span class="occn">${g.act}</span> occurrence${g.act === 1 ? '' : 's'} — show elements</summary>
+<ul class="issues">${occ}</ul>
+</details>
+</div>`;
+}
+
+function pageSection(p, codes, dismissed) {
+  const byCode = {};
+  for (const it of p.issues) (byCode[it.code] = byCode[it.code] || []).push(it);
+  const groups = Object.keys(byCode).map((code) => {
+    const items = byCode[code];
+    return {
+      code, items, type: items[0].type,
+      act: items.filter((i) => !dismissed.has(i.fp)).length,
+    };
+  }).sort((x, y) => sevRank(x.type) - sevRank(y.type) || y.act - x.act);
+
+  const inner = groups.map((g) => group(g, codes)).join('\n');
+  return `<section class="pg${p.act === 0 ? ' clean' : ''}" data-page="${esc(p.url)}">
+<h2><a class="pglink" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a> <span class="pgcount">${p.errs} errors / ${p.act} issues</span></h2>
+<div class="groups">${inner || '<p class="ok">No issues found.</p>'}</div>
+</section>`;
+}
+
 function site(s) {
-  const codes = s.codes || {};
+  // Re-derive the WCAG link, fix tip, and "why it matters" from each code's
+  // success criterion at render time, so editing the WCAG table and rebuilding
+  // updates every report without a re-scan. Fall back to whatever the scan
+  // captured (e.g. an axe rule's own help link/text) when the SC is unknown.
+  const codes = {};
+  for (const k of Object.keys(s.codes || {})) {
+    const v = s.codes[k];
+    const m = wcag.forSC(v.sc);
+    codes[k] = {
+      sc: v.sc,
+      label: v.label,
+      url: m.url || v.url,
+      tip: m.tip || v.tip,
+      why: m.why,
+    };
+  }
   const dismissed = s.dismissedSet || new Set();
   const a = s.active;
 
-  // pages sorted by active error count desc, then active total desc
   const pageList = Object.keys(s.pages).map((url) => {
     const issues = s.pages[url];
-    const errs = issues.filter((i) => i.type === 'error' && !dismissed.has(i.fp)).length;
-    const act = issues.filter((i) => !dismissed.has(i.fp)).length;
-    return { url, issues, errs, act };
+    return {
+      url, issues,
+      errs: issues.filter((i) => i.type === 'error' && !dismissed.has(i.fp)).length,
+      act: issues.filter((i) => !dismissed.has(i.fp)).length,
+    };
   }).sort((p, q) => q.errs - p.errs || q.act - p.act);
 
-  const sections = pageList.map((p) => {
-    const items = p.issues.map((it) => issueLi(it, codes)).join('\n');
-    return `<section class="pg${p.act === 0 ? ' clean' : ''}" data-page="${esc(p.url)}">
-<h2>${esc(p.url)} <span class="pgcount">${p.errs} errors / ${p.act} issues</span></h2>
-<ul class="issues">${items || '<li class="muted">No issues found.</li>'}</ul>
-</section>`;
-  }).join('\n');
-
-  const bakedFps = jsonScript([...dismissed]);
-  const codesJson = jsonScript(codes);
+  const sections = pageList.map((p) => pageSection(p, codes, dismissed)).join('\n');
 
   const newBadge = (!s.firstScan && s.summary.new) ? `<span class="pill new">⊕ ${s.summary.new} new since last scan</span>` : '';
   const resolvedBadge = (!s.firstScan && s.summary.resolved) ? `<span class="pill resolved">♻ ${s.summary.resolved} resolved</span>` : '';
   const scanErrBadge = s.summary.scanErrors ? `<span class="pill" title="Pages that failed to evaluate cleanly (e.g. browser timeouts) — not accessibility issues">⚠ ${s.summary.scanErrors} scan error${s.summary.scanErrors === 1 ? '' : 's'}</span>` : '';
-  const spark = sparkline(s.history);
 
   const body = `<div class="row">
 <a href="../../index.html" class="muted" style="text-decoration:none">← All sites</a>
@@ -269,7 +326,7 @@ function site(s) {
 <div class="notice"><div class="n" id="cNotice">${a.notices}</div><div class="k">notices</div></div>
 <div><div class="n">${s.summary.pages}</div><div class="k">pages</div></div>
 <div><div class="n" id="cDismissed">${a.dismissed}</div><div class="k">dismissed</div></div>
-<div class="spacer"></div>${spark}
+<div class="spacer"></div>${sparkline(s.history)}
 </div>
 <div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}</div>
 
@@ -292,14 +349,9 @@ function site(s) {
 ${sections || '<p class="muted">No pages scanned.</p>'}
 </div>
 
-<div id="byIssue" hidden>
-<table>
-<thead><tr><th class="ic"></th><th>Issue</th><th class="num">Count</th><th class="num">Pages</th><th>Ref</th></tr></thead>
-<tbody id="issueBody"></tbody>
-</table>
-</div>
+<div id="byIssue" hidden><div id="byIssueBody"></div></div>
 
-<script>window.__A11Y__={slug:${jsonScript(s.slug)},baked:${bakedFps},codes:${codesJson}};</script>
+<script>window.__A11Y__={slug:${jsonScript(s.slug)},baked:${jsonScript([...dismissed])},codes:${jsonScript(codes)}};</script>
 <script>${CLIENT_JS}</script>`;
 
   return shell(s.name + ' — accessibility report', body);
@@ -319,6 +371,7 @@ const CLIENT_JS = `
   var bakedSet = {};
   baked.forEach(function(fp){ bakedSet[fp] = 1; });
   var lis = Array.prototype.slice.call(document.querySelectorAll('.issue'));
+  var searchTerm = '';
 
   function store(){
     try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) return v; } catch(e){}
@@ -336,13 +389,13 @@ const CLIENT_JS = `
   }
 
   function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
   function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
 
   function applyState(){
     var eff = effective();
     lis.forEach(function(li){
-      var fp = li.getAttribute('data-fp');
-      var dz = !!eff[fp];
+      var dz = !!eff[li.getAttribute('data-fp')];
       li.classList.toggle('is-dismissed', dz);
       var cb = li.querySelector('.dismiss');
       if (cb) cb.checked = dz;
@@ -351,51 +404,126 @@ const CLIENT_JS = `
   }
 
   function recompute(){
-    var e=0,w=0,n=0,d=0, byCode={};
+    var e=0,w=0,n=0,d=0;
     lis.forEach(function(li){
       if (li.classList.contains('is-dismissed')) { d++; return; }
-      var type = li.getAttribute('data-type');
-      if (type==='error') e++; else if (type==='warning') w++; else n++;
-      var code = li.getAttribute('data-code');
-      var sec = li.closest('.pg');
-      var page = sec ? sec.getAttribute('data-page') : '';
-      var rec = byCode[code] || (byCode[code] = {count:0, type:type, pages:{}});
-      rec.count++; rec.pages[page] = 1;
+      var t = li.getAttribute('data-type');
+      if (t==='error') e++; else if (t==='warning') w++; else n++;
     });
-    setText('cErr', e); setText('cWarn', w); setText('cNotice', n); setText('cDismissed', d);
+    setText('cErr',e); setText('cWarn',w); setText('cNotice',n); setText('cDismissed',d);
+
+    document.querySelectorAll('.grp').forEach(function(g){
+      var act = g.querySelectorAll('.issue:not(.is-dismissed)').length;
+      var cnt = g.querySelector('.cnt'); if (cnt) cnt.textContent = act + '\\u00d7';
+      var occn = g.querySelector('.occn'); if (occn) occn.textContent = act;
+      g.classList.toggle('empty', act===0);
+    });
     document.querySelectorAll('.pg').forEach(function(sec){
       var act = sec.querySelectorAll('.issue:not(.is-dismissed)').length;
       var errs = sec.querySelectorAll('.issue.error:not(.is-dismissed)').length;
-      var c = sec.querySelector('.pgcount');
-      if (c) c.textContent = errs + ' errors / ' + act + ' issues';
+      var c = sec.querySelector('.pgcount'); if (c) c.textContent = errs + ' errors / ' + act + ' issues';
       sec.classList.toggle('clean', act===0);
     });
-    buildByIssue(byCode);
+    buildByIssue();
   }
 
-  function buildByIssue(byCode){
-    var body = document.getElementById('issueBody');
-    if (!body) return;
-    var rows = Object.keys(byCode).map(function(code){
-      var r = byCode[code]; r.code = code; r.pageCount = Object.keys(r.pages).length; return r;
-    }).sort(function(a,b){ return b.count - a.count; });
+  function buildByIssue(){
+    var host = document.getElementById('byIssueBody');
+    if (!host) return;
+    var map = {};
+    lis.forEach(function(li){
+      if (li.classList.contains('is-dismissed')) return;
+      var code = li.getAttribute('data-code');
+      var sec = li.closest('.pg');
+      var page = sec ? sec.getAttribute('data-page') : '';
+      var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}});
+      rec.count++; if (page) rec.pages[page] = 1;
+    });
+    var rows = Object.keys(map).map(function(code){ var r=map[code]; r.code=code; return r; })
+      .sort(function(a,b){ return b.count - a.count; });
     var html = '';
     rows.forEach(function(r){
       var meta = codes[r.code] || {};
-      var label = meta.label || r.code;
+      var title = meta.label || r.code;
       var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
-      html += '<tr class="' + r.type + '">'
-        + '<td class="ic"><span class="dot ' + r.type + '"></span></td>'
-        + '<td class="lbl"><div>' + escapeHtml(label) + '</div>'
-        + (meta.tip ? '<div class="tip">' + escapeHtml(meta.tip) + '</div>' : '') + '</td>'
-        + '<td class="num">' + r.count + '</td>'
-        + '<td class="num">' + r.pageCount + '</td>'
-        + '<td>' + (meta.url ? '<a href="' + escapeHtml(meta.url).replace(/"/g,'&quot;') + '" target="_blank" rel="noopener">' + ref + '</a>' : ref) + '</td>'
-        + '</tr>';
+      var pages = Object.keys(r.pages);
+      var plinks = pages.map(function(p){
+        var label = p; try { label = new URL(p).pathname || p; } catch(e){}
+        return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
+      }).join(' ');
+      html += '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
+        + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
+        + '<strong>'+escapeHtml(title)+'</strong>'
+        + '<span class="cnt">'+r.count+'\\u00d7</span>'
+        + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
+        + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
+        + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
+        + (meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '')
+        + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
+        + '</div>';
     });
-    body.innerHTML = html || '<tr><td colspan="5" class="muted">No active issues 🎉</td></tr>';
+    host.innerHTML = html || '<p class="muted">No active issues 🎉</p>';
+    if (searchTerm) filterCards(searchTerm);
   }
 
+  function filterCards(term){
+    document.querySelectorAll('.icard').forEach(function(c){
+      var hit = !term || c.textContent.toLowerCase().indexOf(term) >= 0;
+      c.classList.toggle('q-hide', !hit);
+    });
+  }
+
+  // Report-ready text: "Title (WCAG x.y.z)\\nWhy it matters: ...".
+  function copyText(code){
+    var m = codes[code] || {};
+    var title = m.label || code;
+    if (m.sc) title += ' (WCAG ' + m.sc + ')';
+    var out = [title];
+    if (m.why) out.push('Why it matters: ' + m.why);
+    return out.join('\\n');
+  }
+  function doCopy(text, btn){
+    var label = btn.textContent;
+    var ok = function(){ btn.textContent = 'Copied!'; setTimeout(function(){ btn.textContent = label; }, 1200); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(ok, function(){ fallbackCopy(text); ok(); });
+    } else { fallbackCopy(text); ok(); }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    ta.remove();
+  }
+
+  // Delegated clicks: copy, copy-selector, dismiss-all.
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (!t || !t.closest) return;
+    var cp = t.closest('.copy');
+    if (cp){ var h = cp.closest('[data-code]'); doCopy(copyText(h ? h.getAttribute('data-code') : ''), cp); return; }
+    var cs = t.closest('.copy-sel');
+    if (cs){ var code = cs.parentElement.querySelector('code'); doCopy(code ? code.textContent : '', cs); return; }
+    var dg = t.closest('.dismiss-group');
+    if (dg){
+      var grp = dg.closest('.grp'); if (!grp) return;
+      var items = Array.prototype.slice.call(grp.querySelectorAll('.issue'));
+      var eff = effective();
+      var allOff = items.every(function(li){ return eff[li.getAttribute('data-fp')]; });
+      var s = store(), added = {}, removed = {};
+      s.added.forEach(function(x){ added[x]=1; }); s.removed.forEach(function(x){ removed[x]=1; });
+      items.forEach(function(li){
+        var fp = li.getAttribute('data-fp');
+        if (allOff){ if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
+        else { if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
+      });
+      save({added:Object.keys(added), removed:Object.keys(removed)});
+      applyState();
+    }
+  });
+
+  // Per-occurrence dismiss checkbox.
   lis.forEach(function(li){
     var cb = li.querySelector('.dismiss');
     if (!cb) return;
@@ -429,11 +557,11 @@ const CLIENT_JS = `
 
   var q = document.getElementById('q');
   if (q) q.addEventListener('input', function(){
-    var term = q.value.trim().toLowerCase();
-    lis.forEach(function(li){
-      var hit = !term || li.textContent.toLowerCase().indexOf(term) >= 0;
-      li.classList.toggle('q-hide', !hit);
+    searchTerm = q.value.trim().toLowerCase();
+    document.querySelectorAll('.grp').forEach(function(g){
+      g.classList.toggle('q-hide', !(!searchTerm || g.textContent.toLowerCase().indexOf(searchTerm) >= 0));
     });
+    filterCards(searchTerm);
   });
 
   var sd = document.getElementById('showDismissed');
