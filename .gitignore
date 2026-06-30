@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Transient scan artifacts (regenerated every run; never committed)
+results.json
+run-config.json
+build/
+public/
+
+# OS noise
+.DS_Store

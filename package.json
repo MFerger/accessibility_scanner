@@ -1,0 +1,16 @@
+{
+  "name": "a11y-scanner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enter a site URL, scan every post and page in its Yoast sitemap for WCAG 2.2 AA issues, publish a report.",
+  "scripts": {
+    "discover": "node scripts/discover-urls.js",
+    "scan": "pa11y-ci --config run-config.json --json > results.json || true",
+    "ingest": "node scripts/ingest-results.js",
+    "report": "node scripts/build-report.js",
+    "build": "npm run discover && npm run scan && npm run ingest && npm run report"
+  },
+  "devDependencies": {
+    "pa11y-ci": "^4.0.0"
+  }
+}

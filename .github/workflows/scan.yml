@@ -1,0 +1,100 @@
+name: Accessibility scan
+
+# Run from the Actions tab and enter the client's site URL.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Site URL (e.g. https://clientsite.com) — Yoast sitemap_index.xml is found automatically. A full sitemap URL also works."
+        required: true
+      name:
+        description: "Friendly site name shown in the report (optional; defaults to the hostname)."
+        required: false
+      types:
+        description: "Sitemap types to include (comma-separated). Add a custom post type here for the rare site that needs it."
+        required: false
+        default: "post,page"
+
+permissions:
+  contents: write   # commit normalized scan data back to the repo
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      # Add a repo secret REPORT_PASSWORD to password-protect the report.
+      REPORT_PASSWORD: ${{ secrets.REPORT_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so we can rebase + push scan data back
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Discover pages from sitemap
+        env:
+          SCAN_URL: ${{ inputs.url }}
+          SITEMAP_TYPES: ${{ inputs.types }}
+        run: node scripts/discover-urls.js
+
+      - name: Run accessibility scan
+        run: pa11y-ci --config run-config.json --json > results.json || true
+
+      - name: Normalize results into committed data
+        env:
+          SCAN_URL: ${{ inputs.url }}
+          SITE_NAME: ${{ inputs.name }}
+        run: node scripts/ingest-results.js
+
+      - name: Commit scan data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No scan-data changes to commit."
+          else
+            git commit -m "scan: ${{ inputs.url }} ($(date -u +%Y-%m-%d))"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Build HTML reports
+        run: node scripts/build-report.js
+
+      - name: Assemble site
+        run: |
+          mkdir -p public
+          cp -r build/. public/
+          printf 'User-agent: *\nDisallow: /\n' > public/robots.txt
+
+      - name: Password-protect the report (optional)
+        if: env.REPORT_PASSWORD != ''
+        run: |
+          # Encrypt every rendered page in place (landing + per-site reports).
+          find public -name '*.html' -print0 | while IFS= read -r -d '' f; do
+            npx --yes staticrypt "$f" -p "$REPORT_PASSWORD" -d "$(dirname "$f")"
+          done
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
