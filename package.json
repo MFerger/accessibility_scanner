@@ -11,6 +11,8 @@
     "ingest:ux": "node scripts/ingest-ux.js",
     "report": "node scripts/build-report.js",
     "test:ux": "node test/run.js",
+    "test:fp": "node test/fp.test.js",
+    "test:sitewide": "node test/sitewide.test.js",
     "build": "npm run discover && npm run scan && npm run ingest && npm run scan:ux && npm run ingest:ux && npm run report"
   },
   "devDependencies": {

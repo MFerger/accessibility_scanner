@@ -26,19 +26,34 @@ function readJson(p, fallback) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { return fallback; }
 }
 
-// Active counts = scanned totals minus the committed-dismissed issues.
-function activeCounts(latest, dismissedSet) {
-  let errors = 0, warnings = 0, notices = 0, total = 0, dismissed = 0;
+// dismissed.json is { fp: { date, reason } }. Pull out the per-fp reason
+// ('false-positive' or, by default, 'resolved'); older files with no reason
+// field read as 'resolved' so nothing breaks.
+function reasonsFrom(raw) {
+  const m = {};
+  for (const fp of Object.keys(raw || {})) { const v = raw[fp]; if (v && v.reason) m[fp] = v.reason; }
+  return m;
+}
+
+// Active counts = scanned totals minus the committed-dismissed issues. Dismissed
+// splits into "resolved" (you fixed/accepted it) and "false-positive" (the
+// scanner flagged it wrong) by the per-fp reason recorded in dismissed.json.
+function activeCounts(latest, dismissedSet, reasonsByFp) {
+  let errors = 0, warnings = 0, notices = 0, total = 0, dismissed = 0, falsePositives = 0, resolved = 0;
   for (const url of Object.keys((latest && latest.pages) || {})) {
     for (const it of latest.pages[url]) {
-      if (dismissedSet.has(it.fp)) { dismissed++; continue; }
+      if (dismissedSet.has(it.fp)) {
+        dismissed++;
+        if (reasonsByFp && reasonsByFp[it.fp] === 'false-positive') falsePositives++; else resolved++;
+        continue;
+      }
       total++;
       if (it.type === 'error') errors++;
       else if (it.type === 'warning') warnings++;
       else notices++;
     }
   }
-  return { errors, warnings, notices, total, dismissed };
+  return { errors, warnings, notices, total, dismissed, falsePositives, resolved };
 }
 
 const slugs = fs.existsSync(DATA_DIR)
@@ -54,25 +69,31 @@ const sites = slugs.map((slug) => {
   const dir = path.join(DATA_DIR, slug);
   const latest = readJson(path.join(dir, 'latest.json'), null);
   const history = readJson(path.join(dir, 'history.json'), []);
-  const dismissedSet = new Set(Object.keys(readJson(path.join(dir, 'dismissed.json'), {})));
+  const dismissedRaw = readJson(path.join(dir, 'dismissed.json'), {});
+  const dismissedSet = new Set(Object.keys(dismissedRaw));
+  const reasonsByFp = reasonsFrom(dismissedRaw);
 
   // UX/layout scan data is optional — a site scanned before the UX scanner
   // existed (or with the UX scan turned off) simply has no second lens.
   const uxLatest = readJson(path.join(dir, 'ux-latest.json'), null);
   let ux = null;
   if (uxLatest && uxLatest.pages) {
-    const uxDismissedSet = new Set(Object.keys(readJson(path.join(dir, 'ux-dismissed.json'), {})));
+    const uxDismissedRaw = readJson(path.join(dir, 'ux-dismissed.json'), {});
+    const uxDismissedSet = new Set(Object.keys(uxDismissedRaw));
+    const uxReasonsByFp = reasonsFrom(uxDismissedRaw);
     ux = Object.assign({}, uxLatest, {
       history: readJson(path.join(dir, 'ux-history.json'), []),
       dismissedSet: uxDismissedSet,
-      active: activeCounts(uxLatest, uxDismissedSet),
+      reasonsByFp: uxReasonsByFp,
+      active: activeCounts(uxLatest, uxDismissedSet, uxReasonsByFp),
     });
   }
 
   return Object.assign({}, latest, {
     history,
     dismissedSet,
-    active: activeCounts(latest, dismissedSet),
+    reasonsByFp,
+    active: activeCounts(latest, dismissedSet, reasonsByFp),
     ux,
   });
 });
