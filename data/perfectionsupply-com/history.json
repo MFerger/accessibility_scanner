@@ -1,11 +1,11 @@
 [
   {
     "date": "2026-06-30",
-    "errors": 58,
-    "warnings": 505,
+    "errors": 128,
+    "warnings": 798,
     "notices": 0,
-    "total": 563,
-    "scanErrors": 24,
+    "total": 926,
+    "scanErrors": 15,
     "pages": 43,
     "new": 0,
     "resolved": 0
