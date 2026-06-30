@@ -1,0 +1,34 @@
+{
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 900, "enabled": true },
+    { "name": "tablet", "width": 768, "height": 1024, "enabled": false },
+    { "name": "mobile", "width": 375, "height": 812, "enabled": true }
+  ],
+  "concurrency": 3,
+  "navigationTimeoutMs": 30000,
+  "settleMs": 600,
+  "overflowTolerancePx": 4,
+  "minTapTargetPx": 24,
+  "minFontPx": 12,
+  "ignoreSelectors": [
+    "#cookie-banner",
+    ".cookie-consent",
+    "[id*='onetrust']",
+    "[class*='cookie']",
+    "[id*='chat']",
+    "[class*='chat-widget']"
+  ],
+  "ignoreConsolePatterns": [],
+  "checks": {
+    "horizontalOverflow": true,
+    "failedResources": true,
+    "brokenImages": true,
+    "viewportMeta": true,
+    "consoleErrors": true,
+    "tapTargets": true,
+    "smallText": true,
+    "elementOverflow": false,
+    "collapsedContainer": false,
+    "elementOverlap": false
+  }
+}

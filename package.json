@@ -7,10 +7,14 @@
     "discover": "node scripts/discover-urls.js",
     "scan": "pa11y-ci --config run-config.json --json > results.json || true",
     "ingest": "node scripts/ingest-results.js",
+    "scan:ux": "node scripts/scan-ux.js",
+    "ingest:ux": "node scripts/ingest-ux.js",
     "report": "node scripts/build-report.js",
-    "build": "npm run discover && npm run scan && npm run ingest && npm run report"
+    "test:ux": "node test/run.js",
+    "build": "npm run discover && npm run scan && npm run ingest && npm run scan:ux && npm run ingest:ux && npm run report"
   },
   "devDependencies": {
-    "pa11y-ci": "^4.0.0"
+    "pa11y-ci": "^4.0.0",
+    "puppeteer": "^24.43.1"
   }
 }

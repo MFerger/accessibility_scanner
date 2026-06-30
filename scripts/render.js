@@ -10,6 +10,7 @@
  */
 
 const wcag = require('./lib/wcag');
+const uxChecks = require('./lib/ux-checks');
 
 const esc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -81,8 +82,10 @@ h1{margin:0 0 4px;font-size:24px}
 .chip.error.on{border-color:var(--err);color:var(--err)}
 .chip.warning.on{border-color:var(--warn);color:var(--warn)}
 .chip.notice.on{border-color:var(--notice);color:var(--notice)}
-#q{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;padding:6px 10px;min-width:170px;flex:1 1 170px}
+.q{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;padding:6px 10px;min-width:170px;flex:1 1 170px}
 .ck{display:inline-flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer;font-size:13px}
+.lensrow{margin:0 0 8px}
+.lensmeta{margin:14px 0 0}
 
 /* page sections */
 .pg{border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:0 0 12px;background:var(--card);box-shadow:var(--shadow)}
@@ -155,7 +158,9 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
 .band{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;color:var(--muted);padding:6px 0 3px;border-bottom:1px solid var(--border);margin:4px 0 2px;display:none}
 .band-need{color:var(--warn)}
 .fixsum{background:rgba(37,99,235,.10);color:var(--accent)}
-#fixSummary:empty{display:none}
+.fixSummary:empty{display:none}
+.vp{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.02em;color:var(--accent);
+  border:1px solid rgba(37,99,235,.35);background:rgba(37,99,235,.08);border-radius:4px;padding:0 5px;margin:0 6px 4px 0}
 .tip-locked{display:none}
 /* locked mode (default): CSS/JS tips, two bands via flex order */
 body.locked .tip-standard{display:none}
@@ -167,13 +172,13 @@ body.locked .band-need{order:2}
 body.locked .grp[data-fixable="0"]{order:3;border-left:3px solid var(--border)}
 /* customizable mode: standard tips, no banding or summary */
 body:not(.locked) .tip-locked{display:none}
-body:not(.locked) #fixSummary{display:none}
+body:not(.locked) .fixSummary{display:none}
 
-/* filter visibility (combined via body classes) */
-body.hide-error .grp.error,body.hide-warning .grp.warning,body.hide-notice .grp.notice{display:none}
-body.hide-error #byIssue .icard.error,body.hide-warning #byIssue .icard.warning,body.hide-notice #byIssue .icard.notice{display:none}
-body.hide-dismissed .issue.is-dismissed{display:none}
-body.hide-dismissed .grp.empty{display:none}
+/* filter visibility — scoped per lens so the two lenses filter independently */
+.lens.hide-error .grp.error,.lens.hide-warning .grp.warning,.lens.hide-notice .grp.notice{display:none}
+.lens.hide-error .byIssue .icard.error,.lens.hide-warning .byIssue .icard.warning,.lens.hide-notice .byIssue .icard.notice{display:none}
+.lens.hide-dismissed .issue.is-dismissed{display:none}
+.lens.hide-dismissed .grp.empty{display:none}
 .grp.q-hide,.icard.q-hide{display:none}
 [hidden]{display:none !important}
 `;
@@ -188,7 +193,7 @@ function shell(title, bodyHtml, extraHead) {
 ${THEME_BOOT}
 <style>${STYLES}</style>
 ${extraHead || ''}
-</head><body class="hide-dismissed locked">
+</head><body class="locked">
 ${bodyHtml}
 </body></html>
 `;
@@ -228,7 +233,8 @@ function landing(sites) {
   <p class="name">${esc(s.name)}</p>
   <div class="host">${esc(s.url)}</div>
   <div class="stats">
-    <span class="stat err"><b style="color:var(--err)">${a.errors}</b><span>errors</span></span>
+    <span class="stat err"><b style="color:var(--err)">${a.errors}</b><span>a11y errors</span></span>
+    ${s.ux ? '<span class="stat"><b style="color:var(--err)">' + s.ux.active.errors + '</b><span>UX errors</span></span>' : ''}
     <span class="stat"><b>${a.total}</b><span>issues</span></span>
     <span class="stat"><b>${s.summary.pages}</b><span>pages</span></span>
     ${a.dismissed ? '<span class="stat"><b>' + a.dismissed + '</b><span>dismissed</span></span>' : ''}
@@ -261,7 +267,7 @@ function occurrence(it) {
   return `<li class="issue ${esc(it.type)}" data-fp="${esc(it.fp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}">
 <label class="dz"><input type="checkbox" class="dismiss" aria-label="Dismiss this occurrence"></label>
 <div class="body">
-${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
+${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
 <div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
 ${it.context ? '<pre><code>' + esc(it.context) + '</code></pre>' : ''}
 </div></li>`;
@@ -318,43 +324,109 @@ function pageSection(p, codes, dismissed) {
 </section>`;
 }
 
-function site(s) {
-  // Re-derive the WCAG link, fix tip, and "why it matters" from each code's
-  // success criterion at render time, so editing the WCAG table and rebuilding
-  // updates every report without a re-scan. Fall back to whatever the scan
-  // captured (e.g. an axe rule's own help link/text) when the SC is unknown.
-  const codes = {};
-  for (const k of Object.keys(s.codes || {})) {
-    const v = s.codes[k];
-    const m = wcag.forSC(v.sc);
-    const f = wcag.fix(v.sc, k);
-    codes[k] = {
-      sc: v.sc,
-      label: v.label,
-      url: m.url || v.url,
-      tip: m.tip || v.tip,
-      why: m.why,
-      method: f.method,
-      lockedTip: f.lockedTip,
-    };
-  }
-  const dismissed = s.dismissedSet || new Set();
-  const a = s.active;
+// One lens panel (Accessibility or UX & Layout). Both reuse the same
+// group/occurrence/banding machinery; they differ only in their data + codes.
+function lensPanel(lensId, data, codes, opts) {
+  const showClean = opts.showClean, hasUx = opts.hasUx, label = opts.label;
+  const dismissed = data.dismissedSet || new Set();
+  const a = data.active;
 
-  const pageList = Object.keys(s.pages).map((url) => {
-    const issues = s.pages[url];
+  let pageList = Object.keys(data.pages).map((url) => {
+    const issues = data.pages[url];
     return {
       url, issues,
       errs: issues.filter((i) => i.type === 'error' && !dismissed.has(i.fp)).length,
       act: issues.filter((i) => !dismissed.has(i.fp)).length,
     };
-  }).sort((p, q) => q.errs - p.errs || q.act - p.act);
-
+  });
+  // The UX lens hides clean pages — clean is the norm there, so listing every
+  // page would bury the findings. The a11y lens keeps them (clean is notable).
+  if (!showClean) pageList = pageList.filter((p) => p.issues.length > 0);
+  pageList.sort((p, q) => q.errs - p.errs || q.act - p.act);
   const sections = pageList.map((p) => pageSection(p, codes, dismissed)).join('\n');
 
-  const newBadge = (!s.firstScan && s.summary.new) ? `<span class="pill new">⊕ ${s.summary.new} new since last scan</span>` : '';
-  const resolvedBadge = (!s.firstScan && s.summary.resolved) ? `<span class="pill resolved">♻ ${s.summary.resolved} resolved</span>` : '';
-  const scanErrBadge = s.summary.scanErrors ? `<span class="pill" title="Pages that failed to evaluate cleanly (e.g. browser timeouts) — not accessibility issues">⚠ ${s.summary.scanErrors} scan error${s.summary.scanErrors === 1 ? '' : 's'}</span>` : '';
+  const newBadge = (!data.firstScan && data.summary.new) ? `<span class="pill new">⊕ ${data.summary.new} new since last scan</span>` : '';
+  const resolvedBadge = (!data.firstScan && data.summary.resolved) ? `<span class="pill resolved">♻ ${data.summary.resolved} resolved</span>` : '';
+  const errWord = lensId === 'ux' ? 'page error' : 'scan error';
+  const scanErrBadge = data.summary.scanErrors ? `<span class="pill" title="Pages that failed to load/evaluate cleanly — not findings">⚠ ${data.summary.scanErrors} ${errWord}${data.summary.scanErrors === 1 ? '' : 's'}</span>` : '';
+
+  const lensSwitch = hasUx ? `<div class="row lensrow"><div class="seg" role="group" aria-label="Report section">
+<button class="btn${lensId === 'a11y' ? ' active' : ''}" data-lens-to="a11y">Accessibility</button>
+<button class="btn${lensId === 'ux' ? ' active' : ''}" data-lens-to="ux">UX &amp; Layout</button>
+</div></div>` : '';
+
+  const empty = showClean ? 'No pages scanned.' : 'No UX / layout issues found 🎉';
+
+  return `<section class="lens hide-dismissed" id="lens-${lensId}"${lensId === 'ux' ? ' hidden' : ''}>
+<p class="meta lensmeta">${esc(label)} &middot; last scan ${esc(fmtDate(data.scannedAt))} &middot; ${data.summary.pages} page${data.summary.pages === 1 ? '' : 's'}</p>
+<div class="sum">
+<div class="err"><div class="n cErr">${a.errors}</div><div class="k">errors</div></div>
+<div class="warn"><div class="n cWarn">${a.warnings}</div><div class="k">warnings</div></div>
+<div class="notice"><div class="n cNotice">${a.notices}</div><div class="k">notices</div></div>
+<div><div class="n">${data.summary.pages}</div><div class="k">pages</div></div>
+<div><div class="n cDismissed">${a.dismissed}</div><div class="k">dismissed</div></div>
+<div class="spacer"></div>${sparkline(data.history)}
+</div>
+<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}<span class="pill fixsum fixSummary"></span></div>
+
+<div class="controls">
+${lensSwitch}<div class="row">
+<div class="seg" role="group" aria-label="View">
+<button class="btn active" data-view="page">By page</button>
+<button class="btn" data-view="issue">By issue type</button>
+</div>
+<button class="chip error on" data-sev="error">errors</button>
+<button class="chip warning on" data-sev="warning">warnings</button>
+<button class="chip notice on" data-sev="notice">notices</button>
+<input class="q" type="search" placeholder="Search issues…" aria-label="Search issues">
+<label class="ck"><input type="checkbox" class="showDismissed"> show dismissed</label>
+<button class="btn exportBtn" title="Download the dismissed list to commit">Export dismissed</button>
+</div>
+</div>
+
+<div class="byPage">
+${sections || '<p class="muted">' + empty + '</p>'}
+</div>
+
+<div class="byIssue" hidden><div class="byIssueBody"></div></div>
+</section>`;
+}
+
+// Re-derive a stored code table into render-time display metadata from the
+// source-of-truth module, so a Rebuild picks up edits without a re-scan.
+function a11yCodeTable(stored) {
+  const codes = {};
+  for (const k of Object.keys(stored || {})) {
+    const v = stored[k];
+    const m = wcag.forSC(v.sc);
+    const f = wcag.fix(v.sc, k);
+    codes[k] = { sc: v.sc, label: v.label, url: m.url || v.url, tip: m.tip || v.tip, why: m.why, method: f.method, lockedTip: f.lockedTip };
+  }
+  return codes;
+}
+function uxCodeTable(stored) {
+  const codes = {};
+  for (const k of Object.keys(stored || {})) {
+    const c = uxChecks.forCheck(k);
+    codes[k] = { sc: c.sc, label: c.label, url: c.url, tip: c.tip, why: c.why, method: c.method, lockedTip: c.lockedTip };
+  }
+  return codes;
+}
+
+function site(s) {
+  const hasUx = !!(s.ux && s.ux.pages);
+  const a11yCodes = a11yCodeTable(s.codes);
+  const uxCodes = hasUx ? uxCodeTable(s.ux.codes) : {};
+
+  const a11yPanel = lensPanel('a11y', s, a11yCodes, { showClean: true, hasUx, label: 'Accessibility' });
+  const uxPanel = hasUx ? lensPanel('ux', s.ux, uxCodes, { showClean: false, hasUx, label: 'UX & Layout' }) : '';
+
+  const report = {
+    a11y: { slug: s.slug, storageKey: 'a11y-dismiss-' + s.slug, dismissFile: 'dismissed.json',
+      baked: [...(s.dismissedSet || new Set())], codes: a11yCodes },
+    ux: hasUx ? { slug: s.slug, storageKey: 'ux-dismiss-' + s.slug, dismissFile: 'ux-dismissed.json',
+      baked: [...(s.ux.dismissedSet || new Set())], codes: uxCodes } : null,
+  };
 
   const body = `<div class="row">
 <a href="../../index.html" class="muted" style="text-decoration:none">← All sites</a>
@@ -363,43 +435,15 @@ function site(s) {
 <button class="btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button></div>
 
 <h1>${esc(s.name)}</h1>
-<p class="meta">${esc(s.url)} &middot; last scan ${esc(fmtDate(s.scannedAt))}</p>
+<p class="meta">${esc(s.url)}</p>
 
-<div class="sum">
-<div class="err"><div class="n" id="cErr">${a.errors}</div><div class="k">errors</div></div>
-<div class="warn"><div class="n" id="cWarn">${a.warnings}</div><div class="k">warnings</div></div>
-<div class="notice"><div class="n" id="cNotice">${a.notices}</div><div class="k">notices</div></div>
-<div><div class="n">${s.summary.pages}</div><div class="k">pages</div></div>
-<div><div class="n" id="cDismissed">${a.dismissed}</div><div class="k">dismissed</div></div>
-<div class="spacer"></div>${sparkline(s.history)}
-</div>
-<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}<span class="pill fixsum" id="fixSummary"></span></div>
+${a11yPanel}
+${uxPanel}
 
-<div class="controls">
-<div class="row">
-<div class="seg" role="group" aria-label="View">
-<button class="btn active" data-view="page">By page</button>
-<button class="btn" data-view="issue">By issue type</button>
-</div>
-<button class="chip error on" data-sev="error">errors</button>
-<button class="chip warning on" data-sev="warning">warnings</button>
-<button class="chip notice on" data-sev="notice">notices</button>
-<input id="q" type="search" placeholder="Search issues…" aria-label="Search issues">
-<label class="ck"><input type="checkbox" id="showDismissed"> show dismissed</label>
-<button class="btn" id="exportBtn" title="Download dismissed.json to commit">Export dismissed</button>
-</div>
-</div>
-
-<div id="byPage">
-${sections || '<p class="muted">No pages scanned.</p>'}
-</div>
-
-<div id="byIssue" hidden><div id="byIssueBody"></div></div>
-
-<script>window.__A11Y__={slug:${jsonScript(s.slug)},baked:${jsonScript([...dismissed])},codes:${jsonScript(codes)}};</script>
+<script>window.__REPORT__=${jsonScript(report)};</script>
 <script>${CLIENT_JS}</script>`;
 
-  return shell(s.name + ' — accessibility report', body);
+  return shell(s.name + (hasUx ? ' — accessibility & UX report' : ' — accessibility report'), body);
 }
 
 // ---------------------------------------------------------------------------
@@ -408,170 +452,23 @@ ${sections || '<p class="muted">No pages scanned.</p>'}
 
 const CLIENT_JS = `
 (function(){
-  var cfg = window.__A11Y__ || {};
-  var slug = cfg.slug || 'site';
-  var baked = cfg.baked || [];
-  var codes = cfg.codes || {};
-  var LS = 'a11y-dismiss-' + slug;
-  var bakedSet = {};
-  baked.forEach(function(fp){ bakedSet[fp] = 1; });
-  var lis = Array.prototype.slice.call(document.querySelectorAll('.issue'));
-  var searchTerm = '';
-  var LK = 'a11y-locked-' + slug;
+  var R = window.__REPORT__ || {};
+
+  // ----- shared, stateless helpers (defined once) -----
   var MBADGE = {
     css:{badge:'CSS',fixable:true,label:'CSS'}, js:{badge:'JS',fixable:true,label:'JS'},
     markup:{badge:'Template',fixable:false,label:'template'}, content:{badge:'CMS',fixable:false,label:'CMS'}
   };
   function methodOf(m){ return MBADGE[m] || MBADGE.markup; }
   function lockedNow(){ return document.body.classList.contains('locked'); }
-
-  function store(){
-    try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) return v; } catch(e){}
-    return {added:[], removed:[]};
-  }
-  function save(s){ try { localStorage.setItem(LS, JSON.stringify(s)); } catch(e){} }
-
-  // Effective dismissed set = (committed baseline + locally added) - locally removed.
-  function effective(){
-    var s = store(), set = {};
-    baked.forEach(function(fp){ set[fp] = 1; });
-    s.added.forEach(function(fp){ set[fp] = 1; });
-    s.removed.forEach(function(fp){ delete set[fp]; });
-    return set;
-  }
-
   function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
-  function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
-
-  function applyState(){
-    var eff = effective();
-    lis.forEach(function(li){
-      var dz = !!eff[li.getAttribute('data-fp')];
-      li.classList.toggle('is-dismissed', dz);
-      var cb = li.querySelector('.dismiss');
-      if (cb) cb.checked = dz;
-    });
-    recompute();
-  }
-
-  function recompute(){
-    var e=0,w=0,n=0,d=0;
-    lis.forEach(function(li){
-      if (li.classList.contains('is-dismissed')) { d++; return; }
-      var t = li.getAttribute('data-type');
-      if (t==='error') e++; else if (t==='warning') w++; else n++;
-    });
-    setText('cErr',e); setText('cWarn',w); setText('cNotice',n); setText('cDismissed',d);
-
-    document.querySelectorAll('.grp').forEach(function(g){
-      var act = g.querySelectorAll('.issue:not(.is-dismissed)').length;
-      var cnt = g.querySelector('.cnt'); if (cnt) cnt.textContent = act + '\\u00d7';
-      var occn = g.querySelector('.occn'); if (occn) occn.textContent = act;
-      g.classList.toggle('empty', act===0);
-    });
-    document.querySelectorAll('.pg').forEach(function(sec){
-      var act = sec.querySelectorAll('.issue:not(.is-dismissed)').length;
-      var errs = sec.querySelectorAll('.issue.error:not(.is-dismissed)').length;
-      var c = sec.querySelector('.pgcount'); if (c) c.textContent = errs + ' errors / ' + act + ' issues';
-      sec.classList.toggle('clean', act===0);
-    });
-    buildByIssue();
-    updateFixSummary();
-  }
-
-  function buildByIssue(){
-    var host = document.getElementById('byIssueBody');
-    if (!host) return;
-    var locked = lockedNow();
-    var map = {};
-    lis.forEach(function(li){
-      if (li.classList.contains('is-dismissed')) return;
-      var code = li.getAttribute('data-code');
-      var sec = li.closest('.pg');
-      var page = sec ? sec.getAttribute('data-page') : '';
-      var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}});
-      rec.count++; if (page) rec.pages[page] = 1;
-    });
-    var rows = Object.keys(map).map(function(code){
-      var r = map[code]; r.code = code;
-      r.method = (codes[code] || {}).method || 'markup';
-      r.fixable = methodOf(r.method).fixable;
-      return r;
-    });
-    if (locked) rows.sort(function(a,b){ return (a.fixable===b.fixable) ? (b.count-a.count) : (a.fixable?-1:1); });
-    else rows.sort(function(a,b){ return b.count - a.count; });
-
-    var html = '', fixHdr = false, needHdr = false;
-    rows.forEach(function(r){
-      if (locked){
-        if (r.fixable && !fixHdr){ html += '<div class="band band-fix">Fixable by you — CSS / JS</div>'; fixHdr = true; }
-        if (!r.fixable && !needHdr){ html += '<div class="band band-need">Needs template / CMS access</div>'; needHdr = true; }
-      }
-      html += card(r, locked);
-    });
-    host.innerHTML = html || '<p class="muted">No active issues 🎉</p>';
-    if (searchTerm) filterCards(searchTerm);
-  }
-
-  function card(r, locked){
-    var meta = codes[r.code] || {};
-    var title = meta.label || r.code;
-    var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
-    var M = methodOf(r.method);
-    var tip;
-    if (locked){
-      tip = M.fixable
-        ? '<div class="tip"><b>How to fix ('+M.badge+'):</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>'
-        : '<div class="tip"><b>Needs '+M.label+' access:</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>';
-    } else {
-      tip = meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '';
-    }
-    var pages = Object.keys(r.pages);
-    var plinks = pages.map(function(p){
-      var label = p; try { label = new URL(p).pathname || p; } catch(e){}
-      return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
-    }).join(' ');
-    return '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
-      + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
-      + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
-      + '<strong>'+escapeHtml(title)+'</strong>'
-      + '<span class="cnt">'+r.count+'\\u00d7</span>'
-      + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
-      + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
-      + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
-      + tip
-      + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
-      + '</div>';
-  }
-
-  function updateFixSummary(){
-    var el = document.getElementById('fixSummary');
-    if (!el) return;
-    var fix = 0, need = 0;
-    lis.forEach(function(li){
-      if (li.classList.contains('is-dismissed')) return;
-      var m = (codes[li.getAttribute('data-code')] || {}).method || 'markup';
-      if (m==='css' || m==='js') fix++; else need++;
-    });
-    el.textContent = (fix + need) ? ('▣ ' + fix + ' fixable via CSS/JS · ' + need + ' need template/CMS') : '';
-  }
-
-  function filterCards(term){
-    document.querySelectorAll('.icard').forEach(function(c){
-      var hit = !term || c.textContent.toLowerCase().indexOf(term) >= 0;
-      c.classList.toggle('q-hide', !hit);
-    });
-  }
-
-  // Report-ready text: "Title (WCAG x.y.z)\\nWhy it matters: ...".
-  function copyText(code){
-    var m = codes[code] || {};
-    var title = m.label || code;
-    if (m.sc) title += ' (WCAG ' + m.sc + ')';
-    var out = [title];
-    if (m.why) out.push('Why it matters: ' + m.why);
-    return out.join('\\n');
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    ta.remove();
   }
   function doCopy(text, btn){
     var label = btn.textContent;
@@ -580,86 +477,277 @@ const CLIENT_JS = `
       navigator.clipboard.writeText(text).then(ok, function(){ fallbackCopy(text); ok(); });
     } else { fallbackCopy(text); ok(); }
   }
-  function fallbackCopy(text){
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.focus(); ta.select();
-    try { document.execCommand('copy'); } catch(e){}
-    ta.remove();
+
+  // ----- one report lens, every query scoped to its root element -----
+  function initReport(root, cfg){
+    var LS = cfg.storageKey;
+    var baked = cfg.baked || [];
+    var codes = cfg.codes || {};
+    var bakedSet = {};
+    baked.forEach(function(fp){ bakedSet[fp] = 1; });
+    var lis = Array.prototype.slice.call(root.querySelectorAll('.issue'));
+    var searchTerm = '';
+
+    function store(){
+      try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) return v; } catch(e){}
+      return {added:[], removed:[]};
+    }
+    function save(s){ try { localStorage.setItem(LS, JSON.stringify(s)); } catch(e){} }
+    // Effective dismissed set = (committed baseline + locally added) - locally removed.
+    function effective(){
+      var s = store(), set = {};
+      baked.forEach(function(fp){ set[fp] = 1; });
+      s.added.forEach(function(fp){ set[fp] = 1; });
+      s.removed.forEach(function(fp){ delete set[fp]; });
+      return set;
+    }
+    function setText(cls,v){ var el=root.querySelector('.'+cls); if(el) el.textContent=v; }
+
+    function applyState(){
+      var eff = effective();
+      lis.forEach(function(li){
+        var dz = !!eff[li.getAttribute('data-fp')];
+        li.classList.toggle('is-dismissed', dz);
+        var cb = li.querySelector('.dismiss');
+        if (cb) cb.checked = dz;
+      });
+      recompute();
+    }
+
+    function recompute(){
+      var e=0,w=0,n=0,d=0;
+      lis.forEach(function(li){
+        if (li.classList.contains('is-dismissed')) { d++; return; }
+        var t = li.getAttribute('data-type');
+        if (t==='error') e++; else if (t==='warning') w++; else n++;
+      });
+      setText('cErr',e); setText('cWarn',w); setText('cNotice',n); setText('cDismissed',d);
+
+      root.querySelectorAll('.grp').forEach(function(g){
+        var act = g.querySelectorAll('.issue:not(.is-dismissed)').length;
+        var cnt = g.querySelector('.cnt'); if (cnt) cnt.textContent = act + '\\u00d7';
+        var occn = g.querySelector('.occn'); if (occn) occn.textContent = act;
+        g.classList.toggle('empty', act===0);
+      });
+      root.querySelectorAll('.pg').forEach(function(sec){
+        var act = sec.querySelectorAll('.issue:not(.is-dismissed)').length;
+        var errs = sec.querySelectorAll('.issue.error:not(.is-dismissed)').length;
+        var c = sec.querySelector('.pgcount'); if (c) c.textContent = errs + ' errors / ' + act + ' issues';
+        sec.classList.toggle('clean', act===0);
+      });
+      buildByIssue();
+      updateFixSummary();
+    }
+
+    function buildByIssue(){
+      var host = root.querySelector('.byIssueBody');
+      if (!host) return;
+      var locked = lockedNow();
+      var map = {};
+      lis.forEach(function(li){
+        if (li.classList.contains('is-dismissed')) return;
+        var code = li.getAttribute('data-code');
+        var sec = li.closest('.pg');
+        var page = sec ? sec.getAttribute('data-page') : '';
+        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}});
+        rec.count++; if (page) rec.pages[page] = 1;
+      });
+      var rows = Object.keys(map).map(function(code){
+        var r = map[code]; r.code = code;
+        r.method = (codes[code] || {}).method || 'markup';
+        r.fixable = methodOf(r.method).fixable;
+        return r;
+      });
+      if (locked) rows.sort(function(a,b){ return (a.fixable===b.fixable) ? (b.count-a.count) : (a.fixable?-1:1); });
+      else rows.sort(function(a,b){ return b.count - a.count; });
+
+      var html = '', fixHdr = false, needHdr = false;
+      rows.forEach(function(r){
+        if (locked){
+          if (r.fixable && !fixHdr){ html += '<div class="band band-fix">Fixable by you — CSS / JS</div>'; fixHdr = true; }
+          if (!r.fixable && !needHdr){ html += '<div class="band band-need">Needs template / CMS access</div>'; needHdr = true; }
+        }
+        html += card(r, locked);
+      });
+      host.innerHTML = html || '<p class="muted">No active issues 🎉</p>';
+      if (searchTerm) filterCards(searchTerm);
+    }
+
+    function card(r, locked){
+      var meta = codes[r.code] || {};
+      var title = meta.label || r.code;
+      var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+      var M = methodOf(r.method);
+      var tip;
+      if (locked){
+        tip = M.fixable
+          ? '<div class="tip"><b>How to fix ('+M.badge+'):</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>'
+          : '<div class="tip"><b>Needs '+M.label+' access:</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>';
+      } else {
+        tip = meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '';
+      }
+      var pages = Object.keys(r.pages);
+      var plinks = pages.map(function(p){
+        var label = p; try { label = new URL(p).pathname || p; } catch(e){}
+        return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
+      }).join(' ');
+      return '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
+        + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
+        + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
+        + '<strong>'+escapeHtml(title)+'</strong>'
+        + '<span class="cnt">'+r.count+'\\u00d7</span>'
+        + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
+        + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
+        + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
+        + tip
+        + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
+        + '</div>';
+    }
+
+    function updateFixSummary(){
+      var el = root.querySelector('.fixSummary');
+      if (!el) return;
+      var fix = 0, need = 0;
+      lis.forEach(function(li){
+        if (li.classList.contains('is-dismissed')) return;
+        var m = (codes[li.getAttribute('data-code')] || {}).method || 'markup';
+        if (m==='css' || m==='js') fix++; else need++;
+      });
+      el.textContent = (fix + need) ? ('▣ ' + fix + ' fixable via CSS/JS · ' + need + ' need template/CMS') : '';
+    }
+
+    function filterCards(term){
+      root.querySelectorAll('.icard').forEach(function(c){
+        var hit = !term || c.textContent.toLowerCase().indexOf(term) >= 0;
+        c.classList.toggle('q-hide', !hit);
+      });
+    }
+
+    // Report-ready text: "Title (WCAG x.y.z)\\nWhy it matters: ...".
+    function copyText(code){
+      var m = codes[code] || {};
+      var title = m.label || code;
+      if (m.sc) title += ' (WCAG ' + m.sc + ')';
+      var out = [title];
+      if (m.why) out.push('Why it matters: ' + m.why);
+      return out.join('\\n');
+    }
+
+    // Delegated clicks within this lens: copy, copy-selector, dismiss-all.
+    root.addEventListener('click', function(ev){
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      var cp = t.closest('.copy');
+      if (cp){ var h = cp.closest('[data-code]'); doCopy(copyText(h ? h.getAttribute('data-code') : ''), cp); return; }
+      var cs = t.closest('.copy-sel');
+      if (cs){ var code = cs.parentElement.querySelector('code'); doCopy(code ? code.textContent : '', cs); return; }
+      var dg = t.closest('.dismiss-group');
+      if (dg){
+        var grp = dg.closest('.grp'); if (!grp) return;
+        var items = Array.prototype.slice.call(grp.querySelectorAll('.issue'));
+        var eff = effective();
+        var allOff = items.every(function(li){ return eff[li.getAttribute('data-fp')]; });
+        var s = store(), added = {}, removed = {};
+        s.added.forEach(function(x){ added[x]=1; }); s.removed.forEach(function(x){ removed[x]=1; });
+        items.forEach(function(li){
+          var fp = li.getAttribute('data-fp');
+          if (allOff){ if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
+          else { if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
+        });
+        save({added:Object.keys(added), removed:Object.keys(removed)});
+        applyState();
+      }
+    });
+
+    // Per-occurrence dismiss checkbox.
+    lis.forEach(function(li){
+      var cb = li.querySelector('.dismiss');
+      if (!cb) return;
+      cb.addEventListener('change', function(){
+        var fp = li.getAttribute('data-fp');
+        var s = store(), added = {}, removed = {};
+        s.added.forEach(function(x){ added[x]=1; });
+        s.removed.forEach(function(x){ removed[x]=1; });
+        if (cb.checked){ if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
+        else { if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
+        save({added:Object.keys(added), removed:Object.keys(removed)});
+        applyState();
+      });
+    });
+
+    root.querySelectorAll('[data-view]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var v = btn.getAttribute('data-view');
+        root.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b===btn); });
+        root.querySelector('.byPage').hidden = (v!=='page');
+        root.querySelector('.byIssue').hidden = (v!=='issue');
+      });
+    });
+
+    root.querySelectorAll('[data-sev]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        btn.classList.toggle('on');
+        root.classList.toggle('hide-' + btn.getAttribute('data-sev'), !btn.classList.contains('on'));
+      });
+    });
+
+    var q = root.querySelector('.q');
+    if (q) q.addEventListener('input', function(){
+      searchTerm = q.value.trim().toLowerCase();
+      root.querySelectorAll('.grp').forEach(function(g){
+        g.classList.toggle('q-hide', !(!searchTerm || g.textContent.toLowerCase().indexOf(searchTerm) >= 0));
+      });
+      filterCards(searchTerm);
+    });
+
+    var sd = root.querySelector('.showDismissed');
+    if (sd) sd.addEventListener('change', function(){
+      root.classList.toggle('hide-dismissed', !sd.checked);
+    });
+
+    var ex = root.querySelector('.exportBtn');
+    if (ex) ex.addEventListener('click', function(){
+      var eff = effective(), obj = {}, today = new Date().toISOString().slice(0,10);
+      Object.keys(eff).forEach(function(fp){ obj[fp] = {date: today}; });
+      var blob = new Blob([JSON.stringify(obj, null, 2) + '\\n'], {type:'application/json'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = cfg.dismissFile;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    });
+
+    applyState();
+    return { recompute: recompute };
   }
 
-  // Delegated clicks: copy, copy-selector, dismiss-all.
-  document.addEventListener('click', function(ev){
-    var t = ev.target;
-    if (!t || !t.closest) return;
-    var cp = t.closest('.copy');
-    if (cp){ var h = cp.closest('[data-code]'); doCopy(copyText(h ? h.getAttribute('data-code') : ''), cp); return; }
-    var cs = t.closest('.copy-sel');
-    if (cs){ var code = cs.parentElement.querySelector('code'); doCopy(code ? code.textContent : '', cs); return; }
-    var dg = t.closest('.dismiss-group');
-    if (dg){
-      var grp = dg.closest('.grp'); if (!grp) return;
-      var items = Array.prototype.slice.call(grp.querySelectorAll('.issue'));
-      var eff = effective();
-      var allOff = items.every(function(li){ return eff[li.getAttribute('data-fp')]; });
-      var s = store(), added = {}, removed = {};
-      s.added.forEach(function(x){ added[x]=1; }); s.removed.forEach(function(x){ removed[x]=1; });
-      items.forEach(function(li){
-        var fp = li.getAttribute('data-fp');
-        if (allOff){ if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
-        else { if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
-      });
-      save({added:Object.keys(added), removed:Object.keys(removed)});
-      applyState();
-    }
+  // ----- instantiate each present lens -----
+  var apis = [];
+  ['a11y','ux'].forEach(function(key){
+    var root = document.getElementById('lens-' + key);
+    if (root && R[key]) apis.push(initReport(root, R[key]));
   });
+  var slug = (R.a11y && R.a11y.slug) || 'site';
 
-  // Per-occurrence dismiss checkbox.
-  lis.forEach(function(li){
-    var cb = li.querySelector('.dismiss');
-    if (!cb) return;
-    cb.addEventListener('change', function(){
-      var fp = li.getAttribute('data-fp');
-      var s = store(), added = {}, removed = {};
-      s.added.forEach(function(x){ added[x]=1; });
-      s.removed.forEach(function(x){ removed[x]=1; });
-      if (cb.checked){ if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
-      else { if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
-      save({added:Object.keys(added), removed:Object.keys(removed)});
-      applyState();
-    });
-  });
+  // ----- global: lens switch -----
+  var lensBtns = Array.prototype.slice.call(document.querySelectorAll('[data-lens-to]'));
+  function showLens(to){
+    var a = document.getElementById('lens-a11y'), u = document.getElementById('lens-ux');
+    if (a) a.hidden = (to!=='a11y');
+    if (u) u.hidden = (to!=='ux');
+    lensBtns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lens-to')===to); });
+  }
+  if (lensBtns.length){
+    var LENS = 'a11y-lens-' + slug;
+    lensBtns.forEach(function(b){ b.addEventListener('click', function(){
+      var to = b.getAttribute('data-lens-to'); showLens(to);
+      try { localStorage.setItem(LENS, to); } catch(e){}
+    }); });
+    var saved; try { saved = localStorage.getItem(LENS); } catch(e){}
+    if (saved==='ux' && document.getElementById('lens-ux')) showLens('ux');
+  }
 
-  document.querySelectorAll('[data-view]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var v = btn.getAttribute('data-view');
-      document.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b===btn); });
-      document.getElementById('byPage').hidden = (v!=='page');
-      document.getElementById('byIssue').hidden = (v!=='issue');
-    });
-  });
-
-  document.querySelectorAll('[data-sev]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      btn.classList.toggle('on');
-      document.body.classList.toggle('hide-' + btn.getAttribute('data-sev'), !btn.classList.contains('on'));
-    });
-  });
-
-  var q = document.getElementById('q');
-  if (q) q.addEventListener('input', function(){
-    searchTerm = q.value.trim().toLowerCase();
-    document.querySelectorAll('.grp').forEach(function(g){
-      g.classList.toggle('q-hide', !(!searchTerm || g.textContent.toLowerCase().indexOf(searchTerm) >= 0));
-    });
-    filterCards(searchTerm);
-  });
-
-  var sd = document.getElementById('showDismissed');
-  if (sd) sd.addEventListener('change', function(){
-    document.body.classList.toggle('hide-dismissed', !sd.checked);
-  });
-
+  // ----- global: dark mode -----
   var tb = document.getElementById('themeBtn');
   if (tb) tb.addEventListener('click', function(){
     var c = document.documentElement.getAttribute('data-theme');
@@ -668,18 +756,8 @@ const CLIENT_JS = `
     try { localStorage.setItem('a11y-theme', nx); } catch(e){}
   });
 
-  var ex = document.getElementById('exportBtn');
-  if (ex) ex.addEventListener('click', function(){
-    var eff = effective(), obj = {}, today = new Date().toISOString().slice(0,10);
-    Object.keys(eff).forEach(function(fp){ obj[fp] = {date: today}; });
-    var blob = new Blob([JSON.stringify(obj, null, 2) + '\\n'], {type:'application/json'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'dismissed.json';
-    document.body.appendChild(a); a.click();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
-  });
-
+  // ----- global: locked-theme mode (shared across both lenses) -----
+  var LK = 'a11y-locked-' + slug;
   function setLockLabel(locked){
     var b = document.getElementById('lockBtn');
     if (b){ b.textContent = locked ? '🔒 Locked theme' : '🔓 Customizable'; b.setAttribute('aria-pressed', locked ? 'true' : 'false'); }
@@ -695,11 +773,10 @@ const CLIENT_JS = `
     document.body.classList.toggle('locked', locked);
     try { localStorage.setItem(LK, locked ? '1' : '0'); } catch(e){}
     setLockLabel(locked);
-    recompute();
+    apis.forEach(function(a){ a.recompute(); });
   });
 
   initLock();
-  applyState();
 })();
 `;
 

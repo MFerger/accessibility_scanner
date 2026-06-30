@@ -26,6 +26,21 @@ function readJson(p, fallback) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { return fallback; }
 }
 
+// Active counts = scanned totals minus the committed-dismissed issues.
+function activeCounts(latest, dismissedSet) {
+  let errors = 0, warnings = 0, notices = 0, total = 0, dismissed = 0;
+  for (const url of Object.keys((latest && latest.pages) || {})) {
+    for (const it of latest.pages[url]) {
+      if (dismissedSet.has(it.fp)) { dismissed++; continue; }
+      total++;
+      if (it.type === 'error') errors++;
+      else if (it.type === 'warning') warnings++;
+      else notices++;
+    }
+  }
+  return { errors, warnings, notices, total, dismissed };
+}
+
 const slugs = fs.existsSync(DATA_DIR)
   ? fs.readdirSync(DATA_DIR).filter((s) => fs.existsSync(path.join(DATA_DIR, s, 'latest.json')))
   : [];
@@ -39,25 +54,26 @@ const sites = slugs.map((slug) => {
   const dir = path.join(DATA_DIR, slug);
   const latest = readJson(path.join(dir, 'latest.json'), null);
   const history = readJson(path.join(dir, 'history.json'), []);
-  const dismissed = readJson(path.join(dir, 'dismissed.json'), {});
-  const dismissedSet = new Set(Object.keys(dismissed));
+  const dismissedSet = new Set(Object.keys(readJson(path.join(dir, 'dismissed.json'), {})));
 
-  // Active counts = scanned totals minus the committed-dismissed issues.
-  let errors = 0, warnings = 0, notices = 0, total = 0, dCount = 0;
-  for (const url of Object.keys(latest.pages || {})) {
-    for (const it of latest.pages[url]) {
-      if (dismissedSet.has(it.fp)) { dCount++; continue; }
-      total++;
-      if (it.type === 'error') errors++;
-      else if (it.type === 'warning') warnings++;
-      else notices++;
-    }
+  // UX/layout scan data is optional — a site scanned before the UX scanner
+  // existed (or with the UX scan turned off) simply has no second lens.
+  const uxLatest = readJson(path.join(dir, 'ux-latest.json'), null);
+  let ux = null;
+  if (uxLatest && uxLatest.pages) {
+    const uxDismissedSet = new Set(Object.keys(readJson(path.join(dir, 'ux-dismissed.json'), {})));
+    ux = Object.assign({}, uxLatest, {
+      history: readJson(path.join(dir, 'ux-history.json'), []),
+      dismissedSet: uxDismissedSet,
+      active: activeCounts(uxLatest, uxDismissedSet),
+    });
   }
 
   return Object.assign({}, latest, {
     history,
     dismissedSet,
-    active: { errors, warnings, notices, total, dismissed: dCount },
+    active: activeCounts(latest, dismissedSet),
+    ux,
   });
 });
 

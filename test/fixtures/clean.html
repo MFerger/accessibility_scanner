@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clean fixture</title>
+<style>
+  body{margin:0;font-family:system-ui;font-size:18px;line-height:1.6}
+  .full{width:100vw;background:#def;padding:24px 0}      /* 100vw + vertical scrollbar = the classic false-positive trap */
+  .wrap{max-width:800px;margin:0 auto;padding:0 16px}
+  a.btn{display:inline-block;padding:14px 22px;background:#0a7;color:#fff;text-decoration:none;min-height:44px;min-width:44px;box-sizing:border-box}
+</style></head>
+<body>
+<div class="full"><div class="wrap"><h1>Clean responsive page</h1></div></div>
+<div class="wrap">
+<p>This page is fully responsive and should produce zero UX findings, even though it has a 100vw full-bleed banner and a tall body that forces a vertical scrollbar.</p>
+<p><a class="btn" href="#">A comfortably sized button</a></p>
+<div style="height:1600px"></div>
+<p>Footer text at the bottom of a deliberately tall page.</p>
+</div>
+</body></html>

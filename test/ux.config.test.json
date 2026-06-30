@@ -1,0 +1,26 @@
+{
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 900, "enabled": true },
+    { "name": "mobile", "width": 375, "height": 812, "enabled": true }
+  ],
+  "concurrency": 3,
+  "navigationTimeoutMs": 20000,
+  "settleMs": 300,
+  "overflowTolerancePx": 4,
+  "minTapTargetPx": 24,
+  "minFontPx": 12,
+  "ignoreSelectors": [],
+  "ignoreConsolePatterns": [],
+  "checks": {
+    "horizontalOverflow": true,
+    "failedResources": true,
+    "brokenImages": true,
+    "viewportMeta": true,
+    "consoleErrors": true,
+    "tapTargets": true,
+    "smallText": true,
+    "elementOverflow": true,
+    "collapsedContainer": true,
+    "elementOverlap": false
+  }
+}

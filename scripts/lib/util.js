@@ -42,6 +42,16 @@ function fingerprint(pageUrl, code, context, selector) {
   return hash(pageUrl + '|' + code + '|' + basis);
 }
 
+// Stable id for one UX/layout issue occurrence. Same as fingerprint() but with
+// the viewport folded into the basis, so a width-specific bug (e.g. overflow at
+// mobile vs desktop) produces a distinct fingerprint per viewport. Document-level
+// UX checks (missing meta, 404s) pass viewport "all" so they collapse to one id
+// across the per-viewport passes.
+function uxFingerprint(pageUrl, viewport, code, context, selector) {
+  const basis = normalizeContext(context) || String(selector || '');
+  return hash(pageUrl + '|' + viewport + '|' + code + '|' + basis);
+}
+
 // Slug for a site: hostname only, leading "www." dropped, non-alnum -> "-".
 // Keeps "www.example.com" and "example.com" from creating two separate sites.
 function slugify(input) {
@@ -63,4 +73,4 @@ function hostname(input) {
   } catch (e) { return String(input || ''); }
 }
 
-module.exports = { hash, normalizeContext, truncate, fingerprint, slugify, hostname };
+module.exports = { hash, normalizeContext, truncate, fingerprint, uxFingerprint, slugify, hostname };

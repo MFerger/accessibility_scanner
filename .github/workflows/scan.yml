@@ -14,6 +14,11 @@ on:
         description: "Sitemap types to include (comma-separated). Add a custom post type here for the rare site that needs it."
         required: false
         default: "post,page"
+      ux:
+        description: "Also run the UX / layout scan (rendering + mobile-friendliness bugs)."
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: write   # commit normalized scan data back to the repo
@@ -74,6 +79,28 @@ jobs:
           SCAN_URL: ${{ inputs.url }}
           SITE_NAME: ${{ inputs.name }}
         run: node scripts/ingest-results.js
+
+      # UX / layout scan — reuses run-config.json's URLs and the Chromium that
+      # `npm install` already provisioned for pa11y's puppeteer, so no extra
+      # browser-install step is needed. Runs before the commit so its normalized
+      # data (data/<slug>/ux-*.json) is committed alongside the a11y data.
+      # continue-on-error so a UX hiccup (or the broken-scan guard's refusal to
+      # overwrite good data) never blocks committing + deploying the a11y results
+      # that follow — the report just falls back to an a11y-only lens.
+      - name: Run UX & layout scan
+        if: ${{ inputs.ux }}
+        continue-on-error: true
+        env:
+          SCAN_URL: ${{ inputs.url }}
+        run: node scripts/scan-ux.js
+
+      - name: Normalize UX results into committed data
+        if: ${{ inputs.ux }}
+        continue-on-error: true
+        env:
+          SCAN_URL: ${{ inputs.url }}
+          SITE_NAME: ${{ inputs.name }}
+        run: node scripts/ingest-ux.js
 
       - name: Commit scan data
         run: |
