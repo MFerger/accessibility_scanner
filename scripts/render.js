@@ -22,6 +22,15 @@ const jsonScript = (obj) => JSON.stringify(obj)
 const fmtDate = (iso) => String(iso || '').slice(0, 10) || '—';
 const sevRank = (t) => (t === 'error' ? 0 : t === 'warning' ? 1 : 2);
 
+// Fix-method display: badge text, "fixable by you" bucket, access label.
+const METHOD = {
+  css: { badge: 'CSS', fixable: true, label: 'CSS' },
+  js: { badge: 'JS', fixable: true, label: 'JS' },
+  markup: { badge: 'Template', fixable: false, label: 'template' },
+  content: { badge: 'CMS', fixable: false, label: 'CMS' },
+};
+const methodOf = (m) => METHOD[m] || METHOD.markup;
+
 // ---------------------------------------------------------------------------
 // Shared chrome
 // ---------------------------------------------------------------------------
@@ -138,6 +147,28 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
 .card .stats{display:flex;gap:18px;align-items:center;margin-top:10px;flex-wrap:wrap}
 .card .stat b{font-size:20px} .card .stat span{font-size:12px;color:var(--muted);margin-left:4px}
 
+/* fix-method badges + locked-theme banding */
+.mtag{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:.03em;padding:1px 6px;border-radius:4px;border:1px solid transparent;white-space:nowrap}
+.mtag.css{background:rgba(37,99,235,.12);color:var(--accent);border-color:rgba(37,99,235,.35)}
+.mtag.js{background:rgba(42,122,58,.14);color:var(--ok);border-color:rgba(42,122,58,.35)}
+.mtag.markup,.mtag.content{background:var(--chip);color:var(--muted);border-color:var(--border)}
+.band{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;color:var(--muted);padding:6px 0 3px;border-bottom:1px solid var(--border);margin:4px 0 2px;display:none}
+.band-need{color:var(--warn)}
+.fixsum{background:rgba(37,99,235,.10);color:var(--accent)}
+#fixSummary:empty{display:none}
+.tip-locked{display:none}
+/* locked mode (default): CSS/JS tips, two bands via flex order */
+body.locked .tip-standard{display:none}
+body.locked .tip-locked{display:block}
+body.locked .band{display:block}
+body.locked .band-fix{order:0}
+body.locked .grp[data-fixable="1"]{order:1;border-left:3px solid var(--accent)}
+body.locked .band-need{order:2}
+body.locked .grp[data-fixable="0"]{order:3;border-left:3px solid var(--border)}
+/* customizable mode: standard tips, no banding or summary */
+body:not(.locked) .tip-locked{display:none}
+body:not(.locked) #fixSummary{display:none}
+
 /* filter visibility (combined via body classes) */
 body.hide-error .grp.error,body.hide-warning .grp.warning,body.hide-notice .grp.notice{display:none}
 body.hide-error #byIssue .icard.error,body.hide-warning #byIssue .icard.warning,body.hide-notice #byIssue .icard.notice{display:none}
@@ -157,7 +188,7 @@ function shell(title, bodyHtml, extraHead) {
 ${THEME_BOOT}
 <style>${STYLES}</style>
 ${extraHead || ''}
-</head><body class="hide-dismissed">
+</head><body class="hide-dismissed locked">
 ${bodyHtml}
 </body></html>
 `;
@@ -240,10 +271,15 @@ function group(g, codes) {
   const meta = codes[g.code] || {};
   const title = meta.label || g.code;
   const ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+  const M = methodOf(meta.method);
   const occ = g.items.map(occurrence).join('\n');
-  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}">
+  const lockedBody = M.fixable
+    ? '<b>How to fix (' + M.badge + '):</b> ' + esc(meta.lockedTip || meta.tip || '')
+    : '<b>Needs ' + M.label + ' access:</b> ' + esc(meta.lockedTip || meta.tip || '');
+  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}" data-method="${esc(meta.method || 'markup')}" data-fixable="${M.fixable ? 1 : 0}">
 <div class="grp-head">
 <span class="t ${esc(g.type)}">${esc(g.type)}</span>
+<span class="mtag ${esc(meta.method || 'markup')}">${M.badge}</span>
 <strong class="gtitle">${esc(title)}</strong>
 <span class="cnt">${g.act}&times;</span>
 ${meta.url ? '<a class="sc" href="' + esc(meta.url) + '" target="_blank" rel="noopener">' + esc(ref) + '</a>' : ''}
@@ -252,7 +288,8 @@ ${meta.url ? '<a class="sc" href="' + esc(meta.url) + '" target="_blank" rel="no
 <button class="dismiss-group" type="button" title="Dismiss every occurrence of this issue on this page">dismiss all</button>
 </div>
 ${meta.why ? '<div class="why"><b>Why it matters:</b> ' + esc(meta.why) + '</div>' : ''}
-${meta.tip ? '<div class="tip"><b>How to fix:</b> ' + esc(meta.tip) + '</div>' : ''}
+${meta.tip ? '<div class="tip tip-standard"><b>How to fix:</b> ' + esc(meta.tip) + '</div>' : ''}
+<div class="tip tip-locked">${lockedBody}</div>
 <details class="occ"><summary><span class="occn">${g.act}</span> occurrence${g.act === 1 ? '' : 's'} — show elements</summary>
 <ul class="issues">${occ}</ul>
 </details>
@@ -267,13 +304,17 @@ function pageSection(p, codes, dismissed) {
     return {
       code, items, type: items[0].type,
       act: items.filter((i) => !dismissed.has(i.fp)).length,
+      fixable: methodOf((codes[code] || {}).method).fixable,
     };
   }).sort((x, y) => sevRank(x.type) - sevRank(y.type) || y.act - x.act);
 
+  // Band dividers (locked mode only, via CSS) — render only if non-empty.
+  const divFix = groups.some((g) => g.fixable) ? '<div class="band band-fix">Fixable by you — CSS / JS</div>' : '';
+  const divNeed = groups.some((g) => !g.fixable) ? '<div class="band band-need">Needs template / CMS access</div>' : '';
   const inner = groups.map((g) => group(g, codes)).join('\n');
   return `<section class="pg${p.act === 0 ? ' clean' : ''}" data-page="${esc(p.url)}">
 <h2><a class="pglink" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a> <span class="pgcount">${p.errs} errors / ${p.act} issues</span></h2>
-<div class="groups">${inner || '<p class="ok">No issues found.</p>'}</div>
+<div class="groups">${divFix}${divNeed}${inner || '<p class="ok">No issues found.</p>'}</div>
 </section>`;
 }
 
@@ -286,12 +327,15 @@ function site(s) {
   for (const k of Object.keys(s.codes || {})) {
     const v = s.codes[k];
     const m = wcag.forSC(v.sc);
+    const f = wcag.fix(v.sc, k);
     codes[k] = {
       sc: v.sc,
       label: v.label,
       url: m.url || v.url,
       tip: m.tip || v.tip,
       why: m.why,
+      method: f.method,
+      lockedTip: f.lockedTip,
     };
   }
   const dismissed = s.dismissedSet || new Set();
@@ -315,6 +359,7 @@ function site(s) {
   const body = `<div class="row">
 <a href="../../index.html" class="muted" style="text-decoration:none">← All sites</a>
 <span class="spacer"></span>
+<button class="btn" id="lockBtn" title="Locked theme: prioritize fixes you can do in CSS/JS. Click to switch to a customizable theme." aria-pressed="true">🔒 Locked theme</button>
 <button class="btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button></div>
 
 <h1>${esc(s.name)}</h1>
@@ -328,7 +373,7 @@ function site(s) {
 <div><div class="n" id="cDismissed">${a.dismissed}</div><div class="k">dismissed</div></div>
 <div class="spacer"></div>${sparkline(s.history)}
 </div>
-<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}</div>
+<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}<span class="pill fixsum" id="fixSummary"></span></div>
 
 <div class="controls">
 <div class="row">
@@ -372,6 +417,13 @@ const CLIENT_JS = `
   baked.forEach(function(fp){ bakedSet[fp] = 1; });
   var lis = Array.prototype.slice.call(document.querySelectorAll('.issue'));
   var searchTerm = '';
+  var LK = 'a11y-locked-' + slug;
+  var MBADGE = {
+    css:{badge:'CSS',fixable:true,label:'CSS'}, js:{badge:'JS',fixable:true,label:'JS'},
+    markup:{badge:'Template',fixable:false,label:'template'}, content:{badge:'CMS',fixable:false,label:'CMS'}
+  };
+  function methodOf(m){ return MBADGE[m] || MBADGE.markup; }
+  function lockedNow(){ return document.body.classList.contains('locked'); }
 
   function store(){
     try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) return v; } catch(e){}
@@ -425,11 +477,13 @@ const CLIENT_JS = `
       sec.classList.toggle('clean', act===0);
     });
     buildByIssue();
+    updateFixSummary();
   }
 
   function buildByIssue(){
     var host = document.getElementById('byIssueBody');
     if (!host) return;
+    var locked = lockedNow();
     var map = {};
     lis.forEach(function(li){
       if (li.classList.contains('is-dismissed')) return;
@@ -439,31 +493,68 @@ const CLIENT_JS = `
       var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}});
       rec.count++; if (page) rec.pages[page] = 1;
     });
-    var rows = Object.keys(map).map(function(code){ var r=map[code]; r.code=code; return r; })
-      .sort(function(a,b){ return b.count - a.count; });
-    var html = '';
+    var rows = Object.keys(map).map(function(code){
+      var r = map[code]; r.code = code;
+      r.method = (codes[code] || {}).method || 'markup';
+      r.fixable = methodOf(r.method).fixable;
+      return r;
+    });
+    if (locked) rows.sort(function(a,b){ return (a.fixable===b.fixable) ? (b.count-a.count) : (a.fixable?-1:1); });
+    else rows.sort(function(a,b){ return b.count - a.count; });
+
+    var html = '', fixHdr = false, needHdr = false;
     rows.forEach(function(r){
-      var meta = codes[r.code] || {};
-      var title = meta.label || r.code;
-      var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
-      var pages = Object.keys(r.pages);
-      var plinks = pages.map(function(p){
-        var label = p; try { label = new URL(p).pathname || p; } catch(e){}
-        return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
-      }).join(' ');
-      html += '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
-        + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
-        + '<strong>'+escapeHtml(title)+'</strong>'
-        + '<span class="cnt">'+r.count+'\\u00d7</span>'
-        + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
-        + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
-        + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
-        + (meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '')
-        + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
-        + '</div>';
+      if (locked){
+        if (r.fixable && !fixHdr){ html += '<div class="band band-fix">Fixable by you — CSS / JS</div>'; fixHdr = true; }
+        if (!r.fixable && !needHdr){ html += '<div class="band band-need">Needs template / CMS access</div>'; needHdr = true; }
+      }
+      html += card(r, locked);
     });
     host.innerHTML = html || '<p class="muted">No active issues 🎉</p>';
     if (searchTerm) filterCards(searchTerm);
+  }
+
+  function card(r, locked){
+    var meta = codes[r.code] || {};
+    var title = meta.label || r.code;
+    var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+    var M = methodOf(r.method);
+    var tip;
+    if (locked){
+      tip = M.fixable
+        ? '<div class="tip"><b>How to fix ('+M.badge+'):</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>'
+        : '<div class="tip"><b>Needs '+M.label+' access:</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>';
+    } else {
+      tip = meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '';
+    }
+    var pages = Object.keys(r.pages);
+    var plinks = pages.map(function(p){
+      var label = p; try { label = new URL(p).pathname || p; } catch(e){}
+      return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
+    }).join(' ');
+    return '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
+      + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
+      + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
+      + '<strong>'+escapeHtml(title)+'</strong>'
+      + '<span class="cnt">'+r.count+'\\u00d7</span>'
+      + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
+      + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
+      + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
+      + tip
+      + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
+      + '</div>';
+  }
+
+  function updateFixSummary(){
+    var el = document.getElementById('fixSummary');
+    if (!el) return;
+    var fix = 0, need = 0;
+    lis.forEach(function(li){
+      if (li.classList.contains('is-dismissed')) return;
+      var m = (codes[li.getAttribute('data-code')] || {}).method || 'markup';
+      if (m==='css' || m==='js') fix++; else need++;
+    });
+    el.textContent = (fix + need) ? ('▣ ' + fix + ' fixable via CSS/JS · ' + need + ' need template/CMS') : '';
   }
 
   function filterCards(term){
@@ -589,6 +680,25 @@ const CLIENT_JS = `
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
   });
 
+  function setLockLabel(locked){
+    var b = document.getElementById('lockBtn');
+    if (b){ b.textContent = locked ? '🔒 Locked theme' : '🔓 Customizable'; b.setAttribute('aria-pressed', locked ? 'true' : 'false'); }
+  }
+  function initLock(){
+    var locked; try { var v = localStorage.getItem(LK); locked = (v===null) ? true : (v==='1'); } catch(e){ locked = true; }
+    document.body.classList.toggle('locked', locked);
+    setLockLabel(locked);
+  }
+  var lb = document.getElementById('lockBtn');
+  if (lb) lb.addEventListener('click', function(){
+    var locked = !lockedNow();
+    document.body.classList.toggle('locked', locked);
+    try { localStorage.setItem(LK, locked ? '1' : '0'); } catch(e){}
+    setLockLabel(locked);
+    recompute();
+  });
+
+  initLock();
   applyState();
 })();
 `;

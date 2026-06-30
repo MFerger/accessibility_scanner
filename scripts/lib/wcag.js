@@ -247,6 +247,102 @@ function why(sc) {
   return (sc && WCAG[sc] && WCAG[sc].why) || WHY_FALLBACK;
 }
 
+/*
+ * Fix-method model for "locked theme" reports. Most of the user's sites run
+ * prebuilt themes that only take CSS (Additional CSS) or small jQuery tweaks —
+ * not template/markup or CMS-content edits. Each issue is tagged:
+ *   css     -> fixable in Additional CSS
+ *   js      -> fixable by injecting attributes/behaviour with jQuery
+ *   markup  -> needs a template change
+ *   content -> needs CMS content / settings
+ * css+js are "fixable by you"; markup+content are "needs access".
+ * lockedTip is the CSS/jQuery recommendation (or where-to-go for markup/content).
+ */
+const FIX = {
+  '1.1.1': { method: 'content', lockedTip: "Add alt text in the Media Library or image block — CSS/JS can't supply meaningful alt. Decorative images can be blanked with jQuery: jQuery('img.decorative').attr('alt','')." },
+  '1.2.1': { method: 'content', lockedTip: null },
+  '1.2.2': { method: 'content', lockedTip: null },
+  '1.2.3': { method: 'content', lockedTip: null },
+  '1.2.4': { method: 'content', lockedTip: null },
+  '1.2.5': { method: 'content', lockedTip: null },
+  '1.3.1': { method: 'markup', lockedTip: null },
+  '1.3.2': { method: 'markup', lockedTip: null },
+  '1.3.3': { method: 'markup', lockedTip: null },
+  '1.3.4': { method: 'css', lockedTip: "Don't lock orientation in CSS; make sure the layout works both ways (test in Additional CSS)." },
+  '1.3.5': { method: 'js', lockedTip: "Add the autocomplete attribute with jQuery — e.g. jQuery('#email').attr('autocomplete','email')." },
+  '1.4.1': { method: 'css', lockedTip: "Add a non-colour cue in Additional CSS — e.g. underline in-content links: .entry-content a{text-decoration:underline}." },
+  '1.4.2': { method: 'js', lockedTip: "Turn off autoplay in the media/embed settings, or pause it with a small JS snippet on load." },
+  '1.4.3': { method: 'css', lockedTip: "Override the colours in Additional CSS to reach 4.5:1 (3:1 for large text). Target the selector shown on each occurrence, e.g. .entry-content a{color:#0b5cad}." },
+  '1.4.4': { method: 'css', lockedTip: "Use relative units and avoid fixed pixel heights so text scales to 200%; adjust the offending rules in Additional CSS." },
+  '1.4.5': { method: 'content', lockedTip: "Replace the image-of-text with real text (CMS/template); decorative images are fine as-is." },
+  '1.4.6': { method: 'css', lockedTip: "Override colours in Additional CSS to reach the enhanced ratio (7:1, or 4.5:1 for large text)." },
+  '1.4.10': { method: 'css', lockedTip: "Make the offending block responsive in Additional CSS (max-width:100%, flex-wrap, no fixed widths) so it reflows at 320px." },
+  '1.4.11': { method: 'css', lockedTip: "Raise the contrast of borders, icons, and form outlines to 3:1 in Additional CSS." },
+  '1.4.12': { method: 'css', lockedTip: "Remove fixed heights / overflow:hidden on the affected boxes in Additional CSS so increased text spacing doesn't clip." },
+  '1.4.13': { method: 'css', lockedTip: "Adjust the hover/focus popup's CSS so it's dismissable, hoverable, and stays put." },
+  '2.1.1': { method: 'js', lockedTip: "Make the control keyboard-operable with JS — give it tabindex and bind Enter/Space to its click handler." },
+  '2.1.2': { method: 'js', lockedTip: null },
+  '2.1.4': { method: 'js', lockedTip: null },
+  '2.2.1': { method: 'js', lockedTip: null },
+  '2.2.2': { method: 'js', lockedTip: "Stop the auto-moving widget in its plugin settings or pause it with JS; CSS prefers-reduced-motion can also disable the animation." },
+  '2.3.1': { method: 'content', lockedTip: null },
+  '2.4.1': { method: 'js', lockedTip: "Inject a skip link at the top of <body> with jQuery pointing to your main content's id; landmark roles can also be added via JS." },
+  '2.4.2': { method: 'content', lockedTip: "Set the page title via your SEO plugin (e.g. Yoast) or the page's own settings." },
+  '2.4.3': { method: 'markup', lockedTip: null },
+  '2.4.4': { method: 'js', lockedTip: "Add context with jQuery — e.g. jQuery('.read-more').attr('aria-label', function(){return 'Read more: '+jQuery(this).closest('article').find('h2').text();}); — or inject a visually-hidden <span>." },
+  '2.4.5': { method: 'content', lockedTip: null },
+  '2.4.6': { method: 'markup', lockedTip: null },
+  '2.4.7': { method: 'css', lockedTip: "Add a visible focus style in Additional CSS: a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #1a73e8;outline-offset:2px}." },
+  '2.4.11': { method: 'css', lockedTip: "Add scroll-margin-top to focus targets (or shrink the sticky header) in Additional CSS so focus isn't hidden behind it." },
+  '2.5.1': { method: 'js', lockedTip: null },
+  '2.5.2': { method: 'js', lockedTip: null },
+  '2.5.3': { method: 'js', lockedTip: "Make the accessible name include the visible label — set aria-label to match the visible text with jQuery." },
+  '2.5.4': { method: 'js', lockedTip: null },
+  '2.5.7': { method: 'js', lockedTip: null },
+  '2.5.8': { method: 'css', lockedTip: "Enlarge the tap target in Additional CSS with padding or min-height/min-width:24px (44px is better for mobile)." },
+  '3.1.1': { method: 'content', lockedTip: "Set Site Language in WordPress → Settings → General (it outputs <html lang>). JS fallback: document.documentElement.lang='en'." },
+  '3.1.2': { method: 'js', lockedTip: "Tag the foreign-language element with jQuery — e.g. jQuery('.es').attr('lang','es')." },
+  '3.2.1': { method: 'js', lockedTip: null },
+  '3.2.2': { method: 'js', lockedTip: null },
+  '3.2.3': { method: 'markup', lockedTip: null },
+  '3.2.4': { method: 'markup', lockedTip: null },
+  '3.2.6': { method: 'content', lockedTip: null },
+  '3.3.1': { method: 'js', lockedTip: "Tie the error text to its field with JS (aria-describedby) and make sure it's real text, not colour alone." },
+  '3.3.2': { method: 'js', lockedTip: "Add an accessible name with jQuery — e.g. jQuery('#s').attr('aria-label','Search') — or add a <label for> if you can reach the field." },
+  '3.3.3': { method: 'js', lockedTip: null },
+  '3.3.4': { method: 'markup', lockedTip: null },
+  '3.3.7': { method: 'markup', lockedTip: null },
+  '3.3.8': { method: 'markup', lockedTip: null },
+  '4.1.1': { method: 'markup', lockedTip: null },
+  '4.1.2': { method: 'js', lockedTip: "Inject the missing name/role with jQuery — e.g. jQuery('.icon-button').attr('aria-label','Search'); for toggles also set role and aria-expanded." },
+  '4.1.3': { method: 'js', lockedTip: "Mark the live region with JS — jQuery('.cart-msg').attr({role:'status','aria-live':'polite'})." },
+};
+
+// Per-code overrides where a code's realistic fix differs from its SC default
+// — chiefly landmark/region issues, which you can patch with JS even though
+// 1.3.1 generally needs template changes.
+const CODE_FIX = {
+  'region': { method: 'js', lockedTip: "Add a main landmark via JS — jQuery('#content,#primary,main').first().attr('role','main') — or wrap the content in <main> if you can reach the template." },
+  'landmark-one-main': { method: 'js', lockedTip: "Mark the primary content container as main via JS: jQuery('#content').attr('role','main')." },
+  'landmark-main-is-top-level': { method: 'js', lockedTip: null },
+  'landmark-banner-is-top-level': { method: 'js', lockedTip: null },
+  'landmark-complementary-is-top-level': { method: 'js', lockedTip: null },
+  'landmark-contentinfo-is-top-level': { method: 'js', lockedTip: null },
+  'landmark-no-duplicate-banner': { method: 'js', lockedTip: "Demote the duplicate banner's role via JS so only one remains." },
+  'landmark-no-duplicate-contentinfo': { method: 'js', lockedTip: null },
+  'landmark-no-duplicate-main': { method: 'js', lockedTip: null },
+  'landmark-unique': { method: 'js', lockedTip: "Give duplicate landmarks distinct aria-labels via JS so they're unique." },
+  'frame-title': { method: 'js', lockedTip: "Add a title to the iframe via JS: jQuery('iframe.embed').attr('title','Map')." },
+  'frame-title-unique': { method: 'js', lockedTip: null },
+};
+
+// Returns { method, lockedTip }. Code override wins over SC default; unknown
+// criteria default to 'markup' (conservative — never claim CSS-fixable).
+function fix(sc, code) {
+  const o = (code && CODE_FIX[code]) || (sc && FIX[sc]) || null;
+  return { method: (o && o.method) || 'markup', lockedTip: o ? o.lockedTip : null };
+}
+
 // Display metadata derived purely from the SC, so reports re-derive it on a
 // rebuild (picking up edits here) instead of using values frozen at scan time.
 // Fields are null when the SC is unknown, so callers can fall back to whatever
@@ -277,4 +373,4 @@ function describe(issue) {
   return { sc, url, tip, impact };
 }
 
-module.exports = { describe, why, forSC, cleanMessage, scFromCode, understandingUrl };
+module.exports = { describe, why, forSC, fix, cleanMessage, scFromCode, understandingUrl };
