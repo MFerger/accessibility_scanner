@@ -11,6 +11,7 @@
 
 const wcag = require('./lib/wcag');
 const uxChecks = require('./lib/ux-checks');
+const { globalFingerprint } = require('./lib/util');
 
 const esc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -126,8 +127,17 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
 .issue pre{flex:1;background:var(--code);color:var(--codefg);padding:8px 10px;border-radius:6px;
   overflow:auto;font-size:12px;margin:6px 0 0;white-space:pre-wrap;word-break:break-word}
 .issue pre code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.dz{flex:0 0 auto;padding-top:2px}
+.dz{flex:0 0 auto;padding-top:2px;display:flex;flex-direction:column;gap:6px;align-items:center}
 .dz input{width:16px;height:16px;cursor:pointer}
+.fp-flag{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:5px;
+  min-width:22px;height:20px;line-height:18px;padding:0 5px;cursor:pointer;font-size:12px;white-space:nowrap}
+.fp-flag:hover{border-color:var(--warn);color:var(--warn)}
+.fp-flag.on,.fp-flag[aria-pressed="true"]{background:var(--warn);border-color:var(--warn);color:#fff}
+.issue.is-fp{opacity:.6}
+.issue.is-fp>.body::after{content:"false positive";display:inline-block;margin:5px 0 0;font-size:10px;
+  text-transform:uppercase;letter-spacing:.03em;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 5px}
+.swbadge{display:inline-block;font-size:10.5px;color:var(--accent);border:1px solid rgba(37,99,235,.35);
+  background:rgba(37,99,235,.08);border-radius:4px;padding:0 6px;margin:0 0 4px}
 
 /* by-issue cards */
 .icard{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--card)}
@@ -139,6 +149,11 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
 .icard .pages a{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
   background:var(--chip);border-radius:5px;padding:2px 7px;margin:0 4px 2px 0;display:inline-block;text-decoration:none}
 .icard .pages a:hover{text-decoration:underline}
+/* site-wide cards reuse .icard; just add the element preview + resolve control */
+.swcard .sw-el{margin:9px 0 0}
+.swcard .cnt{font-variant-numeric:tabular-nums}
+.sw-resolve{display:flex;gap:6px;margin:10px 0 0;color:var(--fg);font-size:13px}
+.sw-resolve input{margin-top:2px}
 
 /* landing cards */
 .cards{display:grid;gap:12px}
@@ -177,8 +192,11 @@ body:not(.locked) .fixSummary{display:none}
 /* filter visibility — scoped per lens so the two lenses filter independently */
 .lens.hide-error .grp.error,.lens.hide-warning .grp.warning,.lens.hide-notice .grp.notice{display:none}
 .lens.hide-error .byIssue .icard.error,.lens.hide-warning .byIssue .icard.warning,.lens.hide-notice .byIssue .icard.notice{display:none}
-.lens.hide-dismissed .issue.is-dismissed{display:none}
-.lens.hide-dismissed .grp.empty{display:none}
+.lens.hide-error .siteWide .icard.error,.lens.hide-warning .siteWide .icard.warning,.lens.hide-notice .siteWide .icard.notice{display:none}
+/* resolved (dismissed, not a false positive) and false positives hide independently */
+.lens.hide-resolved .issue.is-dismissed:not(.is-fp){display:none}
+.lens.hide-fp .issue.is-fp{display:none}
+.lens.hide-resolved.hide-fp .grp.empty{display:none}
 .grp.q-hide,.icard.q-hide{display:none}
 [hidden]{display:none !important}
 `;
@@ -264,8 +282,12 @@ try{localStorage.setItem('a11y-theme',n);}catch(e){}});
 // ---------------------------------------------------------------------------
 
 function occurrence(it) {
-  return `<li class="issue ${esc(it.type)}" data-fp="${esc(it.fp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}">
-<label class="dz"><input type="checkbox" class="dismiss" aria-label="Dismiss this occurrence"></label>
+  // URL-independent key: same code + same element on any page collapses to one
+  // gfp, so the client can group it as a single "site-wide" issue. Fold the UX
+  // viewport in (when present) so width-specific bugs stay distinct per viewport.
+  const gfp = globalFingerprint((it.viewport && it.viewport !== 'all' ? it.viewport + '|' : '') + it.code, it.context, it.selector);
+  return `<li class="issue ${esc(it.type)}" data-fp="${esc(it.fp)}" data-gfp="${esc(gfp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}">
+<div class="dz"><label title="Mark resolved — you fixed it (or will)"><input type="checkbox" class="dismiss" aria-label="Mark this occurrence resolved"></label><button class="fp-flag" type="button" aria-pressed="false" title="False positive — the scanner flagged this incorrectly">⚑</button></div>
 <div class="body">
 ${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
 <div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
@@ -357,14 +379,15 @@ function lensPanel(lensId, data, codes, opts) {
 
   const empty = showClean ? 'No pages scanned.' : 'No UX / layout issues found 🎉';
 
-  return `<section class="lens hide-dismissed" id="lens-${lensId}"${lensId === 'ux' ? ' hidden' : ''}>
+  return `<section class="lens hide-resolved hide-fp" id="lens-${lensId}"${lensId === 'ux' ? ' hidden' : ''}>
 <p class="meta lensmeta">${esc(label)} &middot; last scan ${esc(fmtDate(data.scannedAt))} &middot; ${data.summary.pages} page${data.summary.pages === 1 ? '' : 's'}</p>
 <div class="sum">
 <div class="err"><div class="n cErr">${a.errors}</div><div class="k">errors</div></div>
 <div class="warn"><div class="n cWarn">${a.warnings}</div><div class="k">warnings</div></div>
 <div class="notice"><div class="n cNotice">${a.notices}</div><div class="k">notices</div></div>
 <div><div class="n">${data.summary.pages}</div><div class="k">pages</div></div>
-<div><div class="n cDismissed">${a.dismissed}</div><div class="k">dismissed</div></div>
+<div><div class="n cDismissed">${a.resolved != null ? a.resolved : a.dismissed}</div><div class="k">resolved</div></div>
+<div><div class="n cFalsePos">${a.falsePositives || 0}</div><div class="k">false positives</div></div>
 <div class="spacer"></div>${sparkline(data.history)}
 </div>
 <div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}<span class="pill fixsum fixSummary"></span></div>
@@ -373,13 +396,15 @@ function lensPanel(lensId, data, codes, opts) {
 ${lensSwitch}<div class="row">
 <div class="seg" role="group" aria-label="View">
 <button class="btn active" data-view="page">By page</button>
+<button class="btn" data-view="sitewide">Site-wide</button>
 <button class="btn" data-view="issue">By issue type</button>
 </div>
 <button class="chip error on" data-sev="error">errors</button>
 <button class="chip warning on" data-sev="warning">warnings</button>
 <button class="chip notice on" data-sev="notice">notices</button>
 <input class="q" type="search" placeholder="Search issues…" aria-label="Search issues">
-<label class="ck"><input type="checkbox" class="showDismissed"> show dismissed</label>
+<label class="ck"><input type="checkbox" class="showResolved"> show resolved</label>
+<label class="ck"><input type="checkbox" class="showFp"> show false positives</label>
 <button class="btn exportBtn" title="Download the dismissed list to commit">Export dismissed</button>
 </div>
 </div>
@@ -389,6 +414,7 @@ ${sections || '<p class="muted">' + empty + '</p>'}
 </div>
 
 <div class="byIssue" hidden><div class="byIssueBody"></div></div>
+<div class="siteWide" hidden><div class="siteWideBody"></div></div>
 </section>`;
 }
 
@@ -423,9 +449,9 @@ function site(s) {
 
   const report = {
     a11y: { slug: s.slug, storageKey: 'a11y-dismiss-' + s.slug, dismissFile: 'dismissed.json',
-      baked: [...(s.dismissedSet || new Set())], codes: a11yCodes },
+      baked: [...(s.dismissedSet || new Set())], bakedReasons: s.reasonsByFp || {}, codes: a11yCodes },
     ux: hasUx ? { slug: s.slug, storageKey: 'ux-dismiss-' + s.slug, dismissFile: 'ux-dismissed.json',
-      baked: [...(s.ux.dismissedSet || new Set())], codes: uxCodes } : null,
+      baked: [...(s.ux.dismissedSet || new Set())], bakedReasons: s.ux.reasonsByFp || {}, codes: uxCodes } : null,
   };
 
   const body = `<div class="row">
@@ -461,6 +487,7 @@ const CLIENT_JS = `
   };
   function methodOf(m){ return MBADGE[m] || MBADGE.markup; }
   function lockedNow(){ return document.body.classList.contains('locked'); }
+  function sevRankJS(t){ return t==='error' ? 0 : t==='warning' ? 1 : 2; }
   function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
   function fallbackCopy(text){
@@ -482,6 +509,7 @@ const CLIENT_JS = `
   function initReport(root, cfg){
     var LS = cfg.storageKey;
     var baked = cfg.baked || [];
+    var bakedReasons = cfg.bakedReasons || {};
     var codes = cfg.codes || {};
     var bakedSet = {};
     baked.forEach(function(fp){ bakedSet[fp] = 1; });
@@ -489,8 +517,8 @@ const CLIENT_JS = `
     var searchTerm = '';
 
     function store(){
-      try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) return v; } catch(e){}
-      return {added:[], removed:[]};
+      try { var v = JSON.parse(localStorage.getItem(LS)); if (v && v.added && v.removed) { if (!v.reasons) v.reasons = {}; return v; } } catch(e){}
+      return {added:[], removed:[], reasons:{}};
     }
     function save(s){ try { localStorage.setItem(LS, JSON.stringify(s)); } catch(e){} }
     // Effective dismissed set = (committed baseline + locally added) - locally removed.
@@ -501,27 +529,61 @@ const CLIENT_JS = `
       s.removed.forEach(function(fp){ delete set[fp]; });
       return set;
     }
+    // Why an issue is dismissed: 'false-positive' (scanner wrong) else 'resolved'.
+    function reasonOf(fp, reasons){
+      if (reasons && reasons[fp]) return reasons[fp];
+      return bakedReasons[fp] || 'resolved';
+    }
+    // 'active' | 'resolved' | 'falsePositive' for one fp.
+    function statusOf(fp, eff, reasons){
+      eff = eff || effective();
+      if (!eff[fp]) return 'active';
+      return reasonOf(fp, reasons) === 'false-positive' ? 'falsePositive' : 'resolved';
+    }
+    // Read-modify-write the store once; fn mutates the {added,removed,reasons} maps.
+    function mutate(fn){
+      var s = store(), added = {}, removed = {}, reasons = {};
+      s.added.forEach(function(x){ added[x]=1; });
+      s.removed.forEach(function(x){ removed[x]=1; });
+      if (s.reasons) Object.keys(s.reasons).forEach(function(k){ reasons[k]=s.reasons[k]; });
+      fn(added, removed, reasons);
+      save({added:Object.keys(added), removed:Object.keys(removed), reasons:reasons});
+    }
+    // Move one fp to a status within an in-flight mutate(). Resolve and false-
+    // positive both dismiss; they differ only in the stored reason.
+    function setStatus(added, removed, reasons, fp, status){
+      if (status === 'active'){ if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; delete reasons[fp]; return; }
+      if (bakedSet[fp]) delete removed[fp]; else added[fp]=1;
+      if (status === 'falsePositive') reasons[fp]='false-positive'; else delete reasons[fp];
+    }
     function setText(cls,v){ var el=root.querySelector('.'+cls); if(el) el.textContent=v; }
 
     function applyState(){
-      var eff = effective();
+      var s = store(), eff = {};
+      baked.forEach(function(fp){ eff[fp]=1; });
+      s.added.forEach(function(fp){ eff[fp]=1; });
+      s.removed.forEach(function(fp){ delete eff[fp]; });
+      var reasons = s.reasons || {};
       lis.forEach(function(li){
-        var dz = !!eff[li.getAttribute('data-fp')];
+        var fp = li.getAttribute('data-fp');
+        var dz = !!eff[fp];
+        var isFp = dz && reasonOf(fp, reasons) === 'false-positive';
         li.classList.toggle('is-dismissed', dz);
-        var cb = li.querySelector('.dismiss');
-        if (cb) cb.checked = dz;
+        li.classList.toggle('is-fp', isFp);
+        var cb = li.querySelector('.dismiss'); if (cb) cb.checked = dz && !isFp;
+        var fl = li.querySelector('.fp-flag'); if (fl){ fl.setAttribute('aria-pressed', isFp?'true':'false'); fl.classList.toggle('on', isFp); }
       });
       recompute();
     }
 
     function recompute(){
-      var e=0,w=0,n=0,d=0;
+      var e=0,w=0,n=0,res=0,fp=0;
       lis.forEach(function(li){
-        if (li.classList.contains('is-dismissed')) { d++; return; }
+        if (li.classList.contains('is-dismissed')) { if (li.classList.contains('is-fp')) fp++; else res++; return; }
         var t = li.getAttribute('data-type');
         if (t==='error') e++; else if (t==='warning') w++; else n++;
       });
-      setText('cErr',e); setText('cWarn',w); setText('cNotice',n); setText('cDismissed',d);
+      setText('cErr',e); setText('cWarn',w); setText('cNotice',n); setText('cDismissed',res); setText('cFalsePos',fp);
 
       root.querySelectorAll('.grp').forEach(function(g){
         var act = g.querySelectorAll('.issue:not(.is-dismissed)').length;
@@ -536,6 +598,7 @@ const CLIENT_JS = `
         sec.classList.toggle('clean', act===0);
       });
       buildByIssue();
+      buildSiteWide();
       updateFixSummary();
     }
 
@@ -604,6 +667,99 @@ const CLIENT_JS = `
         + '</div>';
     }
 
+    // "Site-wide" view: the SAME issue on the SAME element across >= 2 distinct
+    // pages (one fix clears all). Grouped by data-gfp over the still-active
+    // occurrences, so a resolved/false-positive group leaves the list.
+    function buildSiteWide(){
+      var host = root.querySelector('.siteWideBody');
+      if (!host) return;
+      var locked = lockedNow();
+      var map = {};
+      lis.forEach(function(li){
+        if (li.classList.contains('is-dismissed')) return;
+        var gfp = li.getAttribute('data-gfp'); if (!gfp) return;
+        var sec = li.closest('.pg');
+        var page = sec ? sec.getAttribute('data-page') : '';
+        var rec = map[gfp] || (map[gfp] = {gfp:gfp, code:li.getAttribute('data-code'), type:li.getAttribute('data-type'), count:0, pages:{}, sample:li});
+        rec.count++; if (page) rec.pages[page] = 1;
+      });
+      var rows = Object.keys(map).map(function(k){ return map[k]; })
+        .filter(function(r){ return Object.keys(r.pages).length >= 2; });   // >= 2 DISTINCT pages
+      rows.forEach(function(r){ r.method = (codes[r.code]||{}).method || 'markup'; r.fixable = methodOf(r.method).fixable; });
+      if (locked) rows.sort(function(a,b){ return (a.fixable===b.fixable) ? (sevRankJS(a.type)-sevRankJS(b.type) || b.count-a.count) : (a.fixable?-1:1); });
+      else rows.sort(function(a,b){ return sevRankJS(a.type)-sevRankJS(b.type) || b.count-a.count; });
+
+      var html = '', fixHdr = false, needHdr = false;
+      rows.forEach(function(r){
+        if (locked){
+          if (r.fixable && !fixHdr){ html += '<div class="band band-fix">Fixable by you — CSS / JS</div>'; fixHdr = true; }
+          if (!r.fixable && !needHdr){ html += '<div class="band band-need">Needs template / CMS access</div>'; needHdr = true; }
+        }
+        html += siteWideCard(r, locked);
+      });
+      host.innerHTML = html || '<p class="muted">No issue repeats identically across multiple pages 🎉</p>';
+      if (searchTerm) filterCards(searchTerm);
+    }
+
+    function siteWideCard(r, locked){
+      var meta = codes[r.code] || {};
+      var title = meta.label || r.code;
+      var ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
+      var M = methodOf(r.method);
+      var tip = locked
+        ? (M.fixable
+            ? '<div class="tip"><b>How to fix ('+M.badge+'):</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>'
+            : '<div class="tip"><b>Needs '+M.label+' access:</b> '+escapeHtml(meta.lockedTip||meta.tip||'')+'</div>')
+        : (meta.tip ? '<div class="tip"><b>How to fix:</b> '+escapeHtml(meta.tip)+'</div>' : '');
+      var pages = Object.keys(r.pages);
+      var plinks = pages.map(function(p){
+        var label = p; try { label = new URL(p).pathname || p; } catch(e){}
+        return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
+      }).join(' ');
+      var elBody = r.sample.querySelector('.body');           // show the element preview ONCE
+      var preview = elBody ? elBody.innerHTML : '';
+      return '<div class="icard swcard '+r.type+'" data-code="'+escapeAttr(r.code)+'" data-gfp="'+escapeAttr(r.gfp)+'">'
+        + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
+        + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
+        + '<strong>'+escapeHtml(title)+'</strong>'
+        + '<span class="cnt">'+r.count+'\\u00d7 across '+pages.length+' pages</span>'
+        + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
+        + '<span class="ghspacer"></span>'
+        + '<button class="fp-flag" type="button" aria-pressed="false" title="Mark as a false positive on all '+pages.length+' pages">⚑</button>'
+        + '<button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
+        + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
+        + tip
+        + '<div class="sw-el">'+preview+'</div>'
+        + '<div class="pages"><span class="lbl">Found on '+pages.length+' pages:</span> '+plinks+'</div>'
+        + '<label class="ck sw-resolve"><input type="checkbox" class="sw-dismiss" data-gfp="'+escapeAttr(r.gfp)+'"> Resolve site-wide — dismiss all '+r.count+' occurrence'+(r.count===1?'':'s')+' on '+pages.length+' pages</label>'
+        + '</div>';
+    }
+
+    // Tag every occurrence whose gfp spans >= 2 pages with a "site-wide" badge,
+    // so the By-page view shows it's part of a one-fix-clears-all group. Run once.
+    function markSiteWideBadges(){
+      var pagesByGfp = {};
+      lis.forEach(function(li){
+        var gfp = li.getAttribute('data-gfp'); if (!gfp) return;
+        var sec = li.closest('.pg'); var page = sec ? sec.getAttribute('data-page') : '';
+        var set = pagesByGfp[gfp] || (pagesByGfp[gfp] = {}); if (page) set[page] = 1;
+      });
+      lis.forEach(function(li){
+        var gfp = li.getAttribute('data-gfp'); var set = gfp && pagesByGfp[gfp];
+        var n = set ? Object.keys(set).length : 0;
+        if (n < 2) return;
+        li.classList.add('is-sitewide');
+        var body = li.querySelector('.body');
+        if (body && !li.querySelector('.swbadge')){
+          var b = document.createElement('span');
+          b.className = 'swbadge';
+          b.title = 'This exact issue appears on ' + n + ' pages — fixing it once (template/CSS) clears them all';
+          b.textContent = '🌐 site-wide · also on ' + (n-1) + ' other page' + ((n-1)===1?'':'s');
+          body.insertBefore(b, body.firstChild);
+        }
+      });
+    }
+
     function updateFixSummary(){
       var el = root.querySelector('.fixSummary');
       if (!el) return;
@@ -633,10 +789,26 @@ const CLIENT_JS = `
       return out.join('\\n');
     }
 
-    // Delegated clicks within this lens: copy, copy-selector, dismiss-all.
+    // Delegated clicks within this lens: false-positive flag, copy, copy-selector,
+    // dismiss-all. The flag and site-wide controls all route through setStatus().
     root.addEventListener('click', function(ev){
       var t = ev.target;
       if (!t || !t.closest) return;
+      var fl = t.closest('.fp-flag');
+      if (fl){
+        var sw = fl.closest('.swcard');
+        if (sw){
+          var gfp = sw.getAttribute('data-gfp');
+          var members = lis.filter(function(li){ return li.getAttribute('data-gfp')===gfp; });
+          var turnOn = members.some(function(li){ return statusOf(li.getAttribute('data-fp'))!=='falsePositive'; });
+          mutate(function(a,r,re){ members.forEach(function(li){ setStatus(a,r,re,li.getAttribute('data-fp'), turnOn?'falsePositive':'active'); }); });
+        } else {
+          var li2 = fl.closest('.issue');
+          if (li2){ var fp2 = li2.getAttribute('data-fp'); var on = statusOf(fp2)==='falsePositive';
+            mutate(function(a,r,re){ setStatus(a,r,re,fp2, on?'active':'falsePositive'); }); }
+        }
+        applyState(); return;
+      }
       var cp = t.closest('.copy');
       if (cp){ var h = cp.closest('[data-code]'); doCopy(copyText(h ? h.getAttribute('data-code') : ''), cp); return; }
       var cs = t.closest('.copy-sel');
@@ -647,32 +819,30 @@ const CLIENT_JS = `
         var items = Array.prototype.slice.call(grp.querySelectorAll('.issue'));
         var eff = effective();
         var allOff = items.every(function(li){ return eff[li.getAttribute('data-fp')]; });
-        var s = store(), added = {}, removed = {};
-        s.added.forEach(function(x){ added[x]=1; }); s.removed.forEach(function(x){ removed[x]=1; });
-        items.forEach(function(li){
-          var fp = li.getAttribute('data-fp');
-          if (allOff){ if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
-          else { if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
-        });
-        save({added:Object.keys(added), removed:Object.keys(removed)});
+        mutate(function(a,r,re){ items.forEach(function(li){ setStatus(a,r,re,li.getAttribute('data-fp'), allOff?'active':'resolved'); }); });
         applyState();
       }
     });
 
-    // Per-occurrence dismiss checkbox.
-    lis.forEach(function(li){
-      var cb = li.querySelector('.dismiss');
-      if (!cb) return;
-      cb.addEventListener('change', function(){
+    // Delegated change within this lens: per-occurrence resolve, site-wide resolve,
+    // and the resolved / false-positive visibility filters.
+    root.addEventListener('change', function(ev){
+      var t = ev.target;
+      if (!t || !t.classList) return;
+      if (t.classList.contains('dismiss')){
+        var li = t.closest('.issue'); if (!li) return;
         var fp = li.getAttribute('data-fp');
-        var s = store(), added = {}, removed = {};
-        s.added.forEach(function(x){ added[x]=1; });
-        s.removed.forEach(function(x){ removed[x]=1; });
-        if (cb.checked){ if (bakedSet[fp]) delete removed[fp]; else added[fp]=1; }
-        else { if (bakedSet[fp]) removed[fp]=1; else delete added[fp]; }
-        save({added:Object.keys(added), removed:Object.keys(removed)});
-        applyState();
-      });
+        mutate(function(a,r,re){ setStatus(a,r,re,fp, t.checked?'resolved':'active'); });
+        applyState(); return;
+      }
+      if (t.classList.contains('sw-dismiss')){
+        var gfp = t.getAttribute('data-gfp');
+        var members = lis.filter(function(li){ return li.getAttribute('data-gfp')===gfp; });
+        mutate(function(a,r,re){ members.forEach(function(li){ setStatus(a,r,re,li.getAttribute('data-fp'), t.checked?'resolved':'active'); }); });
+        applyState(); return;
+      }
+      if (t.classList.contains('showResolved')){ root.classList.toggle('hide-resolved', !t.checked); return; }
+      if (t.classList.contains('showFp')){ root.classList.toggle('hide-fp', !t.checked); return; }
     });
 
     root.querySelectorAll('[data-view]').forEach(function(btn){
@@ -681,6 +851,7 @@ const CLIENT_JS = `
         root.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b===btn); });
         root.querySelector('.byPage').hidden = (v!=='page');
         root.querySelector('.byIssue').hidden = (v!=='issue');
+        root.querySelector('.siteWide').hidden = (v!=='sitewide');
       });
     });
 
@@ -700,15 +871,10 @@ const CLIENT_JS = `
       filterCards(searchTerm);
     });
 
-    var sd = root.querySelector('.showDismissed');
-    if (sd) sd.addEventListener('change', function(){
-      root.classList.toggle('hide-dismissed', !sd.checked);
-    });
-
     var ex = root.querySelector('.exportBtn');
     if (ex) ex.addEventListener('click', function(){
-      var eff = effective(), obj = {}, today = new Date().toISOString().slice(0,10);
-      Object.keys(eff).forEach(function(fp){ obj[fp] = {date: today}; });
+      var eff = effective(), reasons = store().reasons || {}, obj = {}, today = new Date().toISOString().slice(0,10);
+      Object.keys(eff).forEach(function(fp){ obj[fp] = {date: today, reason: reasonOf(fp, reasons)}; });
       var blob = new Blob([JSON.stringify(obj, null, 2) + '\\n'], {type:'application/json'});
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -717,6 +883,7 @@ const CLIENT_JS = `
       setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
     });
 
+    markSiteWideBadges();
     applyState();
     return { recompute: recompute };
   }

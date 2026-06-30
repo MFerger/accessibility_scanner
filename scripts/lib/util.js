@@ -42,6 +42,17 @@ function fingerprint(pageUrl, code, context, selector) {
   return hash(pageUrl + '|' + code + '|' + basis);
 }
 
+// URL-independent fingerprint: the identity of one issue (code) on one element
+// (context, else selector) REGARDLESS of which page it sits on. It's fingerprint()
+// minus the pageUrl prefix. Occurrences that share this across >= 2 distinct pages
+// are one "site-wide" issue — the same rule on the same element (a shared header/
+// footer/skip-link), so one fix clears them all. The same rule on a DIFFERENT
+// element has different context, so it gets a different key and stays separate.
+function globalFingerprint(code, context, selector) {
+  const basis = normalizeContext(context) || String(selector || '');
+  return hash(code + '|' + basis);
+}
+
 // Stable id for one UX/layout issue occurrence. Same as fingerprint() but with
 // the viewport folded into the basis, so a width-specific bug (e.g. overflow at
 // mobile vs desktop) produces a distinct fingerprint per viewport. Document-level
@@ -73,4 +84,4 @@ function hostname(input) {
   } catch (e) { return String(input || ''); }
 }
 
-module.exports = { hash, normalizeContext, truncate, fingerprint, uxFingerprint, slugify, hostname };
+module.exports = { hash, normalizeContext, truncate, fingerprint, globalFingerprint, uxFingerprint, slugify, hostname };
