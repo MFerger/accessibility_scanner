@@ -52,7 +52,22 @@ jobs:
         run: node scripts/discover-urls.js
 
       - name: Run accessibility scan
-        run: pa11y-ci --config run-config.json --json > results.json || true
+        # Use the npm script so node_modules/.bin is on PATH (a bare "pa11y-ci"
+        # is not found in CI). pa11y-ci exits non-zero when it finds issues,
+        # which is normal, so the script swallows that — we validate the output
+        # in the next step instead.
+        run: npm run scan
+
+      - name: Check the scan produced results
+        run: |
+          if ! node -e 'JSON.parse(require("fs").readFileSync("results.json","utf8"))' 2>/dev/null; then
+            echo "::error::Scan produced no valid results.json — pa11y-ci failed to run (often a Chromium launch issue on the runner)."
+            echo "----- results.json (first 400 bytes) -----"
+            head -c 400 results.json || true
+            echo
+            exit 1
+          fi
+          echo "results.json is valid."
 
       - name: Normalize results into committed data
         env:
