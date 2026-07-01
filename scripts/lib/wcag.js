@@ -64,6 +64,9 @@ const WCAG = {
   '1.4.5': { name: 'Images of Text', slug: 'images-of-text',
     tip: 'Use real text instead of pictures of text wherever possible.',
     why: 'Text baked into an image cannot be resized, recolored, or read aloud by a screen reader. Real text adapts to each person\'s needs.' },
+  '1.4.6': { name: 'Contrast (Enhanced)', slug: 'contrast-enhanced',
+    tip: 'Use at least 7:1 contrast for normal text and 4.5:1 for large or bold text.',
+    why: 'This is the stricter AAA contrast level. Meeting it makes text comfortably readable for people with more significant low vision, who cannot read text that only just meets the minimum ratio.' },
   '1.4.10': { name: 'Reflow', slug: 'reflow',
     tip: 'Use responsive layouts so content reflows into one column at 320 CSS px wide.',
     why: 'People who zoom in to read should not have to scroll sideways for every line. Content should reflow into a single column.' },
@@ -373,4 +376,4 @@ function describe(issue) {
   return { sc, url, tip, impact };
 }
 
-module.exports = { describe, why, forSC, fix, cleanMessage, scFromCode, understandingUrl };
+module.exports = { describe, why, forSC, fix, cleanMessage, scFromCode, understandingUrl, WCAG, AXE_SC, FIX, CODE_FIX };

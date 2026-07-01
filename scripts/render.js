@@ -24,6 +24,15 @@ const jsonScript = (obj) => JSON.stringify(obj)
 const fmtDate = (iso) => String(iso || '').slice(0, 10) || '—';
 const sevRank = (t) => (t === 'error' ? 0 : t === 'warning' ? 1 : 2);
 
+// Worst axe impact across a set of issues (critical > serious > moderate >
+// minor); '' when none are rated (htmlcs / UX findings carry no impact).
+const impRankN = (v) => (v === 'critical' ? 0 : v === 'serious' ? 1 : v === 'moderate' ? 2 : v === 'minor' ? 3 : 9);
+function worstImpact(items) {
+  let best = '';
+  for (const it of items) if (it.impact && (!best || impRankN(it.impact) < impRankN(best))) best = it.impact;
+  return best;
+}
+
 // Fix-method display: badge text, "fixable by you" bucket, access label.
 const METHOD = {
   css: { badge: 'CSS', fixable: true, label: 'CSS' },
@@ -83,6 +92,9 @@ h1{margin:0 0 4px;font-size:24px}
 .chip.error.on{border-color:var(--err);color:var(--err)}
 .chip.warning.on{border-color:var(--warn);color:var(--warn)}
 .chip.notice.on{border-color:var(--notice);color:var(--notice)}
+.chip.impact.on{border-color:var(--muted);color:var(--fg)}
+.chip.newchip{text-transform:none}
+.chip.newchip.on{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,.10)}
 .q{border:1px solid var(--border);background:var(--card);color:var(--fg);border-radius:7px;padding:6px 10px;min-width:170px;flex:1 1 170px}
 .ck{display:inline-flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer;font-size:13px}
 .lensrow{margin:0 0 8px}
@@ -121,6 +133,8 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
 .issue .body{min-width:0;flex:1}
 .imp{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);
   border:1px solid var(--border);border-radius:4px;padding:0 5px;margin:0 0 4px}
+.newtag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.03em;color:var(--accent);
+  background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.35);border-radius:4px;padding:0 5px;margin:0 6px 4px 0}
 .sel{display:flex;gap:8px;align-items:flex-start}
 .sel code{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;word-break:break-all;
   background:var(--chip);border-radius:5px;padding:4px 7px}
@@ -193,6 +207,14 @@ body:not(.locked) .fixSummary{display:none}
 .lens.hide-error .grp.error,.lens.hide-warning .grp.warning,.lens.hide-notice .grp.notice{display:none}
 .lens.hide-error .byIssue .icard.error,.lens.hide-warning .byIssue .icard.warning,.lens.hide-notice .byIssue .icard.notice{display:none}
 .lens.hide-error .siteWide .icard.error,.lens.hide-warning .siteWide .icard.warning,.lens.hide-notice .siteWide .icard.notice{display:none}
+/* impact filter (axe critical/serious/moderate/minor) — group-level, like the
+   severity filter; unrated (empty-impact) groups are never hidden by these */
+.lens.hide-impact-critical .grp[data-impact="critical"],.lens.hide-impact-serious .grp[data-impact="serious"],.lens.hide-impact-moderate .grp[data-impact="moderate"],.lens.hide-impact-minor .grp[data-impact="minor"]{display:none}
+.lens.hide-impact-critical .byIssue .icard[data-impact="critical"],.lens.hide-impact-serious .byIssue .icard[data-impact="serious"],.lens.hide-impact-moderate .byIssue .icard[data-impact="moderate"],.lens.hide-impact-minor .byIssue .icard[data-impact="minor"]{display:none}
+.lens.hide-impact-critical .siteWide .icard[data-impact="critical"],.lens.hide-impact-serious .siteWide .icard[data-impact="serious"],.lens.hide-impact-moderate .siteWide .icard[data-impact="moderate"],.lens.hide-impact-minor .siteWide .icard[data-impact="minor"]{display:none}
+/* "new only" — show just issues first seen in the latest scan */
+.lens.only-new .grp:not([data-new]){display:none}
+.lens.only-new .byIssue .icard:not(.is-new),.lens.only-new .siteWide .icard:not(.is-new){display:none}
 /* resolved (dismissed, not a false positive) and false positives hide independently */
 .lens.hide-resolved .issue.is-dismissed:not(.is-fp){display:none}
 .lens.hide-fp .issue.is-fp{display:none}
@@ -286,10 +308,14 @@ function occurrence(it) {
   // gfp, so the client can group it as a single "site-wide" issue. Fold the UX
   // viewport in (when present) so width-specific bugs stay distinct per viewport.
   const gfp = globalFingerprint((it.viewport && it.viewport !== 'all' ? it.viewport + '|' : '') + it.code, it.context, it.selector);
-  return `<li class="issue ${esc(it.type)}" data-fp="${esc(it.fp)}" data-gfp="${esc(gfp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}">
+  // "New this scan" is stamped at ingest time (fp absent from the prior scan);
+  // false on a first scan. See ingest-results.js — a date compare can't tell a
+  // same-day re-scan apart, the fp diff can.
+  const isNew = !!it.isNew;
+  return `<li class="issue ${esc(it.type)}${isNew ? ' is-new' : ''}" data-fp="${esc(it.fp)}" data-gfp="${esc(gfp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}"${isNew ? ' data-new="1"' : ''}>
 <div class="dz"><label title="Mark resolved — you fixed it (or will)"><input type="checkbox" class="dismiss" aria-label="Mark this occurrence resolved"></label><button class="fp-flag" type="button" aria-pressed="false" title="False positive — the scanner flagged this incorrectly">⚑</button></div>
 <div class="body">
-${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
+${isNew ? '<span class="newtag" title="First seen in the latest scan">NEW</span>' : ''}${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
 <div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
 ${it.context ? '<pre><code>' + esc(it.context) + '</code></pre>' : ''}
 </div></li>`;
@@ -301,10 +327,14 @@ function group(g, codes) {
   const ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
   const M = methodOf(meta.method);
   const occ = g.items.map(occurrence).join('\n');
+  const anyNew = g.items.some((i) => i.isNew);
+  // Worst axe impact across the group's occurrences, so an impact filter can
+  // hide the whole issue card (matching the severity filter's group-level hide).
+  const impact = worstImpact(g.items);
   const lockedBody = M.fixable
     ? '<b>How to fix (' + M.badge + '):</b> ' + esc(meta.lockedTip || meta.tip || '')
     : '<b>Needs ' + M.label + ' access:</b> ' + esc(meta.lockedTip || meta.tip || '');
-  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}" data-method="${esc(meta.method || 'markup')}" data-fixable="${M.fixable ? 1 : 0}">
+  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}" data-method="${esc(meta.method || 'markup')}" data-fixable="${M.fixable ? 1 : 0}"${anyNew ? ' data-new="1"' : ''}${impact ? ' data-impact="' + esc(impact) + '"' : ''}>
 <div class="grp-head">
 <span class="t ${esc(g.type)}">${esc(g.type)}</span>
 <span class="mtag ${esc(meta.method || 'markup')}">${M.badge}</span>
@@ -377,6 +407,19 @@ function lensPanel(lensId, data, codes, opts) {
 <button class="btn${lensId === 'ux' ? ' active' : ''}" data-lens-to="ux">UX &amp; Layout</button>
 </div></div>` : '';
 
+  // Impact chips only make sense on the a11y lens — axe assigns an impact,
+  // htmlcs and the UX checks do not. Default "on" (showing); toggling one off
+  // hides issues rated at that level (unrated issues are never hidden).
+  const impactChips = lensId === 'a11y'
+    ? ['critical', 'serious', 'moderate', 'minor'].map((lvl) =>
+        `<button class="chip impact on" data-impact-filter="${lvl}" title="Hide/show axe issues rated ${lvl} (unrated issues always show)">${lvl}</button>`).join('')
+    : '';
+  // "New only" chip appears when this scan introduced new issues (never on a
+  // first scan). It's an off-by-default toggle, unlike the always-on sev chips.
+  const newChip = (!data.firstScan && data.summary.new)
+    ? '<button class="chip newchip" data-newonly title="Show only issues first seen in the latest scan">⊕ new only</button>'
+    : '';
+
   const empty = showClean ? 'No pages scanned.' : 'No UX / layout issues found 🎉';
 
   return `<section class="lens hide-resolved hide-fp" id="lens-${lensId}"${lensId === 'ux' ? ' hidden' : ''}>
@@ -402,6 +445,7 @@ ${lensSwitch}<div class="row">
 <button class="chip error on" data-sev="error">errors</button>
 <button class="chip warning on" data-sev="warning">warnings</button>
 <button class="chip notice on" data-sev="notice">notices</button>
+${impactChips}${newChip}
 <input class="q" type="search" placeholder="Search issues…" aria-label="Search issues">
 <label class="ck"><input type="checkbox" class="showResolved"> show resolved</label>
 <label class="ck"><input type="checkbox" class="showFp"> show false positives</label>
@@ -488,6 +532,7 @@ const CLIENT_JS = `
   function methodOf(m){ return MBADGE[m] || MBADGE.markup; }
   function lockedNow(){ return document.body.classList.contains('locked'); }
   function sevRankJS(t){ return t==='error' ? 0 : t==='warning' ? 1 : 2; }
+  function impRank(v){ return v==='critical' ? 0 : v==='serious' ? 1 : v==='moderate' ? 2 : v==='minor' ? 3 : 9; }
   function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
   function fallbackCopy(text){
@@ -612,8 +657,11 @@ const CLIENT_JS = `
         var code = li.getAttribute('data-code');
         var sec = li.closest('.pg');
         var page = sec ? sec.getAttribute('data-page') : '';
-        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}});
+        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}, impact:'', neu:false});
         rec.count++; if (page) rec.pages[page] = 1;
+        var imp = li.getAttribute('data-impact') || '';
+        if (imp && (!rec.impact || impRank(imp) < impRank(rec.impact))) rec.impact = imp;   // keep the worst
+        if (li.getAttribute('data-new')) rec.neu = true;
       });
       var rows = Object.keys(map).map(function(code){
         var r = map[code]; r.code = code;
@@ -654,9 +702,10 @@ const CLIENT_JS = `
         var label = p; try { label = new URL(p).pathname || p; } catch(e){}
         return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
       }).join(' ');
-      return '<div class="icard '+r.type+'" data-code="'+escapeAttr(r.code)+'">'
+      return '<div class="icard '+r.type+(r.neu?' is-new':'')+'"'+(r.impact?' data-impact="'+escapeAttr(r.impact)+'"':'')+' data-code="'+escapeAttr(r.code)+'">'
         + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
         + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
+        + (r.neu?'<span class="newtag" title="First seen in the latest scan">NEW</span>':'')
         + '<strong>'+escapeHtml(title)+'</strong>'
         + '<span class="cnt">'+r.count+'\\u00d7</span>'
         + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
@@ -680,8 +729,11 @@ const CLIENT_JS = `
         var gfp = li.getAttribute('data-gfp'); if (!gfp) return;
         var sec = li.closest('.pg');
         var page = sec ? sec.getAttribute('data-page') : '';
-        var rec = map[gfp] || (map[gfp] = {gfp:gfp, code:li.getAttribute('data-code'), type:li.getAttribute('data-type'), count:0, pages:{}, sample:li});
+        var rec = map[gfp] || (map[gfp] = {gfp:gfp, code:li.getAttribute('data-code'), type:li.getAttribute('data-type'), count:0, pages:{}, sample:li, impact:'', neu:false});
         rec.count++; if (page) rec.pages[page] = 1;
+        var imp = li.getAttribute('data-impact') || '';
+        if (imp && (!rec.impact || impRank(imp) < impRank(rec.impact))) rec.impact = imp;
+        if (li.getAttribute('data-new')) rec.neu = true;
       });
       var rows = Object.keys(map).map(function(k){ return map[k]; })
         .filter(function(r){ return Object.keys(r.pages).length >= 2; });   // >= 2 DISTINCT pages
@@ -718,9 +770,10 @@ const CLIENT_JS = `
       }).join(' ');
       var elBody = r.sample.querySelector('.body');           // show the element preview ONCE
       var preview = elBody ? elBody.innerHTML : '';
-      return '<div class="icard swcard '+r.type+'" data-code="'+escapeAttr(r.code)+'" data-gfp="'+escapeAttr(r.gfp)+'">'
+      return '<div class="icard swcard '+r.type+(r.neu?' is-new':'')+'"'+(r.impact?' data-impact="'+escapeAttr(r.impact)+'"':'')+' data-code="'+escapeAttr(r.code)+'" data-gfp="'+escapeAttr(r.gfp)+'">'
         + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
         + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
+        + (r.neu?'<span class="newtag" title="First seen in the latest scan">NEW</span>':'')
         + '<strong>'+escapeHtml(title)+'</strong>'
         + '<span class="cnt">'+r.count+'\\u00d7 across '+pages.length+' pages</span>'
         + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
@@ -860,6 +913,19 @@ const CLIENT_JS = `
         btn.classList.toggle('on');
         root.classList.toggle('hide-' + btn.getAttribute('data-sev'), !btn.classList.contains('on'));
       });
+    });
+
+    root.querySelectorAll('[data-impact-filter]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        btn.classList.toggle('on');
+        root.classList.toggle('hide-impact-' + btn.getAttribute('data-impact-filter'), !btn.classList.contains('on'));
+      });
+    });
+
+    var newBtn = root.querySelector('[data-newonly]');
+    if (newBtn) newBtn.addEventListener('click', function(){
+      newBtn.classList.toggle('on');
+      root.classList.toggle('only-new', newBtn.classList.contains('on'));
     });
 
     var q = root.querySelector('.q');

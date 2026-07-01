@@ -14,6 +14,11 @@ on:
         description: "Sitemap types to include (comma-separated). Add a custom post type here for the rare site that needs it."
         required: false
         default: "post,page"
+      single:
+        description: "Single-page mode: scan only the exact URL above (skip sitemap discovery). Refreshes just that page in the site's existing report."
+        required: false
+        type: boolean
+        default: false
       ux:
         description: "Also run the UX / layout scan (rendering + mobile-friendliness bugs)."
         required: false
@@ -54,6 +59,7 @@ jobs:
         env:
           SCAN_URL: ${{ inputs.url }}
           SITEMAP_TYPES: ${{ inputs.types }}
+          SINGLE: ${{ inputs.single }}
         run: node scripts/discover-urls.js
 
       - name: Run accessibility scan

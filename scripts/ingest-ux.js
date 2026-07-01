@@ -130,6 +130,8 @@ for (const url of pageUrls) {
       selector: i.selector || '',
       context: ctx,
       firstSeen: priorFirstSeen.get(fp) || RUN_DATE,
+      // Introduced by THIS scan (see ingest-results.js for why fp diff, not date).
+      isNew: priorExisted && !priorFps.has(fp),
     });
   }
   pages[url] = out;

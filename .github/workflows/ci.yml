@@ -1,0 +1,25 @@
+name: CI
+
+# Fast, browser-free checks on every push and pull request. Guards the pure
+# logic (fingerprint grouping, WCAG lookup tables) that the report depends on.
+# The heavier browser tests (test:ux, test:sitewide) need Chromium + python3 and
+# are run on demand, not here.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm test

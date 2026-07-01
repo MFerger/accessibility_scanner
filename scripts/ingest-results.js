@@ -116,6 +116,10 @@ for (const url of pageUrls) {
       context: truncate(normalizeContext(i.context), CONTEXT_MAX),
       impact: (i.runnerExtras && i.runnerExtras.impact) || null,
       firstSeen: priorFirstSeen.get(fp) || RUN_DATE,
+      // Introduced by THIS scan (absent from the prior scan). This is the
+      // reliable "new" signal — firstSeen is a date and can't distinguish a
+      // same-day re-scan, but the fp diff always can. False on a first scan.
+      isNew: priorExisted && !priorFps.has(fp),
     };
   });
 }
