@@ -65,6 +65,12 @@ const ISSUES = {
   noElement: issue({ code: 'no-element', type: 'notice', selector: '', context: '' }),
 };
 
+// A page that cannot be reached at all, to prove a page failure is retried and
+// then given up on gracefully rather than taking the run down with it.
+const DEAD_PAGE = 'http://127.0.0.1:8199/unreachable.html';
+const DEAD_ISSUE = issue({ code: 'dead-page', type: 'notice', selector: '#nope',
+  context: '<div id="nope">Nope</div>' });
+
 // UX findings are viewport-scoped: this one must be shot at 375px, not 1280.
 const UX_ISSUE = issue({ code: 'tapTargets', type: 'warning', viewport: 'mobile',
   selector: '#target', context: '<button id="target" type="button">Target</button>' });
@@ -121,7 +127,10 @@ function check(ok, label, detail) {
   fs.writeFileSync(path.join(SITE, 'latest.json'), JSON.stringify({
     slug: SLUG, name: '127.0.0.1', url: BASE, scannedAt: new Date().toISOString(), firstScan: true,
     summary: { errors: 5, warnings: 0, notices: 0, total: 5, scanErrors: 0, pages: 1, new: 0, resolved: 0 },
-    codes: {}, pages: { [PAGE]: Object.keys(ISSUES).map((k) => ISSUES[k]) },
+    codes: {}, pages: {
+      [PAGE]: Object.keys(ISSUES).map((k) => ISSUES[k]),
+      [DEAD_PAGE]: [DEAD_ISSUE],
+    },
   }));
   fs.writeFileSync(path.join(SITE, 'ux-latest.json'), JSON.stringify({
     slug: SLUG, name: '127.0.0.1', url: BASE, scannedAt: new Date().toISOString(), firstScan: true,
@@ -135,18 +144,32 @@ function check(ok, label, detail) {
   try {
     await waitForServer(8000);
 
-    execFileSync('node', ['scripts/shoot.js'], {
-      cwd: ROOT, stdio: 'inherit',
-      env: Object.assign({}, process.env, { DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG }),
+    const firstRun = execFileSync('node', ['scripts/shoot.js'], {
+      cwd: ROOT, encoding: 'utf8',
+      env: Object.assign({}, process.env, {
+        DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG, SHOT_RETRY_DELAY_MS: '100',
+      }),
     });
+    process.stdout.write(firstRun);
 
     console.log('\n=== Screenshot assertions ===');
+
+    // A page that fails is retried before being given up on — sites go briefly
+    // busy, and one blip should not cost that page its pictures.
+    const retries = (firstRun.match(/retrying in/g) || []).length;
+    check(retries === 2, 'an unreachable page is retried (SHOT_RETRIES=2)', 'saw ' + retries + ' retries');
+    check(/unreachable\.html/.test(firstRun), 'the failing page is named in the log');
     const manifest = JSON.parse(fs.readFileSync(path.join(SITE, 'shots.json'), 'utf8'));
     const shotsDir = path.join(SITE, 'shots');
     const keyOf = (i) => shotKey(i);
 
     check(manifest.captured === 3, 'captured 3 shots (2 a11y + 1 ux)',
       'captured=' + manifest.captured + ' missed=' + manifest.missed);
+    check(manifest.pageErrors === 1 && manifest.skipped === 1,
+      'the dead page is counted as a page error, its element as skipped — not as a missing element',
+      'pageErrors=' + manifest.pageErrors + ' skipped=' + manifest.skipped);
+    check(manifest.missed === 2,
+      'missed counts elements once, not once per attempt', 'missed=' + manifest.missed);
     check(Object.keys(manifest.a11y).length === 2 && Object.keys(manifest.ux).length === 1,
       'shots are filed under the lens they came from',
       'a11y=' + Object.keys(manifest.a11y).length + ' ux=' + Object.keys(manifest.ux).length);

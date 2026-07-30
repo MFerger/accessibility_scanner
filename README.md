@@ -131,6 +131,12 @@ The pass is bounded so pictures can never hold up a scan: it stops after
 `shot_budget_min` (default **6 minutes**), keeps everything it captured, and
 lets the report deploy. A typical 30-page site finishes in well under a minute.
 
+A page that fails to load, or that stops answering part-way through, gets
+**2 more attempts** on a fresh tab (3s then 6s apart) before it is given up on —
+a site being briefly busy shouldn't cost it its pictures. A retry only picks up
+the elements still missing, never re-shooting one already taken. Tune with
+`SHOT_RETRIES` / `SHOT_RETRY_DELAY_MS`.
+
 Because a re-run reuses what is already on disk, **running the scan again picks
 up exactly where the last one left off** — it spends the whole budget on the
 pictures that are still missing. So a big site can be filled in over two runs,

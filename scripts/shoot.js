@@ -31,6 +31,9 @@
  *                   pa11y's default — so the crop matches what pa11y saw)
  *   SHOT_BUDGET_MIN wall-clock budget for the whole pass, in minutes  (default: 6)
  *   SHOT_BUDGET_MS  same budget in milliseconds (SHOT_BUDGET_MIN wins if both set)
+ *   SHOT_RETRIES    extra attempts for a page that stalls or fails  (default: 2)
+ *   SHOT_RETRY_DELAY_MS  backoff before the first retry, doubled for the second
+ *                                                              (default: 3000)
  *   UX_HTTP_USER / UX_HTTP_PASS   HTTP basic auth for staging behind a password
  *
  * Pictures are a bonus, never a reason a scan stalls. A healthy site shoots a
@@ -63,9 +66,11 @@ const MIN_W = 160, MIN_H = 90;            // a 1x1 tap target still gets a usabl
 const BUDGET_MS = process.env.SHOT_BUDGET_MIN
   ? Math.max(0, Math.round(parseFloat(process.env.SHOT_BUDGET_MIN) * 60000) || 0)
   : Math.max(0, parseInt(process.env.SHOT_BUDGET_MS || '360000', 10) || 0);
-const ELEMENT_MS = 8000;                  // one element may never take longer than this
+const ELEMENT_MS = Math.max(100, parseInt(process.env.SHOT_ELEMENT_MS || '8000', 10) || 8000);
 const PAGE_MS = 45000;                    // ...nor one page's whole element loop
 const DEAD_PAGE_STRIKES = 3;              // consecutive timeouts => the page is wedged
+const RETRIES = Math.max(0, parseInt(process.env.SHOT_RETRIES || '2', 10) || 0);
+const RETRY_DELAY_MS = Math.max(0, parseInt(process.env.SHOT_RETRY_DELAY_MS || '3000', 10) || 0);
 
 if (!INPUT) {
   console.error('No URL given. Set SCAN_URL or pass a URL argument.');
@@ -300,10 +305,21 @@ function withTimeout(promise, ms, what) {
 
 const startedAt = Date.now();
 const overBudget = () => BUDGET_MS > 0 && (Date.now() - startedAt) > BUDGET_MS;
-let captured = 0, missed = 0, pageErrors = 0, skipped = 0;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Per KEY, not per attempt, so a retry can't double-count anything.
+const attempted = new Set();
+let captured = 0, pageErrors = 0;
 
-async function shootGroup(browser, g) {
-  let page, got = 0, strikes = 0, done = 0;
+// Returns { ok } — ok:false means the PAGE let us down (navigation failed, or
+// it stopped answering mid-way), which is worth another try. Running out of a
+// budget is not: retrying would just spend the same time again.
+async function shootGroup(browser, g, attempt) {
+  // A retry only picks up what is still missing — anything already captured on
+  // an earlier attempt stays captured.
+  const items = g.items.filter((t) => !shots[t.lens][t.key]);
+  if (!items.length) return { ok: true };
+
+  let page, got = 0, strikes = 0;
   const t0 = Date.now();
   let loadMs = 0;
   try {
@@ -322,15 +338,15 @@ async function shootGroup(browser, g) {
     loadMs = Date.now() - t0;
 
     const tEls = Date.now();
-    for (const t of g.items) {
+    for (const t of items) {
       if (overBudget() || strikes >= DEAD_PAGE_STRIKES || (Date.now() - tEls) > PAGE_MS) break;
-      done++;
+      attempted.add(t.lens + '|' + t.key);
       try {
         const clip = await withTimeout(page.evaluate(locate, {
           selector: t.selector, context: t.context,
           pad: PAD, maxW: MAX_W, maxH: MAX_H, minW: MIN_W, minH: MIN_H,
         }), ELEMENT_MS, 'locate');
-        if (!clip) { missed++; strikes = 0; continue; }   // element gone, hidden, or off-canvas
+        if (!clip) { strikes = 0; continue; }             // element gone, hidden, or off-canvas
         const file = t.lens + '-' + t.key + '.webp';
         const buf = await withTimeout(page.screenshot({
           type: 'webp', quality: QUALITY, captureBeyondViewport: true,
@@ -341,24 +357,43 @@ async function shootGroup(browser, g) {
         captured++; got++;
         strikes = 0;                             // only a WHOLE target clears the strikes
       } catch (e) {
-        missed++;
         if (/timed out/.test(String(e && e.message))) strikes++;
       }
     }
     const elMs = Date.now() - tEls;
-    skipped += g.items.length - done;
-    console.log('  ' + g.url + ' (' + g.width + 'px) — ' + got + '/' + g.items.length +
+    const stalled = strikes >= DEAD_PAGE_STRIKES;
+    console.log('  ' + g.url + ' (' + g.width + 'px) — ' + got + '/' + items.length +
+      (attempt ? ' | retry ' + attempt : '') +
       ' | load ' + (loadMs / 1000).toFixed(1) + 's + elements ' + (elMs / 1000).toFixed(1) + 's' +
-      (strikes >= DEAD_PAGE_STRIKES ? '  [page stopped responding, abandoned]' : '') +
+      (stalled ? '  [page stopped responding]' : '') +
       (elMs > PAGE_MS ? '  [page budget spent]' : '') +
       (overBudget() ? '  [budget spent]' : ''));
+    return { ok: !stalled };
   } catch (e) {
-    pageErrors++;
-    skipped += g.items.length - done;
-    console.log('  ! ' + g.url + ' (' + g.width + 'px): ' + String((e && e.message) || e));
+    console.log('  ! ' + g.url + ' (' + g.width + 'px)' + (attempt ? ' [retry ' + attempt + ']' : '') +
+      ': ' + String((e && e.message) || e));
+    return { ok: false };
   } finally {
     if (page) await page.close().catch(() => {});
   }
+}
+
+// A page that stalls or fails to load gets another go on a fresh tab after a
+// short backoff — a site being briefly busy shouldn't cost it its pictures.
+// Retries stop at the global budget, and never redo an element already taken.
+async function shootGroupWithRetries(browser, g) {
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    if (attempt) {
+      const wait = RETRY_DELAY_MS * attempt;          // 3s, then 6s
+      console.log('  ↻ ' + g.url + ' (' + g.width + 'px) — retrying in ' + (wait / 1000) + 's');
+      await sleep(wait);
+      if (overBudget()) break;
+    }
+    const res = await shootGroup(browser, g, attempt);
+    if (res.ok) return;
+    if (overBudget()) break;
+  }
+  pageErrors++;   // still not right after every retry
 }
 
 (async function () {
@@ -382,8 +417,8 @@ async function shootGroup(browser, g) {
     });
     try {
       await pool(groupList, concurrency, async (g) => {
-        if (overBudget()) { skipped += g.items.length; return; }
-        await shootGroup(browser, g);
+        if (overBudget()) return;
+        await shootGroupWithRetries(browser, g);
       });
     } finally {
       await browser.close().catch(() => {});
@@ -400,9 +435,15 @@ async function shootGroup(browser, g) {
     process.exit(2);
   }
 
+  // Counted per element, not per attempt: everything we tried and still have no
+  // picture for is "missed", everything we never got to is "skipped". A retry
+  // that succeeds therefore removes an element from missed rather than adding.
+  const missed = attempted.size - captured;
+  const skipped = todo.length - attempted.size;
+
   const manifest = {
     generatedAt: new Date().toISOString(),
-    planned: planned.length, captured, reused, missed, max: MAX,
+    planned: planned.length, captured, reused, missed, skipped, pageErrors, max: MAX,
     a11y: sortKeys(shots.a11y), ux: sortKeys(shots.ux),
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 1) + '\n');
@@ -421,14 +462,19 @@ async function shootGroup(browser, g) {
   console.log('Captured ' + captured + ' new screenshot(s)' +
     (reused ? ', reused ' + reused : '') + ', ' + missed + ' element(s) not found' +
     (pageErrors ? ', ' + pageErrors + ' page load failure(s)' : '') +
-    (skipped ? ', ' + skipped + ' skipped (budget)' : '') +
+    (skipped ? ', ' + skipped + ' not reached' : '') +
     (pruned ? ', pruned ' + pruned + ' stale' : '') +
     ' — ' + (bytes / 1048576).toFixed(1) + ' MB in ' + shotsDir + '/' +
     ' in ' + ((Date.now() - startedAt) / 1000).toFixed(0) + 's');
-  if (skipped) {
+  // Say WHY they weren't reached — running out of time and a page that never
+  // answered call for completely different responses.
+  if (skipped && overBudget()) {
     console.log('Ran out of the ' + (BUDGET_MS / 60000).toFixed(1) + '-minute budget with ' + skipped +
       ' element(s) left. Re-running picks up exactly where this left off (already-captured ' +
       'elements are reused, not re-shot), or raise SHOT_BUDGET_MIN to finish in one pass.');
+  } else if (skipped) {
+    console.log(skipped + ' element(s) were on ' + pageErrors + ' page(s) that never loaded, after ' +
+      RETRIES + ' retr' + (RETRIES === 1 ? 'y' : 'ies') + ' each. Re-running retries just those.');
   }
 })().catch((e) => { console.error('Screenshot pass failed: ' + (e && e.stack || e)); process.exit(1); });
 
