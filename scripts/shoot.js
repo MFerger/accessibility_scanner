@@ -29,7 +29,15 @@
  *   SHOT_MAX_W/H    largest crop, in CSS px                (default: 640 / 400)
  *   SHOT_A11Y_VIEWPORT  viewport for a11y shots            (default: 1280x1024,
  *                   pa11y's default — so the crop matches what pa11y saw)
+ *   SHOT_BUDGET_MS  wall-clock budget for the whole pass  (default: 360000 = 6 min)
  *   UX_HTTP_USER / UX_HTTP_PASS   HTTP basic auth for staging behind a password
+ *
+ * Pictures are a bonus, never a reason a scan stalls. A healthy site shoots a
+ * few hundred elements in well under a minute, so every wait here is bounded:
+ * a wall-clock budget for the pass, a timeout per element, and a page that
+ * stops responding is abandoned after a few consecutive timeouts rather than
+ * burning the budget one element at a time. Whatever was captured before the
+ * budget ran out is kept and reported.
  *
  * Like the ingest steps this refuses to destroy good data: if it captures
  * nothing at all but shots already exist, it leaves them (and the manifest)
@@ -51,6 +59,9 @@ const PAD = Math.max(0, parseInt(process.env.SHOT_PAD || '24', 10) || 0);
 const MAX_W = Math.max(80, parseInt(process.env.SHOT_MAX_W || '640', 10) || 640);
 const MAX_H = Math.max(60, parseInt(process.env.SHOT_MAX_H || '400', 10) || 400);
 const MIN_W = 160, MIN_H = 90;            // a 1x1 tap target still gets a usable picture
+const BUDGET_MS = Math.max(0, parseInt(process.env.SHOT_BUDGET_MS || '360000', 10) || 0);
+const ELEMENT_MS = 15000;                 // one element may never take longer than this
+const DEAD_PAGE_STRIKES = 3;              // consecutive timeouts => the page is wedged
 
 if (!INPUT) {
   console.error('No URL given. Set SCAN_URL or pass a URL argument.');
@@ -253,39 +264,62 @@ async function pool(items, n, worker) {
   await Promise.all(runners);
 }
 
+// Bound any await. The loser of the race is NOT cancelled — a wedged page keeps
+// whatever it was doing — so callers also count strikes and abandon the page.
+function withTimeout(promise, ms, what) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(what + ' timed out after ' + ms + 'ms')), ms); }),
+  ]).finally(() => clearTimeout(timer));
+}
+
 const shots = { a11y: {}, ux: {} };
-let captured = 0, missed = 0, pageErrors = 0;
+const startedAt = Date.now();
+const overBudget = () => BUDGET_MS > 0 && (Date.now() - startedAt) > BUDGET_MS;
+let captured = 0, missed = 0, pageErrors = 0, skipped = 0;
 
 async function shootGroup(browser, g) {
-  let page;
+  let page, got = 0, strikes = 0, done = 0;
+  const t0 = Date.now();
   try {
     page = await browser.newPage();
     await page.setViewport({ width: g.width, height: g.height, deviceScaleFactor: 1 });
     if (httpCredentials) await page.authenticate(httpCredentials);
     await page.goto(g.url, { waitUntil: 'load', timeout: navTimeout });
-    await prep.settle(page, { ignoreSelectors, settleMs });
+    await withTimeout(prep.settle(page, { ignoreSelectors, settleMs }), navTimeout, 'settle');
 
     for (const t of g.items) {
+      if (overBudget() || strikes >= DEAD_PAGE_STRIKES) break;
+      done++;
       try {
-        const clip = await page.evaluate(locate, {
+        const clip = await withTimeout(page.evaluate(locate, {
           selector: t.selector, context: t.context,
           pad: PAD, maxW: MAX_W, maxH: MAX_H, minW: MIN_W, minH: MIN_H,
-        });
+        }), ELEMENT_MS, 'locate');
+        strikes = 0;
         if (!clip) { missed++; continue; }        // element gone, hidden, or off-canvas
         const file = t.lens + '-' + t.key + '.webp';
-        const buf = await page.screenshot({
+        const buf = await withTimeout(page.screenshot({
           type: 'webp', quality: QUALITY, captureBeyondViewport: true,
           clip: { x: clip.x, y: clip.y, width: clip.w, height: clip.h },
-        });
+        }), ELEMENT_MS, 'screenshot');
         fs.writeFileSync(path.join(shotsDir, file), buf);
         shots[t.lens][t.key] = { f: file, w: clip.w, h: clip.h, p: t.page, v: t.vpName };
-        captured++;
+        captured++; got++;
       } catch (e) {
         missed++;
+        if (/timed out/.test(String(e && e.message))) strikes++;
       }
     }
+    skipped += g.items.length - done;
+    console.log('  ' + g.url + ' (' + g.width + 'px) — ' + got + '/' + g.items.length +
+      ' in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's' +
+      (strikes >= DEAD_PAGE_STRIKES ? '  [page stopped responding, abandoned]' : '') +
+      (overBudget() ? '  [budget spent]' : ''));
   } catch (e) {
     pageErrors++;
+    skipped += g.items.length - done;
     console.log('  ! ' + g.url + ' (' + g.width + 'px): ' + String((e && e.message) || e));
   } finally {
     if (page) await page.close().catch(() => {});
@@ -305,9 +339,15 @@ async function shootGroup(browser, g) {
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-dev-shm-usage'],
+    // Default is 3 minutes; nothing here legitimately takes that long, and a
+    // wedged CDP call should surface as an error, not as a stalled scan.
+    protocolTimeout: 60000,
   });
   try {
-    await pool(groupList, concurrency, (g) => shootGroup(browser, g));
+    await pool(groupList, concurrency, async (g) => {
+      if (overBudget()) { skipped += g.items.length; return; }
+      await shootGroup(browser, g);
+    });
   } finally {
     await browser.close().catch(() => {});
   }
@@ -343,8 +383,14 @@ async function shootGroup(browser, g) {
   const bytes = [...keep].reduce((n, f) => n + fs.statSync(path.join(shotsDir, f)).size, 0);
   console.log('Captured ' + captured + ' screenshot(s), ' + missed + ' element(s) not found' +
     (pageErrors ? ', ' + pageErrors + ' page load failure(s)' : '') +
+    (skipped ? ', ' + skipped + ' skipped (budget)' : '') +
     (pruned ? ', pruned ' + pruned + ' stale' : '') +
-    ' — ' + (bytes / 1048576).toFixed(1) + ' MB in ' + shotsDir + '/');
+    ' — ' + (bytes / 1048576).toFixed(1) + ' MB in ' + shotsDir + '/' +
+    ' in ' + ((Date.now() - startedAt) / 1000).toFixed(0) + 's');
+  if (skipped) {
+    console.log('Ran out of the ' + (BUDGET_MS / 1000) + 's budget with ' + skipped +
+      ' element(s) left — raise SHOT_BUDGET_MS or lower SHOT_MAX. The site was likely slow or throttling us.');
+  }
 })().catch((e) => { console.error('Screenshot pass failed: ' + (e && e.stack || e)); process.exit(1); });
 
 // Stable key order keeps the committed manifest's diff to just what changed.

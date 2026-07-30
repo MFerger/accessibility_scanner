@@ -123,9 +123,12 @@ jobs:
       # so the images land in data/<slug>/shots/ alongside the scan record and
       # survive a later Rebuild report. continue-on-error for the same reason as
       # the UX steps: pictures are a bonus, they must never block the report.
+      # timeout-minutes on top of the script's own budget: even a bug in here
+      # must never hold up committing the scan data and deploying the report.
       - name: Capture element screenshots
         if: ${{ inputs.shots }}
         continue-on-error: true
+        timeout-minutes: 10
         env:
           SCAN_URL: ${{ inputs.url }}
           SHOT_MAX: ${{ inputs.shot_max }}
