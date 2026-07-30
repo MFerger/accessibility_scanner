@@ -1,0 +1,704 @@
+{
+ "generatedAt": "2026-07-30T20:28:47.269Z",
+ "planned": 343,
+ "captured": 99,
+ "missed": 65,
+ "max": 400,
+ "a11y": {
+  "11ac4az": {
+   "f": "a11y-11ac4az.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "11hy3sh": {
+   "f": "a11y-11hy3sh.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/",
+   "v": ""
+  },
+  "130p7y9": {
+   "f": "a11y-130p7y9.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "15ja7vu": {
+   "f": "a11y-15ja7vu.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "15l5j8j": {
+   "f": "a11y-15l5j8j.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "15o3blk": {
+   "f": "a11y-15o3blk.webp",
+   "w": 523,
+   "h": 228,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "16rw1o9": {
+   "f": "a11y-16rw1o9.webp",
+   "w": 523,
+   "h": 363,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "178mkte": {
+   "f": "a11y-178mkte.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "194y6ev": {
+   "f": "a11y-194y6ev.webp",
+   "w": 640,
+   "h": 114,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "1a1hkd0": {
+   "f": "a11y-1a1hkd0.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1ca74xk": {
+   "f": "a11y-1ca74xk.webp",
+   "w": 640,
+   "h": 241,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": ""
+  },
+  "1df6p8s": {
+   "f": "a11y-1df6p8s.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1e0cq9s": {
+   "f": "a11y-1e0cq9s.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "1fik9i1": {
+   "f": "a11y-1fik9i1.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": ""
+  },
+  "1fm0fzx": {
+   "f": "a11y-1fm0fzx.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": ""
+  },
+  "1ikla1p": {
+   "f": "a11y-1ikla1p.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1khydli": {
+   "f": "a11y-1khydli.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": ""
+  },
+  "1kibj2l": {
+   "f": "a11y-1kibj2l.webp",
+   "w": 640,
+   "h": 93,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": ""
+  },
+  "1n2g5hc": {
+   "f": "a11y-1n2g5hc.webp",
+   "w": 640,
+   "h": 158,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1nhtq0j": {
+   "f": "a11y-1nhtq0j.webp",
+   "w": 640,
+   "h": 186,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1ot0dlb": {
+   "f": "a11y-1ot0dlb.webp",
+   "w": 250,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1pgwchu": {
+   "f": "a11y-1pgwchu.webp",
+   "w": 640,
+   "h": 93,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "1q0iu5k": {
+   "f": "a11y-1q0iu5k.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1u69t24": {
+   "f": "a11y-1u69t24.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "1v2tde8": {
+   "f": "a11y-1v2tde8.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/",
+   "v": ""
+  },
+  "1yasbmm": {
+   "f": "a11y-1yasbmm.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "29jxd6": {
+   "f": "a11y-29jxd6.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://gandsinsulating.com/about/",
+   "v": ""
+  },
+  "4acndh": {
+   "f": "a11y-4acndh.webp",
+   "w": 640,
+   "h": 93,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "9516qy": {
+   "f": "a11y-9516qy.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "98je0r": {
+   "f": "a11y-98je0r.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": ""
+  },
+  "c4n342": {
+   "f": "a11y-c4n342.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "em0ptd": {
+   "f": "a11y-em0ptd.webp",
+   "w": 519,
+   "h": 101,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "eqq1n9": {
+   "f": "a11y-eqq1n9.webp",
+   "w": 640,
+   "h": 131,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": ""
+  },
+  "hwukh5": {
+   "f": "a11y-hwukh5.webp",
+   "w": 640,
+   "h": 103,
+   "p": "https://gandsinsulating.com/about/",
+   "v": ""
+  },
+  "l4d6xc": {
+   "f": "a11y-l4d6xc.webp",
+   "w": 245,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": ""
+  },
+  "m7bthf": {
+   "f": "a11y-m7bthf.webp",
+   "w": 523,
+   "h": 363,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "mppjgv": {
+   "f": "a11y-mppjgv.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": ""
+  },
+  "pbhfc9": {
+   "f": "a11y-pbhfc9.webp",
+   "w": 273,
+   "h": 348,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": ""
+  },
+  "s8nqua": {
+   "f": "a11y-s8nqua.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": ""
+  },
+  "senwx1": {
+   "f": "a11y-senwx1.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "snb0lg": {
+   "f": "a11y-snb0lg.webp",
+   "w": 523,
+   "h": 228,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "unz3a": {
+   "f": "a11y-unz3a.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "v49xma": {
+   "f": "a11y-v49xma.webp",
+   "w": 640,
+   "h": 213,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": ""
+  },
+  "x8x086": {
+   "f": "a11y-x8x086.webp",
+   "w": 292,
+   "h": 350,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  },
+  "zv8zac": {
+   "f": "a11y-zv8zac.webp",
+   "w": 245,
+   "h": 90,
+   "p": "https://gandsinsulating.com/",
+   "v": ""
+  }
+ },
+ "ux": {
+  "11autas": {
+   "f": "ux-11autas.webp",
+   "w": 243,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "15g84zk": {
+   "f": "ux-15g84zk.webp",
+   "w": 256,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": "mobile"
+  },
+  "167nhq6": {
+   "f": "ux-167nhq6.webp",
+   "w": 189,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": "mobile"
+  },
+  "169yvqf": {
+   "f": "ux-169yvqf.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "17owaqg": {
+   "f": "ux-17owaqg.webp",
+   "w": 217,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "19dyhjh": {
+   "f": "ux-19dyhjh.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "1b1cyho": {
+   "f": "ux-1b1cyho.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1czdla6": {
+   "f": "ux-1czdla6.webp",
+   "w": 263,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1dys3kg": {
+   "f": "ux-1dys3kg.webp",
+   "w": 166,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1gb5t28": {
+   "f": "ux-1gb5t28.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1jq3oux": {
+   "f": "ux-1jq3oux.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "1ld1y96": {
+   "f": "ux-1ld1y96.webp",
+   "w": 177,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1o1ud2h": {
+   "f": "ux-1o1ud2h.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1p7nfg6": {
+   "f": "ux-1p7nfg6.webp",
+   "w": 211,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1pfsfno": {
+   "f": "ux-1pfsfno.webp",
+   "w": 250,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "1q71saq": {
+   "f": "ux-1q71saq.webp",
+   "w": 187,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1qx4lxo": {
+   "f": "ux-1qx4lxo.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": "mobile"
+  },
+  "1s4ac0": {
+   "f": "ux-1s4ac0.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": "mobile"
+  },
+  "1sb4wn2": {
+   "f": "ux-1sb4wn2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1stxl2x": {
+   "f": "ux-1stxl2x.webp",
+   "w": 233,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "1u2aa0w": {
+   "f": "ux-1u2aa0w.webp",
+   "w": 191,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1vphsk2": {
+   "f": "ux-1vphsk2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1wo8jny": {
+   "f": "ux-1wo8jny.webp",
+   "w": 334,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": "mobile"
+  },
+  "1xkfi67": {
+   "f": "ux-1xkfi67.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "4aq9vf": {
+   "f": "ux-4aq9vf.webp",
+   "w": 191,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "4kvdus": {
+   "f": "ux-4kvdus.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "5j4etj": {
+   "f": "ux-5j4etj.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "5sdwp3": {
+   "f": "ux-5sdwp3.webp",
+   "w": 303,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "7b2eyr": {
+   "f": "ux-7b2eyr.webp",
+   "w": 309,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "7qvj20": {
+   "f": "ux-7qvj20.webp",
+   "w": 270,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "8dsi1w": {
+   "f": "ux-8dsi1w.webp",
+   "w": 184,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "92gj3w": {
+   "f": "ux-92gj3w.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "d3910m": {
+   "f": "ux-d3910m.webp",
+   "w": 219,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "dd3ied": {
+   "f": "ux-dd3ied.webp",
+   "w": 193,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "dpjaqw": {
+   "f": "ux-dpjaqw.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "fozdi2": {
+   "f": "ux-fozdi2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "j7gbwj": {
+   "f": "ux-j7gbwj.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "m2iuhi": {
+   "f": "ux-m2iuhi.webp",
+   "w": 184,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "mqnyu0": {
+   "f": "ux-mqnyu0.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "mwekj": {
+   "f": "ux-mwekj.webp",
+   "w": 214,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "nft96k": {
+   "f": "ux-nft96k.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "o2h7kd": {
+   "f": "ux-o2h7kd.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "opovs5": {
+   "f": "ux-opovs5.webp",
+   "w": 188,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "puzxyl": {
+   "f": "ux-puzxyl.webp",
+   "w": 244,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "qnnmcp": {
+   "f": "ux-qnnmcp.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "s340rz": {
+   "f": "ux-s340rz.webp",
+   "w": 263,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "uow2wm": {
+   "f": "ux-uow2wm.webp",
+   "w": 230,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "vdhp4o": {
+   "f": "ux-vdhp4o.webp",
+   "w": 184,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "vvtvbn": {
+   "f": "ux-vvtvbn.webp",
+   "w": 166,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "wesjlr": {
+   "f": "ux-wesjlr.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "wmr5ww": {
+   "f": "ux-wmr5ww.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
+  "ym2b0p": {
+   "f": "ux-ym2b0p.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "z4pctw": {
+   "f": "ux-z4pctw.webp",
+   "w": 217,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "zjiquk": {
+   "f": "ux-zjiquk.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  }
+ }
+}
