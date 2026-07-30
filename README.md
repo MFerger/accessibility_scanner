@@ -90,19 +90,35 @@ stays reproducible from the repo alone. Real numbers from a 58-page client site:
 
 Two things keep that from compounding:
 
-* **Re-scans are usually free.** An unchanged element re-renders to identical
-  bytes, which is the same git blob — no new objects, no history growth. Only
-  elements that actually changed cost anything.
+* **Re-scans don't re-shoot.** An element whose image is already on disk is
+  carried straight into the new manifest, so an unchanged site costs nothing —
+  no re-shooting, no rewritten bytes, no git churn.
 * **Stale images are pruned.** Each run deletes images no current finding points
   at, so the working tree tracks the latest scan. (Git *history* still holds
   every version ever committed — that is the one cost you can't undo without
   rewriting history.)
 
-Tune it with `SHOT_MAX` (budget — errors first, then the elements repeated on
-the most pages), `SHOT_QUALITY`, `SHOT_PAD`, `SHOT_MAX_W` / `SHOT_MAX_H`, or
-turn it off entirely by unticking **shots** in the workflow. `SHOT_MAX=0` means
-no cap. Trimming the committed images later is just `rm -rf data/<slug>/shots
-data/<slug>/shots.json` plus a rebuild.
+### Time, and finishing an interrupted run
+
+The pass is bounded so pictures can never hold up a scan: it stops after
+`shot_budget_min` (default **6 minutes**), keeps everything it captured, and
+lets the report deploy. A typical 30-page site finishes in well under a minute.
+
+Because a re-run reuses what is already on disk, **running the scan again picks
+up exactly where the last one left off** — it spends the whole budget on the
+pictures that are still missing. So a big site can be filled in over two runs,
+or in one by raising **shot_budget_min**. (The workflow step is killed at 20
+minutes regardless; raise `timeout-minutes` in `scan.yml` if you go past ~18.)
+
+Since keys are derived from an element's markup, changing an element gives it a
+new key and a fresh picture. A change that alters only *appearance* (CSS) and
+not markup keeps the old image — set `SHOT_REFRESH=1` to retake everything.
+
+Other knobs: `SHOT_MAX` (how many elements to cover — errors first, then the
+elements repeated on the most pages; `0` means no cap), `SHOT_QUALITY`,
+`SHOT_PAD`, `SHOT_MAX_W` / `SHOT_MAX_H`. Turn it off entirely by unticking
+**shots** in the workflow. Trimming the committed images later is just
+`rm -rf data/<slug>/shots data/<slug>/shots.json` plus a rebuild.
 
 > **Note:** if you password-protect the report with `REPORT_PASSWORD`,
 > staticrypt encrypts the HTML but **not** the `shots/*.webp` files — they stay

@@ -33,6 +33,10 @@ on:
         description: "Most screenshots to capture for this site (highest-severity, most-repeated elements first)."
         required: false
         default: "400"
+      shot_budget_min:
+        description: "Minutes the screenshot pass may run before it stops and keeps what it got. Re-running fills in the rest."
+        required: false
+        default: "6"
 
 permissions:
   contents: write   # commit normalized scan data back to the repo
@@ -123,15 +127,17 @@ jobs:
       # so the images land in data/<slug>/shots/ alongside the scan record and
       # survive a later Rebuild report. continue-on-error for the same reason as
       # the UX steps: pictures are a bonus, they must never block the report.
-      # timeout-minutes on top of the script's own budget: even a bug in here
-      # must never hold up committing the scan data and deploying the report.
+      # timeout-minutes is a backstop ABOVE the script's own budget (shot_budget_min):
+      # even a bug in here must never hold up committing the scan data and
+      # deploying the report. Raise it if you raise the budget past ~18 minutes.
       - name: Capture element screenshots
         if: ${{ inputs.shots }}
         continue-on-error: true
-        timeout-minutes: 10
+        timeout-minutes: 20
         env:
           SCAN_URL: ${{ inputs.url }}
           SHOT_MAX: ${{ inputs.shot_max }}
+          SHOT_BUDGET_MIN: ${{ inputs.shot_budget_min }}
         run: node scripts/shoot.js
 
       - name: Commit scan data

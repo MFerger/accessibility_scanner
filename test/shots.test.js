@@ -193,21 +193,56 @@ function check(ok, label, detail) {
         (r.fractions[0] * 100).toFixed(1) + '% target green');
     }
 
-    // 4. Stale images are pruned, so the committed folder tracks the scan.
+    // 4. A re-run RESUMES: existing images are reused rather than re-shot, and
+    //    images no finding points at any more are pruned.
     const stale = path.join(shotsDir, 'a11y-stalekey.webp');
     fs.writeFileSync(stale, 'not really a webp');
-    execFileSync('node', ['scripts/shoot.js'], {
-      cwd: ROOT, stdio: 'ignore',
-      env: Object.assign({}, process.env, { DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG }),
-    });
+    const rerun = () => JSON.parse(execFileSync('node', ['-e',
+      'require("child_process").execFileSync("node",["scripts/shoot.js"],{stdio:"ignore",env:process.env});' +
+      'process.stdout.write(require("fs").readFileSync(process.env.MANIFEST,"utf8"))'], {
+      cwd: ROOT,
+      env: Object.assign({}, process.env, {
+        DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG, MANIFEST: path.join(SITE, 'shots.json'),
+      }),
+    }).toString());
+
+    const second = rerun();
+    check(second.captured === 0 && second.reused === 3,
+      'a re-run reuses what is already on disk instead of re-shooting it',
+      'captured=' + second.captured + ' reused=' + second.reused);
     check(!fs.existsSync(stale), 'a re-run prunes images no finding points at any more');
     check(fs.readdirSync(shotsDir).filter((f) => /\.webp$/.test(f)).length === 3,
       're-run keeps exactly the current shots');
 
-    // 5. The cap keeps the worst findings and is honoured.
+    // 5. A shot that went missing is the ONLY thing a re-run spends time on —
+    //    this is what lets a budget-capped run be finished by running it again.
+    const gone = manifest.a11y[keyOf(ISSUES.bySelector)].f;
+    fs.unlinkSync(path.join(shotsDir, gone));
+    const third = rerun();
+    check(third.captured === 1 && third.reused === 2,
+      'a re-run fills in only the missing shot', 'captured=' + third.captured + ' reused=' + third.reused);
+    check(fs.existsSync(path.join(shotsDir, gone)), 'the missing shot is back on disk');
+
+    // 6. SHOT_REFRESH retakes everything, ignoring what is already there.
+    const refreshed = JSON.parse(execFileSync('node', ['-e',
+      'require("child_process").execFileSync("node",["scripts/shoot.js"],{stdio:"ignore",env:process.env});' +
+      'process.stdout.write(require("fs").readFileSync(process.env.MANIFEST,"utf8"))'], {
+      cwd: ROOT,
+      env: Object.assign({}, process.env, {
+        DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG, SHOT_REFRESH: '1',
+        MANIFEST: path.join(SITE, 'shots.json'),
+      }),
+    }).toString());
+    check(refreshed.captured === 3 && refreshed.reused === 0,
+      'SHOT_REFRESH retakes every shot', 'captured=' + refreshed.captured + ' reused=' + refreshed.reused);
+
+    // 7. The cap keeps the worst findings and is honoured (forced fresh, so the
+    //    cap is what limits the run rather than reuse).
     execFileSync('node', ['scripts/shoot.js'], {
       cwd: ROOT, stdio: 'ignore',
-      env: Object.assign({}, process.env, { DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG, SHOT_MAX: '1' }),
+      env: Object.assign({}, process.env, {
+        DATA_DIR: DATA, SCAN_URL: BASE, UX_CONFIG, SHOT_MAX: '1', SHOT_REFRESH: '1',
+      }),
     });
     const capped = JSON.parse(fs.readFileSync(path.join(SITE, 'shots.json'), 'utf8'));
     check(capped.captured === 1 && Object.keys(capped.a11y).length === 1,

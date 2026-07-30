@@ -29,7 +29,8 @@
  *   SHOT_MAX_W/H    largest crop, in CSS px                (default: 640 / 400)
  *   SHOT_A11Y_VIEWPORT  viewport for a11y shots            (default: 1280x1024,
  *                   pa11y's default — so the crop matches what pa11y saw)
- *   SHOT_BUDGET_MS  wall-clock budget for the whole pass  (default: 360000 = 6 min)
+ *   SHOT_BUDGET_MIN wall-clock budget for the whole pass, in minutes  (default: 6)
+ *   SHOT_BUDGET_MS  same budget in milliseconds (SHOT_BUDGET_MIN wins if both set)
  *   UX_HTTP_USER / UX_HTTP_PASS   HTTP basic auth for staging behind a password
  *
  * Pictures are a bonus, never a reason a scan stalls. A healthy site shoots a
@@ -59,8 +60,11 @@ const PAD = Math.max(0, parseInt(process.env.SHOT_PAD || '24', 10) || 0);
 const MAX_W = Math.max(80, parseInt(process.env.SHOT_MAX_W || '640', 10) || 640);
 const MAX_H = Math.max(60, parseInt(process.env.SHOT_MAX_H || '400', 10) || 400);
 const MIN_W = 160, MIN_H = 90;            // a 1x1 tap target still gets a usable picture
-const BUDGET_MS = Math.max(0, parseInt(process.env.SHOT_BUDGET_MS || '360000', 10) || 0);
-const ELEMENT_MS = 15000;                 // one element may never take longer than this
+const BUDGET_MS = process.env.SHOT_BUDGET_MIN
+  ? Math.max(0, Math.round(parseFloat(process.env.SHOT_BUDGET_MIN) * 60000) || 0)
+  : Math.max(0, parseInt(process.env.SHOT_BUDGET_MS || '360000', 10) || 0);
+const ELEMENT_MS = 8000;                  // one element may never take longer than this
+const PAGE_MS = 45000;                    // ...nor one page's whole element loop
 const DEAD_PAGE_STRIKES = 3;              // consecutive timeouts => the page is wedged
 
 if (!INPUT) {
@@ -155,10 +159,30 @@ planned.sort((a, b) =>
   (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 const targets = MAX ? planned.slice(0, MAX) : planned;
 
+// Resume, don't restart. An element already on disk (same key => same code on
+// the same markup) is carried straight into the new manifest, so a re-run
+// spends its whole budget on the pictures that are still MISSING and fills in
+// what a previous run ran out of time for. It also means an unchanged site
+// re-scans for free: no re-shooting, no rewritten bytes, no git churn.
+// SHOT_REFRESH=1 forces every shot to be retaken (use after a redesign that
+// changed how things look without changing their markup).
+const shots = { a11y: {}, ux: {} };
+const REFRESH = /^(1|true|yes)$/i.test(process.env.SHOT_REFRESH || '');
+const prior = readJson(manifestPath, null);
+let reused = 0;
+const todo = targets.filter((t) => {
+  if (REFRESH || !prior) return true;
+  const prev = prior[t.lens] && prior[t.lens][t.key];
+  if (!prev || !prev.f || !fs.existsSync(path.join(shotsDir, prev.f))) return true;
+  shots[t.lens][t.key] = prev;
+  reused++;
+  return false;
+});
+
 // Group by the page+viewport each shot needs, so one page load serves all of
 // the elements flagged on it.
 const groups = new Map();
-for (const t of targets) {
+for (const t of todo) {
   const gk = t.width + 'x' + t.height + '|' + t.page;
   let g = groups.get(gk);
   if (!g) { g = { url: t.page, width: t.width, height: t.height, items: [] }; groups.set(gk, g); }
@@ -274,7 +298,6 @@ function withTimeout(promise, ms, what) {
   ]).finally(() => clearTimeout(timer));
 }
 
-const shots = { a11y: {}, ux: {} };
 const startedAt = Date.now();
 const overBudget = () => BUDGET_MS > 0 && (Date.now() - startedAt) > BUDGET_MS;
 let captured = 0, missed = 0, pageErrors = 0, skipped = 0;
@@ -282,23 +305,32 @@ let captured = 0, missed = 0, pageErrors = 0, skipped = 0;
 async function shootGroup(browser, g) {
   let page, got = 0, strikes = 0, done = 0;
   const t0 = Date.now();
+  let loadMs = 0;
   try {
     page = await browser.newPage();
     await page.setViewport({ width: g.width, height: g.height, deviceScaleFactor: 1 });
     if (httpCredentials) await page.authenticate(httpCredentials);
-    await page.goto(g.url, { waitUntil: 'load', timeout: navTimeout });
-    await withTimeout(prep.settle(page, { ignoreSelectors, settleMs }), navTimeout, 'settle');
 
+    // Waiting for the full 'load' event costs 15s+ on image-heavy article pages
+    // (every ad/embed/tracker has to finish) for no benefit here. Take the DOM
+    // as soon as it parses, let settle() scroll the page to trigger lazy images,
+    // then give the network a short, bounded chance to quiet down. A page that
+    // never goes idle is photographed as-is rather than waited on.
+    await page.goto(g.url, { waitUntil: 'domcontentloaded', timeout: navTimeout });
+    await withTimeout(prep.settle(page, { ignoreSelectors, settleMs }), navTimeout, 'settle');
+    await page.waitForNetworkIdle({ idleTime: 400, timeout: 4000 }).catch(() => {});
+    loadMs = Date.now() - t0;
+
+    const tEls = Date.now();
     for (const t of g.items) {
-      if (overBudget() || strikes >= DEAD_PAGE_STRIKES) break;
+      if (overBudget() || strikes >= DEAD_PAGE_STRIKES || (Date.now() - tEls) > PAGE_MS) break;
       done++;
       try {
         const clip = await withTimeout(page.evaluate(locate, {
           selector: t.selector, context: t.context,
           pad: PAD, maxW: MAX_W, maxH: MAX_H, minW: MIN_W, minH: MIN_H,
         }), ELEMENT_MS, 'locate');
-        strikes = 0;
-        if (!clip) { missed++; continue; }        // element gone, hidden, or off-canvas
+        if (!clip) { missed++; strikes = 0; continue; }   // element gone, hidden, or off-canvas
         const file = t.lens + '-' + t.key + '.webp';
         const buf = await withTimeout(page.screenshot({
           type: 'webp', quality: QUALITY, captureBeyondViewport: true,
@@ -307,15 +339,18 @@ async function shootGroup(browser, g) {
         fs.writeFileSync(path.join(shotsDir, file), buf);
         shots[t.lens][t.key] = { f: file, w: clip.w, h: clip.h, p: t.page, v: t.vpName };
         captured++; got++;
+        strikes = 0;                             // only a WHOLE target clears the strikes
       } catch (e) {
         missed++;
         if (/timed out/.test(String(e && e.message))) strikes++;
       }
     }
+    const elMs = Date.now() - tEls;
     skipped += g.items.length - done;
     console.log('  ' + g.url + ' (' + g.width + 'px) — ' + got + '/' + g.items.length +
-      ' in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's' +
+      ' | load ' + (loadMs / 1000).toFixed(1) + 's + elements ' + (elMs / 1000).toFixed(1) + 's' +
       (strikes >= DEAD_PAGE_STRIKES ? '  [page stopped responding, abandoned]' : '') +
+      (elMs > PAGE_MS ? '  [page budget spent]' : '') +
       (overBudget() ? '  [budget spent]' : ''));
   } catch (e) {
     pageErrors++;
@@ -333,31 +368,33 @@ async function shootGroup(browser, g) {
   }
   console.log('Screenshots: ' + targets.length + ' element(s)' +
     (planned.length > targets.length ? ' of ' + planned.length + ' (SHOT_MAX=' + MAX + ')' : '') +
-    ' across ' + groupList.length + ' page load(s).');
+    (reused ? ', ' + reused + ' already captured' : '') +
+    ' — ' + todo.length + ' to shoot across ' + groupList.length + ' page load(s).');
 
   fs.mkdirSync(shotsDir, { recursive: true });
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-dev-shm-usage'],
-    // Default is 3 minutes; nothing here legitimately takes that long, and a
-    // wedged CDP call should surface as an error, not as a stalled scan.
-    protocolTimeout: 60000,
-  });
-  try {
-    await pool(groupList, concurrency, async (g) => {
-      if (overBudget()) { skipped += g.items.length; return; }
-      await shootGroup(browser, g);
+  if (todo.length) {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
+      // Default is 3 minutes; nothing here legitimately takes that long, and a
+      // wedged CDP call should surface as an error, not as a stalled scan.
+      protocolTimeout: 60000,
     });
-  } finally {
-    await browser.close().catch(() => {});
+    try {
+      await pool(groupList, concurrency, async (g) => {
+        if (overBudget()) { skipped += g.items.length; return; }
+        await shootGroup(browser, g);
+      });
+    } finally {
+      await browser.close().catch(() => {});
+    }
   }
 
   // Refuse to blank out a good set of pictures when the RUN broke (site down,
   // every navigation failing) — the same guard the ingest steps apply to scan
   // data. Loading every page fine and matching no elements is a real result
   // (the site changed), so that case is allowed through.
-  const priorManifest = readJson(manifestPath, null);
-  if (captured === 0 && pageErrors > 0 && priorManifest) {
+  if (captured === 0 && reused === 0 && pageErrors > 0 && prior) {
     console.error('Captured 0 of ' + targets.length + ' screenshots after ' + pageErrors +
       ' page load failure(s) — keeping the existing shots for "' + slug + '".');
     process.exit(2);
@@ -365,7 +402,7 @@ async function shootGroup(browser, g) {
 
   const manifest = {
     generatedAt: new Date().toISOString(),
-    planned: planned.length, captured, missed, max: MAX,
+    planned: planned.length, captured, reused, missed, max: MAX,
     a11y: sortKeys(shots.a11y), ux: sortKeys(shots.ux),
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 1) + '\n');
@@ -381,15 +418,17 @@ async function shootGroup(browser, g) {
   }
 
   const bytes = [...keep].reduce((n, f) => n + fs.statSync(path.join(shotsDir, f)).size, 0);
-  console.log('Captured ' + captured + ' screenshot(s), ' + missed + ' element(s) not found' +
+  console.log('Captured ' + captured + ' new screenshot(s)' +
+    (reused ? ', reused ' + reused : '') + ', ' + missed + ' element(s) not found' +
     (pageErrors ? ', ' + pageErrors + ' page load failure(s)' : '') +
     (skipped ? ', ' + skipped + ' skipped (budget)' : '') +
     (pruned ? ', pruned ' + pruned + ' stale' : '') +
     ' — ' + (bytes / 1048576).toFixed(1) + ' MB in ' + shotsDir + '/' +
     ' in ' + ((Date.now() - startedAt) / 1000).toFixed(0) + 's');
   if (skipped) {
-    console.log('Ran out of the ' + (BUDGET_MS / 1000) + 's budget with ' + skipped +
-      ' element(s) left — raise SHOT_BUDGET_MS or lower SHOT_MAX. The site was likely slow or throttling us.');
+    console.log('Ran out of the ' + (BUDGET_MS / 60000).toFixed(1) + '-minute budget with ' + skipped +
+      ' element(s) left. Re-running picks up exactly where this left off (already-captured ' +
+      'elements are reused, not re-shot), or raise SHOT_BUDGET_MIN to finish in one pass.');
   }
 })().catch((e) => { console.error('Screenshot pass failed: ' + (e && e.stack || e)); process.exit(1); });
 
