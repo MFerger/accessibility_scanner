@@ -1,71 +1,37 @@
 {
- "generatedAt": "2026-07-30T20:28:47.269Z",
- "planned": 343,
- "captured": 99,
- "missed": 65,
+ "generatedAt": "2026-07-30T20:44:54.626Z",
+ "planned": 267,
+ "captured": 154,
+ "reused": 67,
+ "missed": 46,
  "max": 400,
  "a11y": {
-  "11ac4az": {
-   "f": "a11y-11ac4az.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
+  "10hj51t": {
+   "f": "a11y-10hj51t.webp",
+   "w": 337,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
-  "11hy3sh": {
-   "f": "a11y-11hy3sh.webp",
+  "12ysdi2": {
+   "f": "a11y-12ysdi2.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "133sgwc": {
+   "f": "a11y-133sgwc.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": ""
+  },
+  "14s2brd": {
+   "f": "a11y-14s2brd.webp",
    "w": 160,
    "h": 90,
-   "p": "https://gandsinsulating.com/about/",
-   "v": ""
-  },
-  "130p7y9": {
-   "f": "a11y-130p7y9.webp",
-   "w": 640,
-   "h": 400,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "15ja7vu": {
-   "f": "a11y-15ja7vu.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "15l5j8j": {
-   "f": "a11y-15l5j8j.webp",
-   "w": 638,
-   "h": 90,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
-   "v": ""
-  },
-  "15o3blk": {
-   "f": "a11y-15o3blk.webp",
-   "w": 523,
-   "h": 228,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "16rw1o9": {
-   "f": "a11y-16rw1o9.webp",
-   "w": 523,
-   "h": 363,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "178mkte": {
-   "f": "a11y-178mkte.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "194y6ev": {
-   "f": "a11y-194y6ev.webp",
-   "w": 640,
-   "h": 114,
-   "p": "https://gandsinsulating.com/",
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
   "1a1hkd0": {
@@ -75,11 +41,32 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
+  "1bto1u4": {
+   "f": "a11y-1bto1u4.webp",
+   "w": 337,
+   "h": 103,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
   "1ca74xk": {
    "f": "a11y-1ca74xk.webp",
    "w": 640,
    "h": 241,
    "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
+   "v": ""
+  },
+  "1ccqruv": {
+   "f": "a11y-1ccqruv.webp",
+   "w": 640,
+   "h": 328,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1d0d8jx": {
+   "f": "a11y-1d0d8jx.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
   "1df6p8s": {
@@ -89,25 +76,25 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
-  "1e0cq9s": {
-   "f": "a11y-1e0cq9s.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
+  "1ej0jg7": {
+   "f": "a11y-1ej0jg7.webp",
+   "w": 640,
+   "h": 93,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": ""
   },
-  "1fik9i1": {
-   "f": "a11y-1fik9i1.webp",
+  "1f356us": {
+   "f": "a11y-1f356us.webp",
    "w": 640,
-   "h": 90,
-   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "h": 103,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
-  "1fm0fzx": {
-   "f": "a11y-1fm0fzx.webp",
-   "w": 640,
+  "1i5gfrk": {
+   "f": "a11y-1i5gfrk.webp",
+   "w": 160,
    "h": 90,
-   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
   "1ikla1p": {
@@ -117,6 +104,13 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
+  "1kdnxc9": {
+   "f": "a11y-1kdnxc9.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
   "1khydli": {
    "f": "a11y-1khydli.webp",
    "w": 640,
@@ -124,11 +118,11 @@
    "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
    "v": ""
   },
-  "1kibj2l": {
-   "f": "a11y-1kibj2l.webp",
+  "1ksijtm": {
+   "f": "a11y-1ksijtm.webp",
    "w": 640,
-   "h": 93,
-   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": ""
   },
   "1n2g5hc": {
@@ -145,18 +139,32 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
+  "1o0sdjq": {
+   "f": "a11y-1o0sdjq.webp",
+   "w": 298,
+   "h": 153,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1obzl48": {
+   "f": "a11y-1obzl48.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": ""
+  },
+  "1ohz1vc": {
+   "f": "a11y-1ohz1vc.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
   "1ot0dlb": {
    "f": "a11y-1ot0dlb.webp",
    "w": 250,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
-   "v": ""
-  },
-  "1pgwchu": {
-   "f": "a11y-1pgwchu.webp",
-   "w": 640,
-   "h": 93,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
    "v": ""
   },
   "1q0iu5k": {
@@ -166,6 +174,41 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
+  "1qehxnl": {
+   "f": "a11y-1qehxnl.webp",
+   "w": 250,
+   "h": 153,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": ""
+  },
+  "1qjij2": {
+   "f": "a11y-1qjij2.webp",
+   "w": 337,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1s95arm": {
+   "f": "a11y-1s95arm.webp",
+   "w": 337,
+   "h": 103,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1t3f32l": {
+   "f": "a11y-1t3f32l.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "1tl9edr": {
+   "f": "a11y-1tl9edr.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
   "1u69t24": {
    "f": "a11y-1u69t24.webp",
    "w": 640,
@@ -173,18 +216,25 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": ""
   },
-  "1v2tde8": {
-   "f": "a11y-1v2tde8.webp",
+  "1xt22ye": {
+   "f": "a11y-1xt22ye.webp",
    "w": 160,
-   "h": 90,
-   "p": "https://gandsinsulating.com/about/",
+   "h": 269,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
-  "1yasbmm": {
-   "f": "a11y-1yasbmm.webp",
+  "21sxz1": {
+   "f": "a11y-21sxz1.webp",
+   "w": 160,
+   "h": 269,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "27jbbo": {
+   "f": "a11y-27jbbo.webp",
    "w": 640,
    "h": 132,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": ""
   },
   "29jxd6": {
@@ -194,81 +244,151 @@
    "p": "https://gandsinsulating.com/about/",
    "v": ""
   },
-  "4acndh": {
-   "f": "a11y-4acndh.webp",
-   "w": 640,
-   "h": 93,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
-   "v": ""
-  },
-  "9516qy": {
-   "f": "a11y-9516qy.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "98je0r": {
-   "f": "a11y-98je0r.webp",
+  "2kwje1": {
+   "f": "a11y-2kwje1.webp",
    "w": 640,
    "h": 132,
-   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
-  "c4n342": {
-   "f": "a11y-c4n342.webp",
+  "2wbo9l": {
+   "f": "a11y-2wbo9l.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "39vwz2": {
+   "f": "a11y-39vwz2.webp",
+   "w": 640,
+   "h": 328,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": ""
+  },
+  "4f0eu6": {
+   "f": "a11y-4f0eu6.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "4q1j3n": {
+   "f": "a11y-4q1j3n.webp",
+   "w": 160,
+   "h": 269,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "5p8brs": {
+   "f": "a11y-5p8brs.webp",
    "w": 640,
    "h": 132,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": ""
   },
-  "em0ptd": {
-   "f": "a11y-em0ptd.webp",
-   "w": 519,
-   "h": 101,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "eqq1n9": {
-   "f": "a11y-eqq1n9.webp",
-   "w": 640,
-   "h": 131,
-   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
-   "v": ""
-  },
-  "hwukh5": {
-   "f": "a11y-hwukh5.webp",
-   "w": 640,
-   "h": 103,
-   "p": "https://gandsinsulating.com/about/",
-   "v": ""
-  },
-  "l4d6xc": {
-   "f": "a11y-l4d6xc.webp",
+  "7te92h": {
+   "f": "a11y-7te92h.webp",
    "w": 245,
    "h": 90,
-   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
    "v": ""
   },
-  "m7bthf": {
-   "f": "a11y-m7bthf.webp",
-   "w": 523,
-   "h": 363,
-   "p": "https://gandsinsulating.com/",
+  "7ul44s": {
+   "f": "a11y-7ul44s.webp",
+   "w": 640,
+   "h": 93,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": ""
   },
-  "mppjgv": {
-   "f": "a11y-mppjgv.webp",
+  "9yrxe9": {
+   "f": "a11y-9yrxe9.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "c2jy29": {
+   "f": "a11y-c2jy29.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": ""
+  },
+  "d3ob58": {
+   "f": "a11y-d3ob58.webp",
+   "w": 634,
+   "h": 104,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "fwaade": {
+   "f": "a11y-fwaade.webp",
+   "w": 337,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "i7hq60": {
+   "f": "a11y-i7hq60.webp",
    "w": 640,
    "h": 132,
-   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": ""
   },
-  "pbhfc9": {
-   "f": "a11y-pbhfc9.webp",
-   "w": 273,
-   "h": 348,
-   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+  "kbz0m4": {
+   "f": "a11y-kbz0m4.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": ""
+  },
+  "luinrq": {
+   "f": "a11y-luinrq.webp",
+   "w": 640,
+   "h": 213,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": ""
+  },
+  "mw629v": {
+   "f": "a11y-mw629v.webp",
+   "w": 245,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "pi8jo4": {
+   "f": "a11y-pi8jo4.webp",
+   "w": 640,
+   "h": 132,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": ""
+  },
+  "preojl": {
+   "f": "a11y-preojl.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "qkbakz": {
+   "f": "a11y-qkbakz.webp",
+   "w": 245,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": ""
+  },
+  "r5si8w": {
+   "f": "a11y-r5si8w.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "rd1a0s": {
+   "f": "a11y-rd1a0s.webp",
+   "w": 250,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": ""
   },
   "s8nqua": {
@@ -278,25 +398,18 @@
    "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
    "v": ""
   },
-  "senwx1": {
-   "f": "a11y-senwx1.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
+  "u30w3u": {
+   "f": "a11y-u30w3u.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
    "v": ""
   },
-  "snb0lg": {
-   "f": "a11y-snb0lg.webp",
-   "w": 523,
-   "h": 228,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "unz3a": {
-   "f": "a11y-unz3a.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
+  "uskbs9": {
+   "f": "a11y-uskbs9.webp",
+   "w": 174,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   },
   "v49xma": {
@@ -306,18 +419,39 @@
    "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
    "v": ""
   },
-  "x8x086": {
-   "f": "a11y-x8x086.webp",
-   "w": 292,
-   "h": 350,
-   "p": "https://gandsinsulating.com/",
-   "v": ""
-  },
-  "zv8zac": {
-   "f": "a11y-zv8zac.webp",
+  "vd840y": {
+   "f": "a11y-vd840y.webp",
    "w": 245,
    "h": 90,
-   "p": "https://gandsinsulating.com/",
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": ""
+  },
+  "wfnyz4": {
+   "f": "a11y-wfnyz4.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": ""
+  },
+  "x5ywkh": {
+   "f": "a11y-x5ywkh.webp",
+   "w": 638,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": ""
+  },
+  "xp6a4g": {
+   "f": "a11y-xp6a4g.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": ""
+  },
+  "zhynrm": {
+   "f": "a11y-zhynrm.webp",
+   "w": 245,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": ""
   }
  },
@@ -327,6 +461,48 @@
    "w": 243,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "12ms5z0": {
+   "f": "ux-12ms5z0.webp",
+   "w": 193,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "12wjyzs": {
+   "f": "ux-12wjyzs.webp",
+   "w": 255,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "13fi9d3": {
+   "f": "ux-13fi9d3.webp",
+   "w": 174,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation/",
+   "v": "mobile"
+  },
+  "13r37ka": {
+   "f": "ux-13r37ka.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/fiberglass-insulation/",
+   "v": "mobile"
+  },
+  "156wis9": {
+   "f": "ux-156wis9.webp",
+   "w": 335,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "15drl04": {
+   "f": "ux-15drl04.webp",
+   "w": 261,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
    "v": "mobile"
   },
   "15g84zk": {
@@ -350,11 +526,32 @@
    "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
    "v": "mobile"
   },
+  "170a5sy": {
+   "f": "ux-170a5sy.webp",
+   "w": 282,
+   "h": 90,
+   "p": "https://gandsinsulating.com/privacy-policy/",
+   "v": "mobile"
+  },
+  "177eayu": {
+   "f": "ux-177eayu.webp",
+   "w": 213,
+   "h": 90,
+   "p": "https://gandsinsulating.com/spray-foam-insulation/",
+   "v": "mobile"
+  },
   "17owaqg": {
    "f": "ux-17owaqg.webp",
    "w": 217,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "184s6xl": {
+   "f": "ux-184s6xl.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
    "v": "mobile"
   },
   "19dyhjh": {
@@ -364,11 +561,67 @@
    "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": "mobile"
   },
+  "19npx5d": {
+   "f": "ux-19npx5d.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "19qvtfr": {
+   "f": "ux-19qvtfr.webp",
+   "w": 166,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "19s7qwx": {
+   "f": "ux-19s7qwx.webp",
+   "w": 236,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
+  "1a8qcb0": {
+   "f": "ux-1a8qcb0.webp",
+   "w": 165,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "1aund3v": {
+   "f": "ux-1aund3v.webp",
+   "w": 196,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
   "1b1cyho": {
    "f": "ux-1b1cyho.webp",
    "w": 375,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1ce9u8m": {
+   "f": "ux-1ce9u8m.webp",
+   "w": 208,
+   "h": 90,
+   "p": "https://gandsinsulating.com/multifamily-insulation/",
+   "v": "mobile"
+  },
+  "1cg22yo": {
+   "f": "ux-1cg22yo.webp",
+   "w": 171,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "1cwblm9": {
+   "f": "ux-1cwblm9.webp",
+   "w": 304,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": "mobile"
   },
   "1czdla6": {
@@ -385,11 +638,74 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "1f1prej": {
+   "f": "ux-1f1prej.webp",
+   "w": 278,
+   "h": 90,
+   "p": "https://gandsinsulating.com/accessibility-statement/",
+   "v": "mobile"
+  },
+  "1fubxx8": {
+   "f": "ux-1fubxx8.webp",
+   "w": 224,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "1fwakjs": {
+   "f": "ux-1fwakjs.webp",
+   "w": 307,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/little-rock/",
+   "v": "mobile"
+  },
+  "1g2tr9y": {
+   "f": "ux-1g2tr9y.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
   "1gb5t28": {
    "f": "ux-1gb5t28.webp",
    "w": 160,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1gd5ab2": {
+   "f": "ux-1gd5ab2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1gdwc2u": {
+   "f": "ux-1gdwc2u.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "1hr8lnz": {
+   "f": "ux-1hr8lnz.webp",
+   "w": 217,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/springdale/",
+   "v": "mobile"
+  },
+  "1hu95q4": {
+   "f": "ux-1hu95q4.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
+  "1jlc3xc": {
+   "f": "ux-1jlc3xc.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": "mobile"
   },
   "1jq3oux": {
@@ -399,6 +715,48 @@
    "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": "mobile"
   },
+  "1jw5k7q": {
+   "f": "ux-1jw5k7q.webp",
+   "w": 227,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "1jwo35k": {
+   "f": "ux-1jwo35k.webp",
+   "w": 249,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "1kapnds": {
+   "f": "ux-1kapnds.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "1kvheoc": {
+   "f": "ux-1kvheoc.webp",
+   "w": 267,
+   "h": 90,
+   "p": "https://gandsinsulating.com/crawl-spaces/",
+   "v": "mobile"
+  },
+  "1l76rk7": {
+   "f": "ux-1l76rk7.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/jonesboro/",
+   "v": "mobile"
+  },
+  "1lapcrm": {
+   "f": "ux-1lapcrm.webp",
+   "w": 213,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
   "1ld1y96": {
    "f": "ux-1ld1y96.webp",
    "w": 177,
@@ -406,11 +764,39 @@
    "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
    "v": "mobile"
   },
+  "1lqn6uk": {
+   "f": "ux-1lqn6uk.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "1m6d57d": {
+   "f": "ux-1m6d57d.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation-removal/",
+   "v": "mobile"
+  },
+  "1mey3h0": {
+   "f": "ux-1mey3h0.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/springdale/",
+   "v": "mobile"
+  },
   "1o1ud2h": {
    "f": "ux-1o1ud2h.webp",
    "w": 160,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1ohp9s8": {
+   "f": "ux-1ohp9s8.webp",
+   "w": 311,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/jonesboro/",
    "v": "mobile"
   },
   "1p7nfg6": {
@@ -427,6 +813,20 @@
    "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
    "v": "mobile"
   },
+  "1pj93hw": {
+   "f": "ux-1pj93hw.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/residential-insulation/",
+   "v": "mobile"
+  },
+  "1ptmsfa": {
+   "f": "ux-1ptmsfa.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
   "1q71saq": {
    "f": "ux-1q71saq.webp",
    "w": 187,
@@ -439,6 +839,20 @@
    "w": 375,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": "mobile"
+  },
+  "1ry8gak": {
+   "f": "ux-1ry8gak.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
+  "1rzukvs": {
+   "f": "ux-1rzukvs.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/little-rock/",
    "v": "mobile"
   },
   "1s4ac0": {
@@ -462,11 +876,39 @@
    "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
    "v": "mobile"
   },
+  "1tz0jap": {
+   "f": "ux-1tz0jap.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation/",
+   "v": "mobile"
+  },
   "1u2aa0w": {
    "f": "ux-1u2aa0w.webp",
    "w": 191,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "1uz4xpq": {
+   "f": "ux-1uz4xpq.webp",
+   "w": 168,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "1v4phn8": {
+   "f": "ux-1v4phn8.webp",
+   "w": 304,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "1vhhyyd": {
+   "f": "ux-1vhhyyd.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation/",
    "v": "mobile"
   },
   "1vphsk2": {
@@ -476,6 +918,13 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "1w5isa4": {
+   "f": "ux-1w5isa4.webp",
+   "w": 227,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
   "1wo8jny": {
    "f": "ux-1wo8jny.webp",
    "w": 334,
@@ -483,11 +932,81 @@
    "p": "https://gandsinsulating.com/about/news/preparing-for-arkansas-winter/",
    "v": "mobile"
   },
+  "1xhhd52": {
+   "f": "ux-1xhhd52.webp",
+   "w": 281,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
   "1xkfi67": {
    "f": "ux-1xkfi67.webp",
    "w": 160,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "1xtchox": {
+   "f": "ux-1xtchox.webp",
+   "w": 234,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
+  "1y19k13": {
+   "f": "ux-1y19k13.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "1y1mal8": {
+   "f": "ux-1y1mal8.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/jonesboro/",
+   "v": "mobile"
+  },
+  "1yrk44x": {
+   "f": "ux-1yrk44x.webp",
+   "w": 189,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "2bwwl1": {
+   "f": "ux-2bwwl1.webp",
+   "w": 363,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "35p5m7": {
+   "f": "ux-35p5m7.webp",
+   "w": 232,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "3l12ja": {
+   "f": "ux-3l12ja.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/jonesboro/",
+   "v": "mobile"
+  },
+  "45ydf5": {
+   "f": "ux-45ydf5.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/jonesboro/",
+   "v": "mobile"
+  },
+  "47eu4t": {
+   "f": "ux-47eu4t.webp",
+   "w": 197,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
    "v": "mobile"
   },
   "4aq9vf": {
@@ -518,11 +1037,32 @@
    "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
    "v": "mobile"
   },
+  "6kcqao": {
+   "f": "ux-6kcqao.webp",
+   "w": 168,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "74522z": {
+   "f": "ux-74522z.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/springdale/",
+   "v": "mobile"
+  },
   "7b2eyr": {
    "f": "ux-7b2eyr.webp",
    "w": 309,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
+   "v": "mobile"
+  },
+  "7jvxwi": {
+   "f": "ux-7jvxwi.webp",
+   "w": 185,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": "mobile"
   },
   "7qvj20": {
@@ -546,6 +1086,69 @@
    "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
    "v": "mobile"
   },
+  "9g7vls": {
+   "f": "ux-9g7vls.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
+  "9h3cyn": {
+   "f": "ux-9h3cyn.webp",
+   "w": 258,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "9ik5np": {
+   "f": "ux-9ik5np.webp",
+   "w": 234,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": "mobile"
+  },
+  "a2tnr1": {
+   "f": "ux-a2tnr1.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/privacy-policy/",
+   "v": "mobile"
+  },
+  "addpr6": {
+   "f": "ux-addpr6.webp",
+   "w": 219,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": "mobile"
+  },
+  "ba7gaq": {
+   "f": "ux-ba7gaq.webp",
+   "w": 276,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
+  "cj0bzn": {
+   "f": "ux-cj0bzn.webp",
+   "w": 164,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "cjfulg": {
+   "f": "ux-cjfulg.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/residential-insulation/",
+   "v": "mobile"
+  },
+  "cspx89": {
+   "f": "ux-cspx89.webp",
+   "w": 252,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/little-rock/",
+   "v": "mobile"
+  },
   "d3910m": {
    "f": "ux-d3910m.webp",
    "w": 219,
@@ -553,11 +1156,25 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "da9hes": {
+   "f": "ux-da9hes.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/residential-insulation/",
+   "v": "mobile"
+  },
   "dd3ied": {
    "f": "ux-dd3ied.webp",
    "w": 193,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "dkl4zd": {
+   "f": "ux-dkl4zd.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": "mobile"
   },
   "dpjaqw": {
@@ -574,11 +1191,88 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "ggvcaf": {
+   "f": "ux-ggvcaf.webp",
+   "w": 295,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/springdale/",
+   "v": "mobile"
+  },
+  "ghv5t4": {
+   "f": "ux-ghv5t4.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "hxv862": {
+   "f": "ux-hxv862.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/fiberglass-insulation/",
+   "v": "mobile"
+  },
+  "i5f2nx": {
+   "f": "ux-i5f2nx.webp",
+   "w": 171,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "ib0mz0": {
+   "f": "ux-ib0mz0.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
   "j7gbwj": {
    "f": "ux-j7gbwj.webp",
    "w": 167,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "j7ifpy": {
+   "f": "ux-j7ifpy.webp",
+   "w": 178,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
+  "kimr3e": {
+   "f": "ux-kimr3e.webp",
+   "w": 165,
+   "h": 90,
+   "p": "https://gandsinsulating.com/residential-insulation/",
+   "v": "mobile"
+  },
+  "kjk4cl": {
+   "f": "ux-kjk4cl.webp",
+   "w": 164,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/springdale/",
+   "v": "mobile"
+  },
+  "l1ezu4": {
+   "f": "ux-l1ezu4.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/how-long-gutters-last-for-arkansas-homes/",
+   "v": "mobile"
+  },
+  "ladivb": {
+   "f": "ux-ladivb.webp",
+   "w": 165,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
+  "lfwev0": {
+   "f": "ux-lfwev0.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/fiberglass-insulation/",
    "v": "mobile"
   },
   "m2iuhi": {
@@ -602,11 +1296,25 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "n4de8z": {
+   "f": "ux-n4de8z.webp",
+   "w": 288,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
   "nft96k": {
    "f": "ux-nft96k.webp",
    "w": 375,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "nuqwdg": {
+   "f": "ux-nuqwdg.webp",
+   "w": 375,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
    "v": "mobile"
   },
   "o2h7kd": {
@@ -623,11 +1331,32 @@
    "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
    "v": "mobile"
   },
+  "ovxki5": {
+   "f": "ux-ovxki5.webp",
+   "w": 274,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/can-insulation-be-installed-over-existing-attic-insulation/",
+   "v": "mobile"
+  },
+  "ph1l17": {
+   "f": "ux-ph1l17.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/residential-insulation/",
+   "v": "mobile"
+  },
   "puzxyl": {
    "f": "ux-puzxyl.webp",
    "w": 244,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "q8n61u": {
+   "f": "ux-q8n61u.webp",
+   "w": 215,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": "mobile"
   },
   "qnnmcp": {
@@ -637,11 +1366,81 @@
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
    "v": "mobile"
   },
+  "qxdq5i": {
+   "f": "ux-qxdq5i.webp",
+   "w": 235,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "rkpmzq": {
+   "f": "ux-rkpmzq.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "rphfou": {
+   "f": "ux-rphfou.webp",
+   "w": 348,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
+   "v": "mobile"
+  },
+  "rqajfn": {
+   "f": "ux-rqajfn.webp",
+   "w": 205,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "rwhwfq": {
+   "f": "ux-rwhwfq.webp",
+   "w": 206,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation/",
+   "v": "mobile"
+  },
   "s340rz": {
    "f": "ux-s340rz.webp",
    "w": 263,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "s3dcj1": {
+   "f": "ux-s3dcj1.webp",
+   "w": 171,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "splmsv": {
+   "f": "ux-splmsv.webp",
+   "w": 226,
+   "h": 90,
+   "p": "https://gandsinsulating.com/multifamily-insulation/",
+   "v": "mobile"
+  },
+  "tyo93w": {
+   "f": "ux-tyo93w.webp",
+   "w": 226,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "ul8ncm": {
+   "f": "ux-ul8ncm.webp",
+   "w": 289,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/swepco-rate-increase-nwa-insulation/",
+   "v": "mobile"
+  },
+  "ume357": {
+   "f": "ux-ume357.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/preventing-moisture-from-arkansas-humidity/",
    "v": "mobile"
   },
   "uow2wm": {
@@ -656,6 +1455,20 @@
    "w": 184,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/how-often-to-clean-gutters/",
+   "v": "mobile"
+  },
+  "vdjqr6": {
+   "f": "ux-vdjqr6.webp",
+   "w": 162,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/little-rock/",
+   "v": "mobile"
+  },
+  "vghcou": {
+   "f": "ux-vghcou.webp",
+   "w": 284,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": "mobile"
   },
   "vvtvbn": {
@@ -679,11 +1492,46 @@
    "p": "https://gandsinsulating.com/about/news/arkansas-winter-insulation-tips/",
    "v": "mobile"
   },
+  "wo4zue": {
+   "f": "ux-wo4zue.webp",
+   "w": 208,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
+   "v": "mobile"
+  },
+  "wx6req": {
+   "f": "ux-wx6req.webp",
+   "w": 203,
+   "h": 90,
+   "p": "https://gandsinsulating.com/insulation/",
+   "v": "mobile"
+  },
+  "x8khxz": {
+   "f": "ux-x8khxz.webp",
+   "w": 167,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/keeping-arkansas-homes-cool-in-the-summer/",
+   "v": "mobile"
+  },
+  "xjmq25": {
+   "f": "ux-xjmq25.webp",
+   "w": 212,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
+   "v": "mobile"
+  },
   "ym2b0p": {
    "f": "ux-ym2b0p.webp",
    "w": 375,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/proper-spray-foam-insulation-thickness-arkansas/",
+   "v": "mobile"
+  },
+  "yoalir": {
+   "f": "ux-yoalir.webp",
+   "w": 166,
+   "h": 90,
+   "p": "https://gandsinsulating.com/about/news/what-is-crawl-space-encapsulation/",
    "v": "mobile"
   },
   "z4pctw": {
@@ -698,6 +1546,13 @@
    "w": 375,
    "h": 90,
    "p": "https://gandsinsulating.com/about/news/home-energy-saving-tips/",
+   "v": "mobile"
+  },
+  "zkjlom": {
+   "f": "ux-zkjlom.webp",
+   "w": 218,
+   "h": 90,
+   "p": "https://gandsinsulating.com/contact/",
    "v": "mobile"
   }
  }
