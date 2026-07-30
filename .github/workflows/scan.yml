@@ -24,6 +24,15 @@ on:
         required: false
         type: boolean
         default: true
+      shots:
+        description: "Capture a small screenshot of each flagged element (one per distinct element) and commit them with the scan data."
+        required: false
+        type: boolean
+        default: true
+      shot_max:
+        description: "Most screenshots to capture for this site (highest-severity, most-repeated elements first)."
+        required: false
+        default: "400"
 
 permissions:
   contents: write   # commit normalized scan data back to the repo
@@ -107,6 +116,20 @@ jobs:
           SCAN_URL: ${{ inputs.url }}
           SITE_NAME: ${{ inputs.name }}
         run: node scripts/ingest-ux.js
+
+      # Element screenshots — driven by the data the two ingest steps just wrote,
+      # so it photographs exactly the flagged elements (one shot per distinct
+      # element, reused everywhere that element appears). Runs before the commit
+      # so the images land in data/<slug>/shots/ alongside the scan record and
+      # survive a later Rebuild report. continue-on-error for the same reason as
+      # the UX steps: pictures are a bonus, they must never block the report.
+      - name: Capture element screenshots
+        if: ${{ inputs.shots }}
+        continue-on-error: true
+        env:
+          SCAN_URL: ${{ inputs.url }}
+          SHOT_MAX: ${{ inputs.shot_max }}
+        run: node scripts/shoot.js
 
       - name: Commit scan data
         run: |

@@ -2,8 +2,8 @@ name: CI
 
 # Fast, browser-free checks on every push and pull request. Guards the pure
 # logic (fingerprint grouping, WCAG lookup tables) that the report depends on.
-# The heavier browser tests (test:ux, test:sitewide) need Chromium + python3 and
-# are run on demand, not here.
+# The heavier browser tests (test:ux, test:shots, test:sitewide) need Chromium +
+# python3 and are run on demand, not here.
 on:
   push:
   pull_request:

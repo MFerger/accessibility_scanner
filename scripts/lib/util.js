@@ -63,6 +63,16 @@ function uxFingerprint(pageUrl, viewport, code, context, selector) {
   return hash(pageUrl + '|' + viewport + '|' + code + '|' + basis);
 }
 
+// Key for one element screenshot. Deliberately the SAME key the report groups
+// "site-wide" issues by (globalFingerprint, viewport folded in for UX findings),
+// so a single image covers every occurrence of that element across the site — a
+// flagged nav link on 40 pages is one picture, not 40. Takes a slim issue record
+// as stored in data/<slug>/{latest,ux-latest}.json.
+function shotKey(issue) {
+  const vp = (issue.viewport && issue.viewport !== 'all') ? issue.viewport + '|' : '';
+  return globalFingerprint(vp + issue.code, issue.context, issue.selector);
+}
+
 // Slug for a site: hostname only, leading "www." dropped, non-alnum -> "-".
 // Keeps "www.example.com" and "example.com" from creating two separate sites.
 function slugify(input) {
@@ -84,4 +94,4 @@ function hostname(input) {
   } catch (e) { return String(input || ''); }
 }
 
-module.exports = { hash, normalizeContext, truncate, fingerprint, globalFingerprint, uxFingerprint, slugify, hostname };
+module.exports = { hash, normalizeContext, truncate, fingerprint, globalFingerprint, uxFingerprint, shotKey, slugify, hostname };

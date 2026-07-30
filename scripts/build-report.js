@@ -7,6 +7,7 @@
  *
  *   <OUT_DIR>/index.html                  landing page (all sites)
  *   <OUT_DIR>/sites/<slug>/index.html     one report per site
+ *   <OUT_DIR>/sites/<slug>/shots/*.webp   element screenshots, copied from data/
  *
  * Runs on every scan so the landing page and every report stay in sync, and
  * nothing a previous run produced is ever lost.
@@ -73,6 +74,10 @@ const sites = slugs.map((slug) => {
   const dismissedSet = new Set(Object.keys(dismissedRaw));
   const reasonsByFp = reasonsFrom(dismissedRaw);
 
+  // Element screenshots are optional: sites scanned before the shooter existed
+  // (or with it turned off) simply render without pictures.
+  const shots = readJson(path.join(dir, 'shots.json'), null);
+
   // UX/layout scan data is optional — a site scanned before the UX scanner
   // existed (or with the UX scan turned off) simply has no second lens.
   const uxLatest = readJson(path.join(dir, 'ux-latest.json'), null);
@@ -86,6 +91,7 @@ const sites = slugs.map((slug) => {
       dismissedSet: uxDismissedSet,
       reasonsByFp: uxReasonsByFp,
       active: activeCounts(uxLatest, uxDismissedSet, uxReasonsByFp),
+      shots: (shots && shots.ux) || null,
     });
   }
 
@@ -95,8 +101,33 @@ const sites = slugs.map((slug) => {
     reasonsByFp,
     active: activeCounts(latest, dismissedSet, reasonsByFp),
     ux,
+    shots: (shots && shots.a11y) || null,
   });
 });
+
+// Copy the images each report references out of the committed data and next to
+// the HTML that points at them (<slug>/shots/<file>). Only what the manifest
+// still lists gets copied, so a pruned shot never lingers in a deploy.
+function copyShots(site, outDir) {
+  const from = path.join(DATA_DIR, site.slug, 'shots');
+  const files = new Set();
+  for (const m of [site.shots, site.ux && site.ux.shots]) {
+    for (const k of Object.keys(m || {})) if (m[k] && m[k].f) files.add(m[k].f);
+  }
+  if (files.size === 0) return { count: 0, bytes: 0 };
+  const dest = path.join(outDir, 'shots');
+  fs.mkdirSync(dest, { recursive: true });
+  let count = 0, bytes = 0;
+  for (const f of files) {
+    const src = path.join(from, f);
+    try {
+      fs.copyFileSync(src, path.join(dest, f));
+      bytes += fs.statSync(src).size;
+      count++;
+    } catch (e) { /* manifest entry with no file — render just shows no picture */ }
+  }
+  return { count, bytes };
+}
 
 // Worst sites first, on the landing page and in our own logging.
 sites.sort((a, b) => b.active.errors - a.active.errors || b.active.total - a.active.total);
@@ -104,12 +135,16 @@ sites.sort((a, b) => b.active.errors - a.active.errors || b.active.total - a.act
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.writeFileSync(path.join(OUT_DIR, 'index.html'), render.landing(sites), 'utf8');
 
+let shotCount = 0, shotBytes = 0;
 for (const s of sites) {
   const dir = path.join(OUT_DIR, 'sites', s.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), render.site(s), 'utf8');
+  const copied = copyShots(s, dir);
+  shotCount += copied.count; shotBytes += copied.bytes;
 }
 
 const totErrors = sites.reduce((n, s) => n + s.active.errors, 0);
-console.log('Built ' + sites.length + ' report(s), ' + totErrors + ' active errors -> ' +
-  OUT_DIR + '/index.html + ' + OUT_DIR + '/sites/<slug>/index.html');
+console.log('Built ' + sites.length + ' report(s), ' + totErrors + ' active errors' +
+  (shotCount ? ', ' + shotCount + ' screenshot(s) (' + (shotBytes / 1048576).toFixed(1) + ' MB)' : '') +
+  ' -> ' + OUT_DIR + '/index.html + ' + OUT_DIR + '/sites/<slug>/index.html');

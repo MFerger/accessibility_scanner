@@ -24,6 +24,7 @@
 
 const fs = require('fs');
 const puppeteer = require('puppeteer');
+const prep = require('./lib/prep');
 
 const RUN_CONFIG = process.env.RUN_CONFIG || 'run-config.json';
 const UX_CONFIG = process.env.UX_CONFIG || 'ux.config.json';
@@ -272,26 +273,9 @@ function measure(opts) {
 // Driver
 // ---------------------------------------------------------------------------
 
-async function settle(page) {
-  await page.addStyleTag({ content:
-    '*,*::before,*::after{animation:none!important;transition:none!important;' +
-    'scroll-behavior:auto!important;caret-color:transparent!important}' }).catch(() => {});
-  if (ignoreSelectors.length) {
-    await page.addStyleTag({ content: ignoreSelectors.join(',') + '{display:none!important}' }).catch(() => {});
-  }
-  await page.evaluate(async () => { try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {} }).catch(() => {});
-  await page.evaluate(async () => {                       // trigger lazy content
-    await new Promise((res) => {
-      var y = 0, h = window.innerHeight || 800, max = 0, t = setInterval(function () {
-        max = Math.max(document.body ? document.body.scrollHeight : 0, document.documentElement.scrollHeight);
-        window.scrollTo(0, y); y += h;
-        if (y >= max) { clearInterval(t); window.scrollTo(0, 0); res(); }
-      }, 40);
-      setTimeout(function () { clearInterval(t); window.scrollTo(0, 0); res(); }, 4000);
-    });
-  }).catch(() => {});
-  await new Promise((r) => setTimeout(r, settleMs));
-}
+// Page preparation lives in lib/prep.js so shoot.js photographs pages in the
+// exact same state this scanner measured them in.
+const settle = (page) => prep.settle(page, { ignoreSelectors, settleMs });
 
 async function scanPageViewport(browser, url, vp) {
   const issues = [];

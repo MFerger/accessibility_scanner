@@ -17,11 +17,13 @@ client's site URL. It:
 3. **Ingests** the raw results into a slim, committed record under
    `data/<slug>/`.
 4. Optionally runs the **UX / layout** scan (rendering + mobile-friendliness).
-5. **Builds** the static HTML reports into `build/` and deploys to Pages.
+5. Optionally **screenshots** each flagged element (see below).
+6. **Builds** the static HTML reports into `build/` and deploys to Pages.
 
 Workflow inputs: `url`, `name` (display name), `types` (sitemap types, default
-`post,page`), `single` (scan only the one URL — see below), and `ux` (run the
-UX lens, default on).
+`post,page`), `single` (scan only the one URL — see below), `ux` (run the UX
+lens, default on), `shots` (capture element screenshots, default on) and
+`shot_max` (screenshot budget, default 400).
 
 **Rebuild report** is a separate workflow that regenerates the HTML from the
 already-committed scan data (no re-scan) — use it to pick up report/wording
@@ -36,7 +38,7 @@ open build/index.html
 ```
 
 Individual steps are also available: `npm run discover`, `scan`, `ingest`,
-`scan:ux`, `ingest:ux`, `report`.
+`scan:ux`, `ingest:ux`, `shots`, `report`.
 
 ### Scanning a single page
 
@@ -51,6 +53,61 @@ npm run scan && npm run ingest && npm run report
 The result is ingested into the **same** `data/<slug>/` record as a full scan,
 so it refreshes only that one page's issues — it is not a full re-scan of the
 site.
+
+## Element screenshots
+
+Every report can show a small picture of the thing it is complaining about. It
+is a **crop of the flagged element** — the element plus ~24px of surrounding
+context, ringed in red — not a full-page shot, so you can see at a glance which
+button, link or paragraph is at fault:
+
+```sh
+SCAN_URL=https://clientsite.com npm run shots   # after ingest, before report
+```
+
+`scripts/shoot.js` is driven by the already-ingested findings, so it revisits
+each page once and photographs exactly the elements that were flagged (a11y
+findings at pa11y's 1280×1024 viewport, UX findings at the viewport they were
+found at). Elements it can't photograph — off-canvas skip links, `display:none`
+nodes, console errors, elements that vanished since the scan — are skipped and
+simply render without a picture.
+
+**One shot per element, not per occurrence.** Shots are keyed the same way the
+report groups site-wide issues, so a flagged nav link that appears on 40 pages
+is one image reused 40 times. That is what keeps this cheap.
+
+### Storage
+
+Images are committed to `data/<slug>/shots/` (with a `shots.json` manifest)
+alongside the scan data, so a **Rebuild report** still has them and every report
+stays reproducible from the repo alone. Real numbers from a 58-page client site:
+
+| | |
+|---|---|
+| Distinct flagged elements | ~580 (from ~2,600 occurrences) |
+| Average image | ~5 KB (WebP, quality 70, ≤640×400) |
+| Cost at the default 400 cap | **~2 MB per site, per scan** |
+
+Two things keep that from compounding:
+
+* **Re-scans are usually free.** An unchanged element re-renders to identical
+  bytes, which is the same git blob — no new objects, no history growth. Only
+  elements that actually changed cost anything.
+* **Stale images are pruned.** Each run deletes images no current finding points
+  at, so the working tree tracks the latest scan. (Git *history* still holds
+  every version ever committed — that is the one cost you can't undo without
+  rewriting history.)
+
+Tune it with `SHOT_MAX` (budget — errors first, then the elements repeated on
+the most pages), `SHOT_QUALITY`, `SHOT_PAD`, `SHOT_MAX_W` / `SHOT_MAX_H`, or
+turn it off entirely by unticking **shots** in the workflow. `SHOT_MAX=0` means
+no cap. Trimming the committed images later is just `rm -rf data/<slug>/shots
+data/<slug>/shots.json` plus a rebuild.
+
+> **Note:** if you password-protect the report with `REPORT_PASSWORD`,
+> staticrypt encrypts the HTML but **not** the `shots/*.webp` files — they stay
+> readable to anyone who guesses their URL. The report is `noindex` and
+> `robots.txt`-disallowed, but don't treat the images as secret.
 
 ## Dismissing issues
 
@@ -83,6 +140,7 @@ committed to `data/` to persist across rebuilds:
 ```sh
 npm test            # fast, browser-free: fingerprint grouping + WCAG tables
 npm run test:ux     # UX scanner against HTML fixtures (needs Chromium + python3)
+npm run test:shots  # element screenshots, checked by decoding the pixels
 npm run test:sitewide  # report interactivity (needs Chromium)
 ```
 

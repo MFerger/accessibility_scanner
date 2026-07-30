@@ -11,7 +11,7 @@
 
 const wcag = require('./lib/wcag');
 const uxChecks = require('./lib/ux-checks');
-const { globalFingerprint } = require('./lib/util');
+const { globalFingerprint, shotKey } = require('./lib/util');
 
 const esc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -152,6 +152,17 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
   text-transform:uppercase;letter-spacing:.03em;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 5px}
 .swbadge{display:inline-block;font-size:10.5px;color:var(--accent);border:1px solid rgba(37,99,235,.35);
   background:rgba(37,99,235,.08);border-radius:4px;padding:0 6px;margin:0 0 4px}
+
+/* element screenshot — a crop of the flagged element, ringed in red */
+.shot{margin:8px 0 2px;padding:0}
+.shot a{display:inline-block;line-height:0;border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;background:#fff;cursor:zoom-in;max-width:100%}
+.shot a:hover{border-color:var(--accent)}
+.shot img{display:block;max-width:100%;max-height:300px;width:auto;height:auto}
+.shot figcaption{font-size:11px;color:var(--muted);margin:4px 0 0;line-height:1.35;word-break:break-all}
+.lightbox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:flex;
+  align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;height:auto;background:#fff;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
 
 /* by-issue cards */
 .icard{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:0 0 10px;background:var(--card)}
@@ -303,7 +314,27 @@ try{localStorage.setItem('a11y-theme',n);}catch(e){}});
 // Per-site report
 // ---------------------------------------------------------------------------
 
-function occurrence(it) {
+// A cropped screenshot of the flagged element, ringed in red by shoot.js. Keyed
+// by element, not by occurrence, so the SAME picture is reused everywhere that
+// element is flagged — it was shot on one page (named in the caption) and is
+// representative of the rest.
+function shotFigure(it, shots) {
+  const s = shots && shots[shotKey(it)];
+  if (!s || !s.f) return '';
+  const src = 'shots/' + s.f;
+  let where = s.p || '';
+  try { where = new URL(s.p).pathname || s.p; } catch (e) { /* keep the raw string */ }
+  // Slugs get long; keep the caption to one line and put the full URL in the tooltip.
+  const short = where.length > 42 ? where.slice(0, 20) + '…' + where.slice(-20) : where;
+  const dims = (s.w && s.h) ? ' width="' + s.w + '" height="' + s.h + '"' : '';
+  // target=_blank is the no-JS fallback; with JS the click opens the lightbox.
+  return `<figure class="shot"><a href="${esc(src)}" target="_blank" rel="noopener" title="Captured on ${esc(s.p || '')}${s.v ? ' at ' + esc(s.v) : ''} — click to enlarge">` +
+    `<img src="${esc(src)}"${dims} loading="lazy" decoding="async" ` +
+    `alt="Screenshot of the flagged element on ${esc(where)}, ringed in red"></a>` +
+    `<figcaption>📷 ${esc(short)}${s.v ? ' &middot; ' + esc(s.v) : ''}</figcaption></figure>`;
+}
+
+function occurrence(it, shots) {
   // URL-independent key: same code + same element on any page collapses to one
   // gfp, so the client can group it as a single "site-wide" issue. Fold the UX
   // viewport in (when present) so width-specific bugs stay distinct per viewport.
@@ -316,17 +347,18 @@ function occurrence(it) {
 <div class="dz"><label title="Mark resolved — you fixed it (or will)"><input type="checkbox" class="dismiss" aria-label="Mark this occurrence resolved"></label><button class="fp-flag" type="button" aria-pressed="false" title="False positive — the scanner flagged this incorrectly">⚑</button></div>
 <div class="body">
 ${isNew ? '<span class="newtag" title="First seen in the latest scan">NEW</span>' : ''}${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
+${shotFigure(it, shots)}
 <div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
 ${it.context ? '<pre><code>' + esc(it.context) + '</code></pre>' : ''}
 </div></li>`;
 }
 
-function group(g, codes) {
+function group(g, codes, shots) {
   const meta = codes[g.code] || {};
   const title = meta.label || g.code;
   const ref = meta.sc ? 'WCAG ' + meta.sc : 'Reference';
   const M = methodOf(meta.method);
-  const occ = g.items.map(occurrence).join('\n');
+  const occ = g.items.map((it) => occurrence(it, shots)).join('\n');
   const anyNew = g.items.some((i) => i.isNew);
   // Worst axe impact across the group's occurrences, so an impact filter can
   // hide the whole issue card (matching the severity filter's group-level hide).
@@ -354,7 +386,7 @@ ${meta.tip ? '<div class="tip tip-standard"><b>How to fix:</b> ' + esc(meta.tip)
 </div>`;
 }
 
-function pageSection(p, codes, dismissed) {
+function pageSection(p, codes, dismissed, shots) {
   const byCode = {};
   for (const it of p.issues) (byCode[it.code] = byCode[it.code] || []).push(it);
   const groups = Object.keys(byCode).map((code) => {
@@ -369,7 +401,7 @@ function pageSection(p, codes, dismissed) {
   // Band dividers (locked mode only, via CSS) — render only if non-empty.
   const divFix = groups.some((g) => g.fixable) ? '<div class="band band-fix">Fixable by you — CSS / JS</div>' : '';
   const divNeed = groups.some((g) => !g.fixable) ? '<div class="band band-need">Needs template / CMS access</div>' : '';
-  const inner = groups.map((g) => group(g, codes)).join('\n');
+  const inner = groups.map((g) => group(g, codes, shots)).join('\n');
   return `<section class="pg${p.act === 0 ? ' clean' : ''}" data-page="${esc(p.url)}">
 <h2><a class="pglink" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a> <span class="pgcount">${p.errs} errors / ${p.act} issues</span></h2>
 <div class="groups">${divFix}${divNeed}${inner || '<p class="ok">No issues found.</p>'}</div>
@@ -395,12 +427,16 @@ function lensPanel(lensId, data, codes, opts) {
   // page would bury the findings. The a11y lens keeps them (clean is notable).
   if (!showClean) pageList = pageList.filter((p) => p.issues.length > 0);
   pageList.sort((p, q) => q.errs - p.errs || q.act - p.act);
-  const sections = pageList.map((p) => pageSection(p, codes, dismissed)).join('\n');
+  const sections = pageList.map((p) => pageSection(p, codes, dismissed, data.shots)).join('\n');
 
   const newBadge = (!data.firstScan && data.summary.new) ? `<span class="pill new">⊕ ${data.summary.new} new since last scan</span>` : '';
   const resolvedBadge = (!data.firstScan && data.summary.resolved) ? `<span class="pill resolved">♻ ${data.summary.resolved} resolved</span>` : '';
   const errWord = lensId === 'ux' ? 'page error' : 'scan error';
   const scanErrBadge = data.summary.scanErrors ? `<span class="pill" title="Pages that failed to load/evaluate cleanly — not findings">⚠ ${data.summary.scanErrors} ${errWord}${data.summary.scanErrors === 1 ? '' : 's'}</span>` : '';
+  const shotN = data.shots ? Object.keys(data.shots).length : 0;
+  const shotBadge = shotN
+    ? `<span class="pill" title="One cropped screenshot per distinct flagged element, reused everywhere that element appears. Expand an issue's occurrences to see them.">📷 ${shotN} element screenshot${shotN === 1 ? '' : 's'}</span>`
+    : '';
 
   const lensSwitch = hasUx ? `<div class="row lensrow"><div class="seg" role="group" aria-label="Report section">
 <button class="btn${lensId === 'a11y' ? ' active' : ''}" data-lens-to="a11y">Accessibility</button>
@@ -433,7 +469,7 @@ function lensPanel(lensId, data, codes, opts) {
 <div><div class="n cFalsePos">${a.falsePositives || 0}</div><div class="k">false positives</div></div>
 <div class="spacer"></div>${sparkline(data.history)}
 </div>
-<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}<span class="pill fixsum fixSummary"></span></div>
+<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}${shotBadge}<span class="pill fixsum fixSummary"></span></div>
 
 <div class="controls">
 ${lensSwitch}<div class="row">
@@ -657,11 +693,12 @@ const CLIENT_JS = `
         var code = li.getAttribute('data-code');
         var sec = li.closest('.pg');
         var page = sec ? sec.getAttribute('data-page') : '';
-        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}, impact:'', neu:false});
+        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}, impact:'', neu:false, shot:''});
         rec.count++; if (page) rec.pages[page] = 1;
         var imp = li.getAttribute('data-impact') || '';
         if (imp && (!rec.impact || impRank(imp) < impRank(rec.impact))) rec.impact = imp;   // keep the worst
         if (li.getAttribute('data-new')) rec.neu = true;
+        if (!rec.shot){ var fig = li.querySelector('.shot'); if (fig) rec.shot = fig.outerHTML; }
       });
       var rows = Object.keys(map).map(function(code){
         var r = map[code]; r.code = code;
@@ -712,6 +749,7 @@ const CLIENT_JS = `
         + '<span class="ghspacer"></span><button class="copy" type="button" title="Copy title + why for your report">copy</button></div>'
         + (meta.why ? '<div class="why"><b>Why it matters:</b> '+escapeHtml(meta.why)+'</div>' : '')
         + tip
+        + (r.shot || '')                                    // one representative element
         + '<div class="pages"><span class="lbl">Found on '+pages.length+' page'+(pages.length===1?'':'s')+':</span> '+plinks+'</div>'
         + '</div>';
     }
@@ -979,6 +1017,46 @@ const CLIENT_JS = `
     var saved; try { saved = localStorage.getItem(LENS); } catch(e){}
     if (saved==='ux' && document.getElementById('lens-ux')) showLens('ux');
   }
+
+  // ----- global: click an element screenshot to enlarge it -----
+  // Progressive enhancement: with JS off the figure's link just opens the image.
+  var lightbox = null, lightboxFrom = null;
+  function closeLightbox(){
+    if (!lightbox || lightbox.hidden) return;
+    lightbox.hidden = true;
+    if (lightboxFrom && lightboxFrom.focus) lightboxFrom.focus();
+    lightboxFrom = null;
+  }
+  document.addEventListener('click', function(ev){
+    var a = ev.target && ev.target.closest && ev.target.closest('.shot a');
+    if (!a) return;
+    ev.preventDefault();
+    if (!lightbox){
+      lightbox = document.createElement('div');
+      lightbox.className = 'lightbox';
+      lightbox.hidden = true;
+      lightbox.setAttribute('role','dialog');
+      lightbox.setAttribute('aria-modal','true');
+      lightbox.setAttribute('aria-label','Element screenshot');
+      lightbox.tabIndex = -1;
+      lightbox.appendChild(document.createElement('img'));
+      lightbox.addEventListener('click', closeLightbox);
+      document.body.appendChild(lightbox);
+    }
+    var src = a.getAttribute('href');
+    var thumb = a.querySelector('img');
+    var full = lightbox.firstChild;
+    full.src = src;
+    full.alt = thumb ? thumb.alt : 'Element screenshot';
+    // Crops are small on purpose — blow them up to 2x (capped by the CSS) so
+    // opening one is actually a closer look, not the same stamp on black.
+    var nw = thumb ? parseInt(thumb.getAttribute('width'), 10) : 0;
+    full.style.width = nw ? (nw * 2) + 'px' : '';
+    lightboxFrom = a;
+    lightbox.hidden = false;
+    lightbox.focus();
+  });
+  document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') closeLightbox(); });
 
   // ----- global: dark mode -----
   var tb = document.getElementById('themeBtn');

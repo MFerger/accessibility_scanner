@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screenshot target fixture</title>
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #fff; color: #111 }
+  .spacer { height: 2200px; padding: 8px }
+  /* Flat, unique fills so the test can prove the crop framed the right element. */
+  #target { display: block; width: 220px; height: 64px; margin: 0 0 0 120px;
+            background: #00c07f; border: 0; color: #00c07f; font-size: 1px }
+  #decoy  { display: block; width: 220px; height: 64px; margin: 120px 0 0 120px;
+            background: #3355ff; border: 0; color: #3355ff; font-size: 1px }
+  /* The classic off-canvas skip link — visible to a scanner, invisible on screen,
+     so it must NOT produce a screenshot. */
+  #offcanvas { position: absolute; left: -9999px; top: 0; width: 1px; height: 1px }
+</style>
+</head>
+<body>
+<a id="offcanvas" href="#main">Skip to content</a>
+<div class="spacer">Filler so the targets sit far below the fold.</div>
+<button id="target" type="button">Target</button>
+<button id="decoy" type="button">Decoy</button>
+<div style="height:600px"></div>
+</body>
+</html>
