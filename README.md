@@ -54,6 +54,33 @@ The result is ingested into the **same** `data/<slug>/` record as a full scan,
 so it refreshes only that one page's issues — it is not a full re-scan of the
 site.
 
+## "Needs review" vs. a real failure
+
+Both checkers report two different kinds of thing, and conflating them is the
+main source of apparent false positives:
+
+* **Proven failures** — the checker measured it and it fails. These are errors.
+* **Couldn't determine** — the checker could not measure it and wants a human
+  to look. Black text over a background image, a gradient, anything
+  semi-transparent, an absolutely-positioned element with no resolvable
+  background. **Not** proven failures.
+
+axe returns those as its `incomplete` bucket, and pa11y's default reports them
+capped at *error* — so a perfectly readable heading over a photo arrived looking
+identical to genuinely unreadable text. This scanner sets
+`levelCapWhenNeedsReview: 'warning'` so **the error count only ever means
+"proven broken"**, and marks every such finding **NEEDS REVIEW** in the report,
+with a `🔍 needs review` chip to hide or show them and a note explaining why
+the checker backed off.
+
+The htmlcs half is recognised by its code suffix (`.Abs`, `.Alpha`, `.BgImage`,
+`.FGColour`, `.BGColour`) and so is re-derived at **render** time — a *Rebuild
+report* reclassifies scans you already have. The axe half is only known to the
+runner, so it needs a fresh scan to take effect.
+
+If you check one by eye and the contrast is fine, flag it as a false positive
+(⚑) and export/commit the dismissal so it stays gone.
+
 ## Element screenshots
 
 Every report can show a small picture of the thing it is complaining about. It

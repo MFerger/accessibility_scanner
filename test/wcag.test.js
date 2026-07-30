@@ -67,4 +67,42 @@ ok(axe.sc === '1.4.3', 'axe color-contrast should map to SC 1.4.3, got ' + axe.s
 const enhanced = wcag.forSC('1.4.6');
 ok(enhanced.name && enhanced.url, '1.4.6 (Contrast Enhanced) must resolve now');
 
+// 8. "Needs review" — the checker could not measure it, so it must NOT be
+//    presented as a proven failure. This is what keeps the error count honest,
+//    so both halves are pinned down here.
+//
+//    a) htmlcs says so in the code suffix (re-derived at render time).
+for (const code of [
+  'WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Abs',
+  'WCAG2AA.Principle1.Guideline1_4.1_4_3.G145.Alpha',
+  'WCAG2AA.Principle1.Guideline1_4.1_4_3.G145.BgImage',
+  'WCAG2AA.Principle1.Guideline1_4.1_4_3_F24.F24.FGColour',
+]) {
+  ok(wcag.isAdvisory(code), code + ' means "cannot determine" and must need review');
+  ok(wcag.describe({ code, runner: 'htmlcs' }).needsReview, code + ' must set needsReview');
+}
+
+//    b) Codes that ARE proven failures must never be swept in with them —
+//       G18.Fail carries a measured ratio, and axe violations are proven.
+for (const code of [
+  'WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Fail',
+  'WCAG2AA.Principle2.Guideline2_4.2_4_1.H64.1',
+  'color-contrast',
+  'link-name',
+]) {
+  ok(!wcag.isAdvisory(code), code + ' is a real finding and must NOT be marked advisory');
+}
+
+//    c) For axe, only the runner knows — it arrives as needsFurtherReview.
+const axeIncomplete = wcag.describe({
+  code: 'color-contrast', runner: 'axe',
+  runnerExtras: { impact: 'serious', needsFurtherReview: true },
+});
+ok(axeIncomplete.needsReview, 'axe incomplete results must be marked needsReview');
+const axeViolation = wcag.describe({
+  code: 'color-contrast', runner: 'axe',
+  runnerExtras: { impact: 'serious', needsFurtherReview: false },
+});
+ok(!axeViolation.needsReview, 'a proven axe violation must NOT be marked needsReview');
+
 console.log('wcag.test.js: all ' + n + ' assertions passed');

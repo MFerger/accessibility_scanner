@@ -360,6 +360,29 @@ function forSC(sc) {
   };
 }
 
+// "The checker could not determine this — a human has to look."
+//
+// Both runners emit these, and mixed in with real findings they are the single
+// biggest source of apparent false positives: a heading in black over a
+// background image gets reported next to genuinely unreadable text, and the
+// error count stops meaning anything.
+//
+//   axe    -> its "incomplete" bucket; pa11y flags each one needsFurtherReview
+//             (nothing in the code identifies it, so ingest has to store it)
+//   htmlcs -> no such flag, but it encodes the reason in the code suffix.
+//             These are exactly its "cannot compute the contrast" outcomes:
+//             .Abs      absolutely positioned, background unknown
+//             .Alpha    text or background is semi-transparent
+//             .BgImage  text sits on a background image
+//             .FGColour/.BGColour  inline colour with no matching counterpart
+//
+// Derived from the code so a REBUILD reclassifies already-committed scans; the
+// axe half needs a fresh scan, since only the runner knew.
+const ADVISORY_SUFFIX = /\.(Abs|Alpha|BgImage|FGColour|BGColour)$/;
+function isAdvisory(code) {
+  return ADVISORY_SUFFIX.test(String(code || ''));
+}
+
 function describe(issue) {
   const x = issue.runnerExtras || {};
   const isAxe = issue.runner === 'axe' || !!x.helpUrl;
@@ -372,8 +395,10 @@ function describe(issue) {
   // "WCAG x.y.z" label); fall back to the axe/Deque help page otherwise.
   const url = sc ? understandingUrl(sc) : (x.helpUrl || understandingUrl(null));
   const impact = x.impact || null; // critical | serious | moderate | minor
+  // axe's incomplete bucket, plus the htmlcs codes that mean the same thing.
+  const needsReview = !!x.needsFurtherReview || isAdvisory(issue.code);
 
-  return { sc, url, tip, impact };
+  return { sc, url, tip, impact, needsReview };
 }
 
-module.exports = { describe, why, forSC, fix, cleanMessage, scFromCode, understandingUrl, WCAG, AXE_SC, FIX, CODE_FIX };
+module.exports = { describe, why, forSC, fix, cleanMessage, scFromCode, understandingUrl, isAdvisory, WCAG, AXE_SC, FIX, CODE_FIX };

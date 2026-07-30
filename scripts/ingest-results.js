@@ -115,6 +115,10 @@ for (const url of pageUrls) {
       selector: i.selector || '',
       context: truncate(normalizeContext(i.context), CONTEXT_MAX),
       impact: (i.runnerExtras && i.runnerExtras.impact) || null,
+      // The checker couldn't determine this one (axe's "incomplete" bucket) —
+      // only the runner knows, so it has to be captured here. The htmlcs half
+      // is re-derived from the code at render time. See lib/wcag.isAdvisory.
+      needsReview: !!(i.runnerExtras && i.runnerExtras.needsFurtherReview) || wcag.isAdvisory(i.code),
       firstSeen: priorFirstSeen.get(fp) || RUN_DATE,
       // Introduced by THIS scan (absent from the prior scan). This is the
       // reliable "new" signal — firstSeen is a date and can't distinguish a

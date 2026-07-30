@@ -160,6 +160,13 @@ function defaults() {
     includeWarnings: true,
     concurrency: 2,
     timeout: 60000,
+    // axe returns two buckets: "violations" (it PROVED a failure) and
+    // "incomplete" (it could not tell — a human has to look). pa11y reports
+    // both, and its default caps incomplete issues at "error", so a heading
+    // axe merely couldn't measure — black text over a background image, say —
+    // arrives looking exactly like a proven failure. Cap them at "warning" so
+    // the error count only ever means "proven broken".
+    levelCapWhenNeedsReview: 'warning',
     chromeLaunchConfig: { args: ['--no-sandbox', '--disable-dev-shm-usage'] }
   };
 }

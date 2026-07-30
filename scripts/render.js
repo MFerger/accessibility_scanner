@@ -34,6 +34,10 @@ function worstImpact(items) {
 }
 
 // Fix-method display: badge text, "fixable by you" bucket, access label.
+// The checker could not measure this element (axe's "incomplete" bucket, or an
+// htmlcs cannot-determine code) — flagged for a human, NOT a proven failure.
+const needsReview = (it) => !!it.needsReview || wcag.isAdvisory(it.code);
+
 const METHOD = {
   css: { badge: 'CSS', fixable: true, label: 'CSS' },
   js: { badge: 'JS', fixable: true, label: 'JS' },
@@ -152,6 +156,12 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
   text-transform:uppercase;letter-spacing:.03em;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 5px}
 .swbadge{display:inline-block;font-size:10.5px;color:var(--accent);border:1px solid rgba(37,99,235,.35);
   background:rgba(37,99,235,.08);border-radius:4px;padding:0 6px;margin:0 0 4px}
+/* the checker could not measure this one — not a proven failure */
+.rvtag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.03em;color:var(--warn);
+  background:rgba(154,103,0,.10);border:1px solid rgba(154,103,0,.35);border-radius:4px;padding:0 5px;margin:0 6px 4px 0}
+.rvnote{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.lens.hide-review .issue.needs-review{display:none}
+.lens.hide-review .grp[data-allreview="1"],.lens.hide-review .icard[data-allreview="1"]{display:none}
 
 /* element screenshot — a crop of the flagged element, ringed in red */
 .shot{margin:8px 0 2px;padding:0}
@@ -343,10 +353,13 @@ function occurrence(it, shots) {
   // false on a first scan. See ingest-results.js — a date compare can't tell a
   // same-day re-scan apart, the fp diff can.
   const isNew = !!it.isNew;
-  return `<li class="issue ${esc(it.type)}${isNew ? ' is-new' : ''}" data-fp="${esc(it.fp)}" data-gfp="${esc(gfp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}"${isNew ? ' data-new="1"' : ''}>
+  // Stored at ingest for axe; re-derived from the code for htmlcs, so a rebuild
+  // reclassifies scans taken before this existed.
+  const review = needsReview(it);
+  return `<li class="issue ${esc(it.type)}${isNew ? ' is-new' : ''}${review ? ' needs-review' : ''}" data-fp="${esc(it.fp)}" data-gfp="${esc(gfp)}" data-code="${esc(it.code)}" data-type="${esc(it.type)}" data-impact="${esc(it.impact || '')}"${isNew ? ' data-new="1"' : ''}${review ? ' data-review="1"' : ''}>
 <div class="dz"><label title="Mark resolved — you fixed it (or will)"><input type="checkbox" class="dismiss" aria-label="Mark this occurrence resolved"></label><button class="fp-flag" type="button" aria-pressed="false" title="False positive — the scanner flagged this incorrectly">⚑</button></div>
 <div class="body">
-${isNew ? '<span class="newtag" title="First seen in the latest scan">NEW</span>' : ''}${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
+${isNew ? '<span class="newtag" title="First seen in the latest scan">NEW</span>' : ''}${review ? '<span class="rvtag" title="The checker could not measure this element — it is not a proven failure. Check it by eye.">NEEDS REVIEW</span>' : ''}${it.viewport && it.viewport !== 'all' ? '<span class="vp" title="Appears at this screen size">' + esc(it.viewport) + '</span>' : ''}${!review && it.impact ? '<span class="imp">' + esc(it.impact) + '</span>' : ''}
 ${shotFigure(it, shots)}
 <div class="sel"><code>${esc(it.selector || '(no selector)')}</code><button class="copy-sel" type="button" title="Copy CSS selector">copy</button></div>
 ${it.context ? '<pre><code>' + esc(it.context) + '</code></pre>' : ''}
@@ -360,13 +373,14 @@ function group(g, codes, shots) {
   const M = methodOf(meta.method);
   const occ = g.items.map((it) => occurrence(it, shots)).join('\n');
   const anyNew = g.items.some((i) => i.isNew);
+  const allReview = g.items.length > 0 && g.items.every(needsReview);
   // Worst axe impact across the group's occurrences, so an impact filter can
   // hide the whole issue card (matching the severity filter's group-level hide).
   const impact = worstImpact(g.items);
   const lockedBody = M.fixable
     ? '<b>How to fix (' + M.badge + '):</b> ' + esc(meta.lockedTip || meta.tip || '')
     : '<b>Needs ' + M.label + ' access:</b> ' + esc(meta.lockedTip || meta.tip || '');
-  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}" data-method="${esc(meta.method || 'markup')}" data-fixable="${M.fixable ? 1 : 0}"${anyNew ? ' data-new="1"' : ''}${impact ? ' data-impact="' + esc(impact) + '"' : ''}>
+  return `<div class="grp ${esc(g.type)}${g.act === 0 ? ' empty' : ''}" data-code="${esc(g.code)}" data-method="${esc(meta.method || 'markup')}" data-fixable="${M.fixable ? 1 : 0}"${anyNew ? ' data-new="1"' : ''}${allReview ? ' data-allreview="1"' : ''}${impact ? ' data-impact="' + esc(impact) + '"' : ''}>
 <div class="grp-head">
 <span class="t ${esc(g.type)}">${esc(g.type)}</span>
 <span class="mtag ${esc(meta.method || 'markup')}">${M.badge}</span>
@@ -377,6 +391,7 @@ ${meta.url ? '<a class="sc" href="' + esc(meta.url) + '" target="_blank" rel="no
 <button class="copy" type="button" title="Copy title + why for your report">copy</button>
 <button class="dismiss-group" type="button" title="Dismiss every occurrence of this issue on this page">dismiss all</button>
 </div>
+${allReview ? '<div class="rvnote"><b>Not a proven failure.</b> The checker could not measure ' + (g.act === 1 ? 'this element' : 'these elements') + ' — usually text over a background image, a gradient, or something semi-transparent. Check ' + (g.act === 1 ? 'it' : 'them') + ' by eye before reporting; if the contrast is fine, flag as a false positive (⚑).</div>' : ''}
 ${meta.why ? '<div class="why"><b>Why it matters:</b> ' + esc(meta.why) + '</div>' : ''}
 ${meta.tip ? '<div class="tip tip-standard"><b>How to fix:</b> ' + esc(meta.tip) + '</div>' : ''}
 <div class="tip tip-locked">${lockedBody}</div>
@@ -433,6 +448,18 @@ function lensPanel(lensId, data, codes, opts) {
   const resolvedBadge = (!data.firstScan && data.summary.resolved) ? `<span class="pill resolved">♻ ${data.summary.resolved} resolved</span>` : '';
   const errWord = lensId === 'ux' ? 'page error' : 'scan error';
   const scanErrBadge = data.summary.scanErrors ? `<span class="pill" title="Pages that failed to load/evaluate cleanly — not findings">⚠ ${data.summary.scanErrors} ${errWord}${data.summary.scanErrors === 1 ? '' : 's'}</span>` : '';
+  // How much of this lens is "the checker couldn't tell" rather than a proven
+  // failure — the single most important number for trusting the report.
+  let reviewN = 0;
+  for (const u of Object.keys(data.pages)) {
+    for (const it of data.pages[u]) if (!dismissed.has(it.fp) && needsReview(it)) reviewN++;
+  }
+  const reviewBadge = reviewN
+    ? `<span class="pill" title="Findings the checker could not measure (text over a background image, a gradient, transparency). Flagged for a human — not proven failures.">🔍 ${reviewN} need${reviewN === 1 ? 's' : ''} review</span>`
+    : '';
+  const reviewChip = reviewN
+    ? '<button class="chip on" data-review-filter title="Hide/show findings the checker could not measure">🔍 needs review</button>'
+    : '';
   const shotN = data.shots ? Object.keys(data.shots).length : 0;
   const shotBadge = shotN
     ? `<span class="pill" title="One cropped screenshot per distinct flagged element, reused everywhere that element appears. Expand an issue's occurrences to see them.">📷 ${shotN} element screenshot${shotN === 1 ? '' : 's'}</span>`
@@ -469,7 +496,7 @@ function lensPanel(lensId, data, codes, opts) {
 <div><div class="n cFalsePos">${a.falsePositives || 0}</div><div class="k">false positives</div></div>
 <div class="spacer"></div>${sparkline(data.history)}
 </div>
-<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}${shotBadge}<span class="pill fixsum fixSummary"></span></div>
+<div class="badges">${newBadge}${resolvedBadge}${scanErrBadge}${reviewBadge}${shotBadge}<span class="pill fixsum fixSummary"></span></div>
 
 <div class="controls">
 ${lensSwitch}<div class="row">
@@ -481,7 +508,7 @@ ${lensSwitch}<div class="row">
 <button class="chip error on" data-sev="error">errors</button>
 <button class="chip warning on" data-sev="warning">warnings</button>
 <button class="chip notice on" data-sev="notice">notices</button>
-${impactChips}${newChip}
+${impactChips}${newChip}${reviewChip}
 <input class="q" type="search" placeholder="Search issues…" aria-label="Search issues">
 <label class="ck"><input type="checkbox" class="showResolved"> show resolved</label>
 <label class="ck"><input type="checkbox" class="showFp"> show false positives</label>
@@ -693,8 +720,9 @@ const CLIENT_JS = `
         var code = li.getAttribute('data-code');
         var sec = li.closest('.pg');
         var page = sec ? sec.getAttribute('data-page') : '';
-        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}, impact:'', neu:false, shot:''});
+        var rec = map[code] || (map[code] = {count:0, type:li.getAttribute('data-type'), pages:{}, impact:'', neu:false, shot:'', review:0, total:0});
         rec.count++; if (page) rec.pages[page] = 1;
+        rec.total++; if (li.getAttribute('data-review')) rec.review++;
         var imp = li.getAttribute('data-impact') || '';
         if (imp && (!rec.impact || impRank(imp) < impRank(rec.impact))) rec.impact = imp;   // keep the worst
         if (li.getAttribute('data-new')) rec.neu = true;
@@ -739,10 +767,12 @@ const CLIENT_JS = `
         var label = p; try { label = new URL(p).pathname || p; } catch(e){}
         return '<a href="'+escapeAttr(p)+'" target="_blank" rel="noopener" title="'+escapeAttr(p)+'">'+escapeHtml(label)+'</a>';
       }).join(' ');
-      return '<div class="icard '+r.type+(r.neu?' is-new':'')+'"'+(r.impact?' data-impact="'+escapeAttr(r.impact)+'"':'')+' data-code="'+escapeAttr(r.code)+'">'
+      var allRv = r.total && r.review === r.total;
+      return '<div class="icard '+r.type+(r.neu?' is-new':'')+'"'+(r.impact&&!allRv?' data-impact="'+escapeAttr(r.impact)+'"':'')+(allRv?' data-allreview="1"':'')+' data-code="'+escapeAttr(r.code)+'">'
         + '<div class="ic-head"><span class="dot '+r.type+'"></span>'
         + '<span class="mtag '+r.method+'">'+M.badge+'</span>'
         + (r.neu?'<span class="newtag" title="First seen in the latest scan">NEW</span>':'')
+        + (allRv?'<span class="rvtag" title="The checker could not measure these — not proven failures.">NEEDS REVIEW</span>':'')
         + '<strong>'+escapeHtml(title)+'</strong>'
         + '<span class="cnt">'+r.count+'\\u00d7</span>'
         + (meta.url ? '<a class="sc" href="'+escapeAttr(meta.url)+'" target="_blank" rel="noopener">'+ref+'</a>' : '')
@@ -958,6 +988,12 @@ const CLIENT_JS = `
         btn.classList.toggle('on');
         root.classList.toggle('hide-impact-' + btn.getAttribute('data-impact-filter'), !btn.classList.contains('on'));
       });
+    });
+
+    var rvBtn = root.querySelector('[data-review-filter]');
+    if (rvBtn) rvBtn.addEventListener('click', function(){
+      rvBtn.classList.toggle('on');
+      root.classList.toggle('hide-review', !rvBtn.classList.contains('on'));
     });
 
     var newBtn = root.querySelector('[data-newonly]');
