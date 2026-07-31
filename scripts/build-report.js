@@ -66,9 +66,21 @@ if (slugs.length === 0) {
   process.exit(1);
 }
 
+// One unreadable site file must not cost every OTHER site its report. A
+// half-finished git rebase leaves conflict markers inside data/<slug>/*.json,
+// and a truncated write leaves invalid JSON; either way the right move is to
+// skip that site loudly and still publish the rest.
+const skippedSlugs = [];
+
 const sites = slugs.map((slug) => {
   const dir = path.join(DATA_DIR, slug);
   const latest = readJson(path.join(dir, 'latest.json'), null);
+  if (!latest || !latest.summary || !latest.pages) {
+    skippedSlugs.push(slug);
+    console.error('WARNING: skipping "' + slug + '" — ' + path.join(dir, 'latest.json') +
+      ' is missing or not valid scan data (truncated write, or unresolved merge conflict?).');
+    return null;
+  }
   const history = readJson(path.join(dir, 'history.json'), []);
   const dismissedRaw = readJson(path.join(dir, 'dismissed.json'), {});
   const dismissedSet = new Set(Object.keys(dismissedRaw));
@@ -103,7 +115,13 @@ const sites = slugs.map((slug) => {
     ux,
     shots: (shots && shots.a11y) || null,
   });
-});
+}).filter(Boolean);
+
+if (sites.length === 0) {
+  console.error('No readable scan data in ' + DATA_DIR + '/ (' + slugs.length +
+    ' site folder(s) present, all unreadable). Refusing to publish an empty report.');
+  process.exit(1);
+}
 
 // Copy the images each report references out of the committed data and next to
 // the HTML that points at them (<slug>/shots/<file>). Only what the manifest
@@ -145,6 +163,9 @@ for (const s of sites) {
 }
 
 const totErrors = sites.reduce((n, s) => n + s.active.errors, 0);
+if (skippedSlugs.length) {
+  console.error('WARNING: ' + skippedSlugs.length + ' site(s) skipped: ' + skippedSlugs.join(', '));
+}
 console.log('Built ' + sites.length + ' report(s), ' + totErrors + ' active errors' +
   (shotCount ? ', ' + shotCount + ' screenshot(s) (' + (shotBytes / 1048576).toFixed(1) + ' MB)' : '') +
   ' -> ' + OUT_DIR + '/index.html + ' + OUT_DIR + '/sites/<slug>/index.html');

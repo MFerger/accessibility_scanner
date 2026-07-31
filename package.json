@@ -12,10 +12,11 @@
     "ingest:ux": "node scripts/ingest-ux.js",
     "shots": "node scripts/shoot.js",
     "report": "node scripts/build-report.js",
-    "test": "node test/fp.test.js && node test/wcag.test.js",
+    "test": "node test/fp.test.js && node test/wcag.test.js && node test/report.test.js",
     "test:ux": "node test/run.js",
     "test:fp": "node test/fp.test.js",
     "test:wcag": "node test/wcag.test.js",
+    "test:report": "node test/report.test.js",
     "test:sitewide": "node test/sitewide.test.js",
     "test:shots": "node test/shots.test.js",
     "build": "npm run discover && npm run scan && npm run ingest && npm run scan:ux && npm run ingest:ux && npm run shots && npm run report"

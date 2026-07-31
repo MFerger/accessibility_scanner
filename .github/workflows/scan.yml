@@ -147,11 +147,32 @@ jobs:
           git add data
           if git diff --cached --quiet; then
             echo "No scan-data changes to commit."
-          else
-            git commit -m "scan: ${{ inputs.url }} ($(date -u +%Y-%m-%d))"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            exit 0
           fi
+          git commit -m "scan: ${{ inputs.url }} ($(date -u +%Y-%m-%d))"
+
+          # Land it on top of anything pushed while we were scanning (another
+          # scan, or a code change). A conflict must NEVER be swallowed: the
+          # next step reads these files, and a half-finished rebase leaves
+          # conflict markers inside them — which breaks the REPORT BUILD for
+          # every site, not just this one. Abort, back off, try again.
+          pushed=""
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then pushed=1; break; fi
+            else
+              git rebase --abort || true
+            fi
+            echo "Push attempt ${attempt} did not land; retrying."
+            sleep $((attempt * 5))
+          done
+
+          # Belt and braces: the build step that follows must see a clean tree.
+          git rebase --abort 2>/dev/null || true
+          if [ -z "$pushed" ]; then
+            echo "::warning::Could not push scan data after 3 attempts — another scan was probably pushing at the same time. The report is still built and deployed from this run, but this scan's data was not committed; re-run the scan to store it."
+          fi
+          git status --short
 
       - name: Build HTML reports
         run: node scripts/build-report.js
