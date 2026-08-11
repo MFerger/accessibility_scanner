@@ -1,50 +1,32 @@
 {
- "generatedAt": "2026-07-30T20:54:09.156Z",
- "planned": 516,
- "captured": 42,
- "missed": 129,
+ "generatedAt": "2026-08-11T15:45:57.821Z",
+ "planned": 217,
+ "captured": 179,
+ "reused": 7,
+ "missed": 31,
+ "skipped": 0,
+ "pageErrors": 0,
  "max": 400,
  "a11y": {
-  "10u3cm6": {
-   "f": "a11y-10u3cm6.webp",
-   "w": 640,
-   "h": 111,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
-   "v": ""
-  },
-  "111ju4g": {
-   "f": "a11y-111ju4g.webp",
+  "10rgui0": {
+   "f": "a11y-10rgui0.webp",
    "w": 640,
    "h": 153,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
    "v": ""
   },
-  "118wl05": {
-   "f": "a11y-118wl05.webp",
+  "10yvw31": {
+   "f": "a11y-10yvw31.webp",
    "w": 640,
    "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
    "v": ""
   },
-  "128abi6": {
-   "f": "a11y-128abi6.webp",
-   "w": 640,
-   "h": 111,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "137jpzt": {
-   "f": "a11y-137jpzt.webp",
-   "w": 640,
+  "13vwq0y": {
+   "f": "a11y-13vwq0y.webp",
+   "w": 195,
    "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "13a6jx9": {
-   "f": "a11y-13a6jx9.webp",
-   "w": 640,
-   "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
    "v": ""
   },
   "14uatu": {
@@ -54,109 +36,60 @@
    "p": "https://devereinsulation.com/commercial-insulation/",
    "v": ""
   },
-  "1a0vpcx": {
-   "f": "a11y-1a0vpcx.webp",
+  "1b22t0u": {
+   "f": "a11y-1b22t0u.webp",
    "w": 640,
-   "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "h": 95,
+   "p": "https://devereinsulation.com/news/thirty-years-and-a-special-celebration/",
    "v": ""
   },
-  "1ahur39": {
-   "f": "a11y-1ahur39.webp",
-   "w": 640,
-   "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+  "1fj4vz9": {
+   "f": "a11y-1fj4vz9.webp",
+   "w": 212,
+   "h": 208,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
    "v": ""
   },
-  "1b33z37": {
-   "f": "a11y-1b33z37.webp",
+  "1g05j18": {
+   "f": "a11y-1g05j18.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1g37xy": {
+   "f": "a11y-1g37xy.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "1imbzvf": {
+   "f": "a11y-1imbzvf.webp",
+   "w": 348,
+   "h": 298,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
+   "v": ""
+  },
+  "1ku7imj": {
+   "f": "a11y-1ku7imj.webp",
    "w": 640,
    "h": 153,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
    "v": ""
   },
-  "1bhs61a": {
-   "f": "a11y-1bhs61a.webp",
-   "w": 640,
-   "h": 111,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+  "1od1kp3": {
+   "f": "a11y-1od1kp3.webp",
+   "w": 348,
+   "h": 298,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
    "v": ""
   },
-  "1d1soei": {
-   "f": "a11y-1d1soei.webp",
-   "w": 640,
-   "h": 132,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
-   "v": ""
-  },
-  "1e3qvl0": {
-   "f": "a11y-1e3qvl0.webp",
-   "w": 640,
+  "1ofttsr": {
+   "f": "a11y-1ofttsr.webp",
+   "w": 418,
    "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1gg9anb": {
-   "f": "a11y-1gg9anb.webp",
-   "w": 640,
-   "h": 132,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
-   "v": ""
-  },
-  "1hi4kkr": {
-   "f": "a11y-1hi4kkr.webp",
-   "w": 640,
-   "h": 111,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1hob9dj": {
-   "f": "a11y-1hob9dj.webp",
-   "w": 640,
-   "h": 132,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
-   "v": ""
-  },
-  "1kcrfw1": {
-   "f": "a11y-1kcrfw1.webp",
-   "w": 318,
-   "h": 380,
-   "p": "https://devereinsulation.com/news/",
-   "v": ""
-  },
-  "1kln97a": {
-   "f": "a11y-1kln97a.webp",
-   "w": 640,
-   "h": 132,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1l33vxw": {
-   "f": "a11y-1l33vxw.webp",
-   "w": 640,
-   "h": 188,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1l486ba": {
-   "f": "a11y-1l486ba.webp",
-   "w": 640,
-   "h": 90,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1mgymiy": {
-   "f": "a11y-1mgymiy.webp",
-   "w": 327,
-   "h": 348,
-   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
-   "v": ""
-  },
-  "1n8k08s": {
-   "f": "a11y-1n8k08s.webp",
-   "w": 640,
-   "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
    "v": ""
   },
   "1p2gajb": {
@@ -166,76 +99,643 @@
    "p": "https://devereinsulation.com/commercial-insulation/",
    "v": ""
   },
-  "1wgt3y7": {
-   "f": "a11y-1wgt3y7.webp",
-   "w": 640,
-   "h": 132,
-   "p": "https://devereinsulation.com/insulation-products/mineral-wool/",
+  "1pco3to": {
+   "f": "a11y-1pco3to.webp",
+   "w": 418,
+   "h": 326,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
    "v": ""
   },
-  "4h3vq4": {
-   "f": "a11y-4h3vq4.webp",
+  "1pspwmu": {
+   "f": "a11y-1pspwmu.webp",
    "w": 640,
    "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
    "v": ""
   },
-  "kt9th6": {
-   "f": "a11y-kt9th6.webp",
+  "1pv9p2f": {
+   "f": "a11y-1pv9p2f.webp",
    "w": 640,
    "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1qf6ndl": {
+   "f": "a11y-1qf6ndl.webp",
+   "w": 640,
+   "h": 153,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "1qwkm9n": {
+   "f": "a11y-1qwkm9n.webp",
+   "w": 625,
+   "h": 125,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1rte8zz": {
+   "f": "a11y-1rte8zz.webp",
+   "w": 233,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1s6i0f7": {
+   "f": "a11y-1s6i0f7.webp",
+   "w": 348,
+   "h": 298,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "1stuu8c": {
+   "f": "a11y-1stuu8c.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1t331m": {
+   "f": "a11y-1t331m.webp",
+   "w": 418,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
+   "v": ""
+  },
+  "1th46rt": {
+   "f": "a11y-1th46rt.webp",
+   "w": 408,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1uoebd1": {
+   "f": "a11y-1uoebd1.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "1vdzqa7": {
+   "f": "a11y-1vdzqa7.webp",
+   "w": 348,
+   "h": 298,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "1wunc4k": {
+   "f": "a11y-1wunc4k.webp",
+   "w": 640,
+   "h": 142,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "1yenaoq": {
+   "f": "a11y-1yenaoq.webp",
+   "w": 408,
+   "h": 168,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "4kotkw": {
+   "f": "a11y-4kotkw.webp",
+   "w": 640,
+   "h": 111,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": ""
+  },
+  "5bm9y0": {
+   "f": "a11y-5bm9y0.webp",
+   "w": 348,
+   "h": 298,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
+   "v": ""
+  },
+  "609r90": {
+   "f": "a11y-609r90.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": ""
+  },
+  "8ddvzq": {
+   "f": "a11y-8ddvzq.webp",
+   "w": 640,
+   "h": 111,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": ""
+  },
+  "9r69tw": {
+   "f": "a11y-9r69tw.webp",
+   "w": 408,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "e8r9g7": {
+   "f": "a11y-e8r9g7.webp",
+   "w": 637,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "g564oa": {
+   "f": "a11y-g564oa.webp",
+   "w": 418,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
+   "v": ""
+  },
+  "hwy26g": {
+   "f": "a11y-hwy26g.webp",
+   "w": 288,
+   "h": 368,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": ""
+  },
+  "iucyqq": {
+   "f": "a11y-iucyqq.webp",
+   "w": 408,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "l6dn5z": {
+   "f": "a11y-l6dn5z.webp",
+   "w": 640,
+   "h": 111,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": ""
+  },
+  "mz6d08": {
+   "f": "a11y-mz6d08.webp",
+   "w": 408,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "nmy4dz": {
+   "f": "a11y-nmy4dz.webp",
+   "w": 408,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "qc1sqm": {
+   "f": "a11y-qc1sqm.webp",
+   "w": 408,
+   "h": 168,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "r821kf": {
+   "f": "a11y-r821kf.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": ""
+  },
+  "vlnr62": {
+   "f": "a11y-vlnr62.webp",
+   "w": 640,
+   "h": 95,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "w6q7uq": {
+   "f": "a11y-w6q7uq.webp",
+   "w": 233,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "z4shxi": {
+   "f": "a11y-z4shxi.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://devereinsulation.com/insulation-products/spray-foam/",
+   "v": ""
+  },
+  "zb44bt": {
+   "f": "a11y-zb44bt.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/honored-to-celebrate-30-years/",
+   "v": ""
+  },
+  "zms2rg": {
+   "f": "a11y-zms2rg.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
    "v": ""
   }
  },
  "ux": {
-  "11l7ylr": {
-   "f": "ux-11l7ylr.webp",
-   "w": 258,
-   "h": 90,
-   "p": "https://devereinsulation.com/about/",
-   "v": "mobile"
-  },
-  "13dz0qb": {
-   "f": "ux-13dz0qb.webp",
-   "w": 201,
-   "h": 90,
-   "p": "https://devereinsulation.com/about/",
-   "v": "mobile"
-  },
-  "16gj2h9": {
-   "f": "ux-16gj2h9.webp",
+  "10u16xa": {
+   "f": "ux-10u16xa.webp",
    "w": 160,
    "h": 90,
-   "p": "https://devereinsulation.com/about/",
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
    "v": "mobile"
   },
-  "16iabmw": {
-   "f": "ux-16iabmw.webp",
-   "w": 272,
+  "11bohhq": {
+   "f": "ux-11bohhq.webp",
+   "w": 179,
    "h": 90,
-   "p": "https://devereinsulation.com/about/",
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
    "v": "mobile"
   },
-  "1ay6gmz": {
-   "f": "ux-1ay6gmz.webp",
-   "w": 323,
+  "11k6fkg": {
+   "f": "ux-11k6fkg.webp",
+   "w": 160,
    "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
    "v": "mobile"
   },
-  "1bwuh4f": {
-   "f": "ux-1bwuh4f.webp",
+  "11vafzh": {
+   "f": "ux-11vafzh.webp",
+   "w": 210,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
+   "v": "mobile"
+  },
+  "11x31tu": {
+   "f": "ux-11x31tu.webp",
+   "w": 191,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "v": "mobile"
+  },
+  "127qwcs": {
+   "f": "ux-127qwcs.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/cellulose-insulation/",
+   "v": "mobile"
+  },
+  "12svs6p": {
+   "f": "ux-12svs6p.webp",
+   "w": 236,
+   "h": 90,
+   "p": "https://devereinsulation.com/commercial-insulation/",
+   "v": "mobile"
+  },
+  "12u3d8f": {
+   "f": "ux-12u3d8f.webp",
+   "w": 194,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "12u4rba": {
+   "f": "ux-12u4rba.webp",
+   "w": 309,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "13s07ko": {
+   "f": "ux-13s07ko.webp",
+   "w": 276,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "13tl11m": {
+   "f": "ux-13tl11m.webp",
+   "w": 214,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "14zwy44": {
+   "f": "ux-14zwy44.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "15ks6kx": {
+   "f": "ux-15ks6kx.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "168w79m": {
+   "f": "ux-168w79m.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "17nijpm": {
+   "f": "ux-17nijpm.webp",
+   "w": 182,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "18mg2o3": {
+   "f": "ux-18mg2o3.webp",
+   "w": 244,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/cellulose-insulation/",
+   "v": "mobile"
+  },
+  "18tjqgj": {
+   "f": "ux-18tjqgj.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "19676v0": {
+   "f": "ux-19676v0.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
+   "v": "mobile"
+  },
+  "19b38fi": {
+   "f": "ux-19b38fi.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "19f8eu3": {
+   "f": "ux-19f8eu3.webp",
+   "w": 174,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "19qvtfr": {
+   "f": "ux-19qvtfr.webp",
+   "w": 161,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1alqhxs": {
+   "f": "ux-1alqhxs.webp",
    "w": 209,
    "h": 90,
-   "p": "https://devereinsulation.com/about/",
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
    "v": "mobile"
   },
-  "1jq3oux": {
-   "f": "ux-1jq3oux.webp",
-   "w": 351,
+  "1bf66tw": {
+   "f": "ux-1bf66tw.webp",
+   "w": 160,
    "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "1bz5npz": {
+   "f": "ux-1bz5npz.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "1cmtkfa": {
+   "f": "ux-1cmtkfa.webp",
+   "w": 236,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "1cuikag": {
+   "f": "ux-1cuikag.webp",
+   "w": 204,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1d1evap": {
+   "f": "ux-1d1evap.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "v": "mobile"
+  },
+  "1d66w32": {
+   "f": "ux-1d66w32.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "1dbf26v": {
+   "f": "ux-1dbf26v.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "1dl5sle": {
+   "f": "ux-1dl5sle.webp",
+   "w": 305,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1dtysi3": {
+   "f": "ux-1dtysi3.webp",
+   "w": 181,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "1e62i90": {
+   "f": "ux-1e62i90.webp",
+   "w": 164,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "1ge1xcr": {
+   "f": "ux-1ge1xcr.webp",
+   "w": 290,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "1gin4z4": {
+   "f": "ux-1gin4z4.webp",
+   "w": 276,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1gjl703": {
+   "f": "ux-1gjl703.webp",
+   "w": 192,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "1gysa8z": {
+   "f": "ux-1gysa8z.webp",
+   "w": 228,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1hp6wqx": {
+   "f": "ux-1hp6wqx.webp",
+   "w": 323,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-devere-team-is-going-to-the-dogs/",
+   "v": "mobile"
+  },
+  "1i7j6nu": {
+   "f": "ux-1i7j6nu.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "1ise3gj": {
+   "f": "ux-1ise3gj.webp",
+   "w": 200,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "1iuknho": {
+   "f": "ux-1iuknho.webp",
+   "w": 176,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "v": "mobile"
+  },
+  "1jq0uei": {
+   "f": "ux-1jq0uei.webp",
+   "w": 228,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1k8ak59": {
+   "f": "ux-1k8ak59.webp",
+   "w": 213,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1kgqqpf": {
+   "f": "ux-1kgqqpf.webp",
+   "w": 188,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "1l8dws8": {
+   "f": "ux-1l8dws8.webp",
+   "w": 208,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1lvnjge": {
+   "f": "ux-1lvnjge.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1mdd3q5": {
+   "f": "ux-1mdd3q5.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "1mo653s": {
+   "f": "ux-1mo653s.webp",
+   "w": 228,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "1myql6e": {
+   "f": "ux-1myql6e.webp",
+   "w": 526,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "1nlhd64": {
+   "f": "ux-1nlhd64.webp",
+   "w": 292,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1ntopzu": {
+   "f": "ux-1ntopzu.webp",
+   "w": 189,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1o4qpn2": {
+   "f": "ux-1o4qpn2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "1oem3z": {
+   "f": "ux-1oem3z.webp",
+   "w": 194,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "1om0wtq": {
+   "f": "ux-1om0wtq.webp",
+   "w": 184,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1pch388": {
+   "f": "ux-1pch388.webp",
+   "w": 258,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1pkpwy0": {
+   "f": "ux-1pkpwy0.webp",
+   "w": 244,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "1q71saq": {
+   "f": "ux-1q71saq.webp",
+   "w": 174,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/spray-foam-thickness-maryland-climate-zones/",
+   "v": "mobile"
+  },
+  "1qtw7yu": {
+   "f": "ux-1qtw7yu.webp",
+   "w": 208,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "1r6b4zs": {
+   "f": "ux-1r6b4zs.webp",
+   "w": 226,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
    "v": "mobile"
   },
   "1t4okc0": {
@@ -245,6 +745,13 @@
    "p": "https://devereinsulation.com/",
    "v": "mobile"
   },
+  "1taip77": {
+   "f": "ux-1taip77.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
   "1taxgpc": {
    "f": "ux-1taxgpc.webp",
    "w": 160,
@@ -252,25 +759,193 @@
    "p": "https://devereinsulation.com/",
    "v": "mobile"
   },
-  "1wc55qg": {
-   "f": "ux-1wc55qg.webp",
-   "w": 170,
+  "1tc0rqn": {
+   "f": "ux-1tc0rqn.webp",
+   "w": 312,
    "h": 90,
-   "p": "https://devereinsulation.com/insulation-products/mineral-wool/",
+   "p": "https://devereinsulation.com/contact/",
    "v": "mobile"
   },
-  "1wznlnj": {
-   "f": "ux-1wznlnj.webp",
-   "w": 279,
+  "1tubgff": {
+   "f": "ux-1tubgff.webp",
+   "w": 180,
    "h": 90,
-   "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
+   "p": "https://devereinsulation.com/news/three-fiberglass-applications-for-maryland-residents/",
    "v": "mobile"
   },
-  "1y43j63": {
-   "f": "ux-1y43j63.webp",
-   "w": 304,
+  "1u4v1w8": {
+   "f": "ux-1u4v1w8.webp",
+   "w": 160,
    "h": 90,
-   "p": "https://devereinsulation.com/insulation-products/mineral-wool/",
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": "mobile"
+  },
+  "1udumxt": {
+   "f": "ux-1udumxt.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "1ums0o7": {
+   "f": "ux-1ums0o7.webp",
+   "w": 243,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
+   "v": "mobile"
+  },
+  "1unmuzy": {
+   "f": "ux-1unmuzy.webp",
+   "w": 178,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1v2k9tg": {
+   "f": "ux-1v2k9tg.webp",
+   "w": 192,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1vbrb9s": {
+   "f": "ux-1vbrb9s.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "1vcirj8": {
+   "f": "ux-1vcirj8.webp",
+   "w": 203,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-services/attic-insulation/",
+   "v": "mobile"
+  },
+  "1vln29n": {
+   "f": "ux-1vln29n.webp",
+   "w": 172,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "1vv6to": {
+   "f": "ux-1vv6to.webp",
+   "w": 215,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-services/attic-insulation/",
+   "v": "mobile"
+  },
+  "1wgfc4": {
+   "f": "ux-1wgfc4.webp",
+   "w": 348,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "1wtuakz": {
+   "f": "ux-1wtuakz.webp",
+   "w": 235,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/energy-saving-projects-for-spring/",
+   "v": "mobile"
+  },
+  "1wzil59": {
+   "f": "ux-1wzil59.webp",
+   "w": 194,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "1xun7m8": {
+   "f": "ux-1xun7m8.webp",
+   "w": 265,
+   "h": 90,
+   "p": "https://devereinsulation.com/commercial-insulation/",
+   "v": "mobile"
+  },
+  "1xuzobp": {
+   "f": "ux-1xuzobp.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "1xwhnie": {
+   "f": "ux-1xwhnie.webp",
+   "w": 225,
+   "h": 90,
+   "p": "https://devereinsulation.com/commercial-insulation/",
+   "v": "mobile"
+  },
+  "1xz83tz": {
+   "f": "ux-1xz83tz.webp",
+   "w": 342,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "1y4bzp4": {
+   "f": "ux-1y4bzp4.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "1y56hgy": {
+   "f": "ux-1y56hgy.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/commercial-insulation/",
+   "v": "mobile"
+  },
+  "1ykln9b": {
+   "f": "ux-1ykln9b.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "1ylz3jm": {
+   "f": "ux-1ylz3jm.webp",
+   "w": 216,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-services/attic-insulation/",
+   "v": "mobile"
+  },
+  "1yo909n": {
+   "f": "ux-1yo909n.webp",
+   "w": 226,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "2bzhge": {
+   "f": "ux-2bzhge.webp",
+   "w": 230,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "2eg4qv": {
+   "f": "ux-2eg4qv.webp",
+   "w": 210,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "32z5xp": {
+   "f": "ux-32z5xp.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "4h89ed": {
+   "f": "ux-4h89ed.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
    "v": "mobile"
   },
   "50mt8x": {
@@ -280,11 +955,88 @@
    "p": "https://devereinsulation.com/news/benefits-of-insulation-in-new-maryland-home/",
    "v": "mobile"
   },
-  "dsuqm2": {
-   "f": "ux-dsuqm2.webp",
-   "w": 227,
+  "5jlkvj": {
+   "f": "ux-5jlkvj.webp",
+   "w": 204,
    "h": 90,
-   "p": "https://devereinsulation.com/about/",
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "5plpkk": {
+   "f": "ux-5plpkk.webp",
+   "w": 199,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "63ifjb": {
+   "f": "ux-63ifjb.webp",
+   "w": 188,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "6fdkzj": {
+   "f": "ux-6fdkzj.webp",
+   "w": 225,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "8oeuhi": {
+   "f": "ux-8oeuhi.webp",
+   "w": 196,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-services/attic-insulation/",
+   "v": "mobile"
+  },
+  "8vlqbu": {
+   "f": "ux-8vlqbu.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "8z9egr": {
+   "f": "ux-8z9egr.webp",
+   "w": 206,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/how-to-decrease-homeowner-callbacks/",
+   "v": "mobile"
+  },
+  "ah1ypm": {
+   "f": "ux-ah1ypm.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/cellulose-insulation/",
+   "v": "mobile"
+  },
+  "ak2ba1": {
+   "f": "ux-ak2ba1.webp",
+   "w": 190,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/cellulose-insulation/",
+   "v": "mobile"
+  },
+  "ccu5ag": {
+   "f": "ux-ccu5ag.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "d145fu": {
+   "f": "ux-d145fu.webp",
+   "w": 183,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "e3euzz": {
+   "f": "ux-e3euzz.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
    "v": "mobile"
   },
   "eea0uw": {
@@ -294,11 +1046,270 @@
    "p": "https://devereinsulation.com/insulation-products/rigid-foam-insulation/",
    "v": "mobile"
   },
+  "fttt3e": {
+   "f": "ux-fttt3e.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "ggvju0": {
+   "f": "ux-ggvju0.webp",
+   "w": 182,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "hbut5o": {
+   "f": "ux-hbut5o.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/three-fiberglass-applications-for-maryland-residents/",
+   "v": "mobile"
+  },
+  "i0fe2u": {
+   "f": "ux-i0fe2u.webp",
+   "w": 210,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "i95mm2": {
+   "f": "ux-i95mm2.webp",
+   "w": 211,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/spray-foam-thickness-maryland-climate-zones/",
+   "v": "mobile"
+  },
+  "j07zd9": {
+   "f": "ux-j07zd9.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-to-air-seal-your-new-home-today/",
+   "v": "mobile"
+  },
+  "jmiu0h": {
+   "f": "ux-jmiu0h.webp",
+   "w": 218,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
+   "v": "mobile"
+  },
+  "khhvaz": {
+   "f": "ux-khhvaz.webp",
+   "w": 227,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-services/attic-insulation/",
+   "v": "mobile"
+  },
+  "kmk077": {
+   "f": "ux-kmk077.webp",
+   "w": 204,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "lw628t": {
+   "f": "ux-lw628t.webp",
+   "w": 290,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "mbmrx1": {
+   "f": "ux-mbmrx1.webp",
+   "w": 352,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "v": "mobile"
+  },
+  "mbqoph": {
+   "f": "ux-mbqoph.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "mlfwbj": {
+   "f": "ux-mlfwbj.webp",
+   "w": 348,
+   "h": 346,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "desktop"
+  },
+  "mqzamb": {
+   "f": "ux-mqzamb.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "mwr83w": {
+   "f": "ux-mwr83w.webp",
+   "w": 161,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/baltimore-builders-cooling-before-framing/",
+   "v": "mobile"
+  },
+  "n4gnd8": {
+   "f": "ux-n4gnd8.webp",
+   "w": 200,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "nuqwdg": {
+   "f": "ux-nuqwdg.webp",
+   "w": 365,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "r8nks3": {
+   "f": "ux-r8nks3.webp",
+   "w": 199,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "sd9p4g": {
+   "f": "ux-sd9p4g.webp",
+   "w": 211,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "su1eka": {
+   "f": "ux-su1eka.webp",
+   "w": 225,
+   "h": 90,
+   "p": "https://devereinsulation.com/commercial-insulation/",
+   "v": "mobile"
+  },
+  "sw39qe": {
+   "f": "ux-sw39qe.webp",
+   "w": 294,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "t2mwui": {
+   "f": "ux-t2mwui.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/the-best-solution-for-insulating-your-metal-building-retroshield/",
+   "v": "mobile"
+  },
+  "t6ulmx": {
+   "f": "ux-t6ulmx.webp",
+   "w": 227,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
   "tclgwo": {
    "f": "ux-tclgwo.webp",
    "w": 195,
    "h": 90,
    "p": "https://devereinsulation.com/",
+   "v": "mobile"
+  },
+  "v7xu16": {
+   "f": "ux-v7xu16.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/",
+   "v": "mobile"
+  },
+  "vxp8sl": {
+   "f": "ux-vxp8sl.webp",
+   "w": 181,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/efficient-new-homes-maryland-airflow-management/",
+   "v": "mobile"
+  },
+  "wx8odi": {
+   "f": "ux-wx8odi.webp",
+   "w": 213,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/devere-insulation-supports-the-franciscan-center/",
+   "v": "mobile"
+  },
+  "wzvqrx": {
+   "f": "ux-wzvqrx.webp",
+   "w": 310,
+   "h": 90,
+   "p": "https://devereinsulation.com/insulation-products/blown-in-wall-system/",
+   "v": "mobile"
+  },
+  "xv7x7p": {
+   "f": "ux-xv7x7p.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "xy4uw6": {
+   "f": "ux-xy4uw6.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/three-fiberglass-applications-for-maryland-residents/",
+   "v": "mobile"
+  },
+  "y575aa": {
+   "f": "ux-y575aa.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-you-should-hire-a-maryland-energy-expert/",
+   "v": "mobile"
+  },
+  "y6qx5e": {
+   "f": "ux-y6qx5e.webp",
+   "w": 163,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/how-to-decrease-homeowner-callbacks/",
+   "v": "mobile"
+  },
+  "yb5qq1": {
+   "f": "ux-yb5qq1.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-indoor-air-quality-matters-and-how-to-improve-it/",
+   "v": "mobile"
+  },
+  "z76lb5": {
+   "f": "ux-z76lb5.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/why-spray-foam/",
+   "v": "mobile"
+  },
+  "ziiz89": {
+   "f": "ux-ziiz89.webp",
+   "w": 269,
+   "h": 90,
+   "p": "https://devereinsulation.com/contact/",
+   "v": "mobile"
+  },
+  "zixdc6": {
+   "f": "ux-zixdc6.webp",
+   "w": 204,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
+   "v": "mobile"
+  },
+  "zpiq3i": {
+   "f": "ux-zpiq3i.webp",
+   "w": 208,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/indoor-air-quality-new-construction-md/",
+   "v": "mobile"
+  },
+  "zsz979": {
+   "f": "ux-zsz979.webp",
+   "w": 182,
+   "h": 90,
+   "p": "https://devereinsulation.com/news/hurricane-harvey-disaster-relief/",
    "v": "mobile"
   }
  }
