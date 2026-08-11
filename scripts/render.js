@@ -196,9 +196,12 @@ ul.issues{list-style:none;margin:9px 0 0;padding:0}
   text-decoration:none;color:inherit;box-shadow:var(--shadow)}
 .card:hover{border-color:var(--accent)}
 .card .name{font-size:17px;font-weight:600;margin:0}
-.card .host{color:var(--muted);font-size:13px;word-break:break-all}
-.card .stats{display:flex;gap:18px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.card .host{color:var(--muted);font-size:13px;word-break:break-all;margin-top:2px}
+.card .stats{display:flex;gap:18px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .card .stat b{font-size:20px} .card .stat span{font-size:12px;color:var(--muted);margin-left:4px}
+.cardhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.cardhead .scanned{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.card .pills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
 
 /* fix-method badges + locked-theme banding */
 .mtag{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:.03em;padding:1px 6px;border-radius:4px;border:1px solid transparent;white-space:nowrap}
@@ -288,34 +291,113 @@ function sparkline(history) {
 
 function landing(sites) {
   const when = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
-  const cards = sites.map((s) => {
+
+  // Most recently scanned first; ties broken worst-first. The reader can
+  // re-sort client-side, but "what did I just scan?" is the default question.
+  const ordered = sites.slice().sort((a, b) =>
+    String(b.scannedAt || '').localeCompare(String(a.scannedAt || '')) ||
+    b.active.errors - a.active.errors);
+
+  const anyUx = ordered.some((s) => s.ux);
+  const tot = ordered.reduce((t, s) => ({
+    errors: t.errors + s.active.errors,
+    ux: t.ux + (s.ux ? s.ux.active.errors : 0),
+    issues: t.issues + s.active.total,
+    pages: t.pages + s.summary.pages,
+  }), { errors: 0, ux: 0, issues: 0, pages: 0 });
+
+  const cards = ordered.map((s) => {
     const a = s.active;
-    return `<a class="card" href="sites/${esc(s.slug)}/">
-  <p class="name">${esc(s.name)}</p>
+    const search = (s.name + ' ' + s.url).toLowerCase();
+    return `<a class="card" href="sites/${esc(s.slug)}/" data-search="${esc(search)}"
+  data-scanned="${esc(s.scannedAt || '')}" data-errors="${a.errors}" data-total="${a.total}">
+  <div class="cardhead">
+    <p class="name">${esc(s.name)}</p>
+    <span class="scanned">Last scan ${esc(fmtDate(s.scannedAt))}<span class="ago"></span></span>
+  </div>
   <div class="host">${esc(s.url)}</div>
   <div class="stats">
-    <span class="stat err"><b style="color:var(--err)">${a.errors}</b><span>a11y errors</span></span>
-    ${s.ux ? '<span class="stat"><b style="color:var(--err)">' + s.ux.active.errors + '</b><span>UX errors</span></span>' : ''}
-    <span class="stat"><b>${a.total}</b><span>issues</span></span>
+    <span class="stat"><b style="color:var(${a.errors ? '--err' : '--ok'})">${a.errors}</b><span>a11y errors</span></span>
+    ${s.ux ? '<span class="stat"><b style="color:var(' + (s.ux.active.errors ? '--err' : '--ok') + ')">' + s.ux.active.errors + '</b><span>UX errors</span></span>' : ''}
+    <span class="stat"><b>${a.total}</b><span>open issues</span></span>
     <span class="stat"><b>${s.summary.pages}</b><span>pages</span></span>
-    ${a.dismissed ? '<span class="stat"><b>' + a.dismissed + '</b><span>dismissed</span></span>' : ''}
     <span class="spacer"></span>${sparkline(s.history)}
   </div>
-  <div class="host" style="margin-top:8px">Last scan ${esc(fmtDate(s.scannedAt))}</div>
+  ${(s.summary.new || s.summary.resolved || a.dismissed) ? '<div class="pills">' +
+    (s.summary.new ? '<span class="pill new">' + s.summary.new + ' new since last scan</span>' : '') +
+    (s.summary.resolved ? '<span class="pill resolved">' + s.summary.resolved + ' resolved</span>' : '') +
+    (a.dismissed ? '<span class="pill">' + a.dismissed + ' dismissed</span>' : '') +
+    '</div>' : ''}
 </a>`;
   }).join('\n');
 
   const body = `<div class="row"><h1>Accessibility reports</h1><span class="spacer"></span>
 <button class="btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button></div>
 <p class="meta">${sites.length} site${sites.length === 1 ? '' : 's'} &middot; generated ${when}</p>
-<div class="cards">
+<div class="sum">
+<div class="err"><div class="n">${tot.errors}</div><div class="k">a11y errors</div></div>
+${anyUx ? '<div class="err"><div class="n">' + tot.ux + '</div><div class="k">UX errors</div></div>' : ''}
+<div><div class="n">${tot.issues}</div><div class="k">open issues</div></div>
+<div><div class="n">${tot.pages}</div><div class="k">pages scanned</div></div>
+</div>
+<div class="controls row">
+<input class="q" id="q" type="search" placeholder="Search by name or URL&hellip;" aria-label="Search sites" title="Press / to search">
+<span class="seg" role="group" aria-label="Sort sites">
+<button class="btn active" type="button" data-sort="recent" aria-pressed="true">Recent</button>
+<button class="btn" type="button" data-sort="errors" aria-pressed="false">Errors</button>
+<button class="btn" type="button" data-sort="name" aria-pressed="false">A&ndash;Z</button>
+</span>
+<span class="cnt" id="matchCount" aria-live="polite"></span>
+</div>
+<div class="cards" id="cards">
 ${cards || '<p class="muted">No sites scanned yet.</p>'}
 </div>
+<p class="muted" id="noMatch" hidden>No sites match your search.</p>
 <script>
+(function(){
 var tb=document.getElementById('themeBtn');
 if(tb)tb.addEventListener('click',function(){var c=document.documentElement.getAttribute('data-theme');
 var n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);
 try{localStorage.setItem('a11y-theme',n);}catch(e){}});
+
+var grid=document.getElementById('cards');
+var cards=Array.prototype.slice.call(grid.querySelectorAll('.card'));
+
+// "12 days ago" next to each absolute scan date — computed now, not at build
+// time, so a page that sits in a tab for a week doesn't lie.
+function ago(iso){var d=new Date(iso);if(isNaN(d))return'';
+var days=Math.floor((Date.now()-d.getTime())/864e5);
+if(days<1)return'today';if(days===1)return'yesterday';
+if(days<31)return days+' days ago';
+var mo=Math.round(days/30.4);if(mo<12)return mo+(mo===1?' month ago':' months ago');
+var y=Math.floor(days/365);return y+(y===1?' year ago':' years ago');}
+cards.forEach(function(c){var el=c.querySelector('.ago');var t=ago(c.getAttribute('data-scanned'));
+if(el&&t)el.textContent=' \\u00b7 '+t;});
+
+var q=document.getElementById('q'),noMatch=document.getElementById('noMatch'),
+matchCount=document.getElementById('matchCount');
+function applyFilter(){var v=(q.value||'').trim().toLowerCase();var n=0;
+cards.forEach(function(c){var hit=!v||c.getAttribute('data-search').indexOf(v)>-1;
+c.hidden=!hit;if(hit)n++;});
+noMatch.hidden=n!==0;
+matchCount.textContent=v?n+' of '+cards.length:'';}
+q.addEventListener('input',applyFilter);
+document.addEventListener('keydown',function(e){
+if(e.key==='/'&&document.activeElement!==q&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){
+e.preventDefault();q.focus();}});
+
+var SORTS={
+recent:function(a,b){return b.getAttribute('data-scanned').localeCompare(a.getAttribute('data-scanned'));},
+errors:function(a,b){return (+b.getAttribute('data-errors'))-(+a.getAttribute('data-errors'))||
+(+b.getAttribute('data-total'))-(+a.getAttribute('data-total'));},
+name:function(a,b){return a.getAttribute('data-search').localeCompare(b.getAttribute('data-search'));}
+};
+var segBtns=Array.prototype.slice.call(document.querySelectorAll('[data-sort]'));
+segBtns.forEach(function(b){b.addEventListener('click',function(){
+segBtns.forEach(function(x){x.classList.toggle('active',x===b);
+x.setAttribute('aria-pressed',x===b?'true':'false');});
+cards.sort(SORTS[b.getAttribute('data-sort')]).forEach(function(c){grid.appendChild(c);});});});
+})();
 </script>`;
   return shell('Accessibility reports', body);
 }

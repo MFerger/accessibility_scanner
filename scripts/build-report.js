@@ -147,7 +147,8 @@ function copyShots(site, outDir) {
   return { count, bytes };
 }
 
-// Worst sites first, on the landing page and in our own logging.
+// Worst sites first in our own logging; the landing page orders itself by
+// most-recent scan (and lets the reader re-sort).
 sites.sort((a, b) => b.active.errors - a.active.errors || b.active.total - a.active.total);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
