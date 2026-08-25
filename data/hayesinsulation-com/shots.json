@@ -1,0 +1,189 @@
+{
+ "generatedAt": "2026-08-25T18:20:36.681Z",
+ "planned": 160,
+ "captured": 25,
+ "reused": 0,
+ "missed": 135,
+ "skipped": 0,
+ "pageErrors": 0,
+ "max": 400,
+ "a11y": {
+  "13carx9": {
+   "f": "a11y-13carx9.webp",
+   "w": 640,
+   "h": 121,
+   "p": "https://hayesinsulation.com/blog/why-air-seal/",
+   "v": ""
+  },
+  "1fbxurv": {
+   "f": "a11y-1fbxurv.webp",
+   "w": 203,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-the-best-method-for-finishing-a-crawl-space/",
+   "v": ""
+  },
+  "1lmhgnt": {
+   "f": "a11y-1lmhgnt.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://hayesinsulation.com/our-culture/",
+   "v": ""
+  },
+  "1q5940l": {
+   "f": "a11y-1q5940l.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-the-best-method-for-finishing-a-crawl-space/",
+   "v": ""
+  },
+  "1quk8wt": {
+   "f": "a11y-1quk8wt.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-batt-insulation/",
+   "v": ""
+  },
+  "1rnxx9y": {
+   "f": "a11y-1rnxx9y.webp",
+   "w": 640,
+   "h": 193,
+   "p": "https://hayesinsulation.com/blog/attic-summer-insulation-upgrade-nashville/",
+   "v": ""
+  },
+  "1secqul": {
+   "f": "a11y-1secqul.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/attic-summer-insulation-upgrade-nashville/",
+   "v": ""
+  },
+  "1sg8nsm": {
+   "f": "a11y-1sg8nsm.webp",
+   "w": 640,
+   "h": 121,
+   "p": "https://hayesinsulation.com/blog/what-is-the-best-method-for-finishing-a-crawl-space/",
+   "v": ""
+  },
+  "1x5kl2i": {
+   "f": "a11y-1x5kl2i.webp",
+   "w": 640,
+   "h": 157,
+   "p": "https://hayesinsulation.com/blog/why-air-seal/",
+   "v": ""
+  },
+  "1yehs4t": {
+   "f": "a11y-1yehs4t.webp",
+   "w": 640,
+   "h": 400,
+   "p": "https://hayesinsulation.com/our-culture/",
+   "v": ""
+  },
+  "28yqn0": {
+   "f": "a11y-28yqn0.webp",
+   "w": 396,
+   "h": 309,
+   "p": "https://hayesinsulation.com/blog/why-air-seal/",
+   "v": ""
+  },
+  "2qhdvt": {
+   "f": "a11y-2qhdvt.webp",
+   "w": 203,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/attic-summer-insulation-upgrade-nashville/",
+   "v": ""
+  },
+  "4hs5e7": {
+   "f": "a11y-4hs5e7.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/commercial-warehouse-spray-foam-in-nashville/",
+   "v": ""
+  },
+  "7djotu": {
+   "f": "a11y-7djotu.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-batt-insulation/",
+   "v": ""
+  },
+  "d71tiz": {
+   "f": "a11y-d71tiz.webp",
+   "w": 640,
+   "h": 121,
+   "p": "https://hayesinsulation.com/products-and-services/mineral-wool/",
+   "v": ""
+  },
+  "kesju9": {
+   "f": "a11y-kesju9.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/commercial-warehouse-spray-foam-in-nashville/",
+   "v": ""
+  },
+  "nkpgad": {
+   "f": "a11y-nkpgad.webp",
+   "w": 460,
+   "h": 112,
+   "p": "https://hayesinsulation.com/our-culture/",
+   "v": ""
+  },
+  "oyarhv": {
+   "f": "a11y-oyarhv.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/attic-summer-insulation-upgrade-nashville/",
+   "v": ""
+  },
+  "pdntj3": {
+   "f": "a11y-pdntj3.webp",
+   "w": 460,
+   "h": 112,
+   "p": "https://hayesinsulation.com/our-culture/",
+   "v": ""
+  },
+  "w78ugs": {
+   "f": "a11y-w78ugs.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/why-air-seal/",
+   "v": ""
+  },
+  "xxkh8d": {
+   "f": "a11y-xxkh8d.webp",
+   "w": 203,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/commercial-warehouse-spray-foam-in-nashville/",
+   "v": ""
+  },
+  "zdc3yj": {
+   "f": "a11y-zdc3yj.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-the-best-method-for-finishing-a-crawl-space/",
+   "v": ""
+  }
+ },
+ "ux": {
+  "10hgc9k": {
+   "f": "ux-10hgc9k.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-your-homes-indoor-air-quality/",
+   "v": "mobile"
+  },
+  "1ifx3jv": {
+   "f": "ux-1ifx3jv.webp",
+   "w": 479,
+   "h": 98,
+   "p": "https://hayesinsulation.com/blog/what-is-your-homes-indoor-air-quality/",
+   "v": "mobile"
+  },
+  "szt22n": {
+   "f": "ux-szt22n.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://hayesinsulation.com/blog/what-is-your-homes-indoor-air-quality/",
+   "v": "mobile"
+  }
+ }
+}
