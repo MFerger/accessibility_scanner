@@ -1,0 +1,245 @@
+{
+ "generatedAt": "2026-08-25T18:40:47.760Z",
+ "planned": 207,
+ "captured": 33,
+ "reused": 0,
+ "missed": 174,
+ "skipped": 0,
+ "pageErrors": 0,
+ "max": 400,
+ "a11y": {
+  "128ezj0": {
+   "f": "a11y-128ezj0.webp",
+   "w": 438,
+   "h": 99,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "16uvi91": {
+   "f": "a11y-16uvi91.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "1cstrgs": {
+   "f": "a11y-1cstrgs.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "1m9i4ne": {
+   "f": "a11y-1m9i4ne.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "1mfw4bj": {
+   "f": "a11y-1mfw4bj.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "1upf08c": {
+   "f": "a11y-1upf08c.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "1ur36e0": {
+   "f": "a11y-1ur36e0.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "3g73v1": {
+   "f": "a11y-3g73v1.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "4fpovd": {
+   "f": "a11y-4fpovd.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "5e45cz": {
+   "f": "a11y-5e45cz.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "5j2qum": {
+   "f": "a11y-5j2qum.webp",
+   "w": 640,
+   "h": 99,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "7psxcu": {
+   "f": "a11y-7psxcu.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "8uknmq": {
+   "f": "a11y-8uknmq.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "8z8vj4": {
+   "f": "a11y-8z8vj4.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "a0qhep": {
+   "f": "a11y-a0qhep.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "dckyf5": {
+   "f": "a11y-dckyf5.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "gagtjv": {
+   "f": "a11y-gagtjv.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "ggmszi": {
+   "f": "a11y-ggmszi.webp",
+   "w": 640,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "jczd15": {
+   "f": "a11y-jczd15.webp",
+   "w": 640,
+   "h": 118,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "lixekt": {
+   "f": "a11y-lixekt.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "mtmgsx": {
+   "f": "a11y-mtmgsx.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "nvrzvd": {
+   "f": "a11y-nvrzvd.webp",
+   "w": 640,
+   "h": 118,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "p98zjz": {
+   "f": "a11y-p98zjz.webp",
+   "w": 622,
+   "h": 355,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "ptwxc2": {
+   "f": "a11y-ptwxc2.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "s1ky4i": {
+   "f": "a11y-s1ky4i.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  },
+  "wko3j9": {
+   "f": "a11y-wko3j9.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/",
+   "v": ""
+  }
+ },
+ "ux": {
+  "10hgc9k": {
+   "f": "ux-10hgc9k.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/another-exciting-project-shari-flaming-center-for-the-arts-at-tabor-college/",
+   "v": "mobile"
+  },
+  "13cmiqs": {
+   "f": "ux-13cmiqs.webp",
+   "w": 381,
+   "h": 98,
+   "p": "https://thehayesco.com/blog/another-exciting-project-shari-flaming-center-for-the-arts-at-tabor-college/",
+   "v": "mobile"
+  },
+  "1ms7vkc": {
+   "f": "ux-1ms7vkc.webp",
+   "w": 462,
+   "h": 90,
+   "p": "https://thehayesco.com/about/",
+   "v": "desktop"
+  },
+  "72pdef": {
+   "f": "ux-72pdef.webp",
+   "w": 236,
+   "h": 90,
+   "p": "https://thehayesco.com/about/",
+   "v": "desktop"
+  },
+  "l0sq6q": {
+   "f": "ux-l0sq6q.webp",
+   "w": 236,
+   "h": 138,
+   "p": "https://thehayesco.com/about/",
+   "v": "desktop"
+  },
+  "slnkk4": {
+   "f": "ux-slnkk4.webp",
+   "w": 236,
+   "h": 102,
+   "p": "https://thehayesco.com/about/",
+   "v": "desktop"
+  },
+  "szt22n": {
+   "f": "ux-szt22n.webp",
+   "w": 160,
+   "h": 90,
+   "p": "https://thehayesco.com/blog/another-exciting-project-shari-flaming-center-for-the-arts-at-tabor-college/",
+   "v": "mobile"
+  }
+ }
+}
