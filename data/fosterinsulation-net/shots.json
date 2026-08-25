@@ -1,0 +1,12 @@
+{
+ "generatedAt": "2026-08-25T18:42:08.421Z",
+ "planned": 70,
+ "captured": 0,
+ "reused": 0,
+ "missed": 70,
+ "skipped": 0,
+ "pageErrors": 0,
+ "max": 400,
+ "a11y": {},
+ "ux": {}
+}
